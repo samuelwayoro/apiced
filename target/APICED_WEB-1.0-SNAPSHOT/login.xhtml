@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>CONNEXION UTILISATEUR</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body>
+        <div class="p-grid nested-grid">
+            <div class="p-col-6">
+                <div class="p-grid" style="margin-top: 100px">
+                    <div class="p-col-12">
+                        <h1 style="font-family: serif;margin-left: 200px;font-size: xx-large;color: red">APICED WEB</h1>
+                        <h1 style="font-family: serif;margin-left: 200px ; color: #9C27B0" >
+                            PLATEFORME DE PAIEMENT ELECTRONIQUE DES SUBSIDES 
+                        </h1>
+                    </div>
+                    <div class="p-col-12" style="margin-left: 200px">
+                        <h:form id="loginForm">
+                            <p:messages id="messages"  closable="true">
+                                <p:autoUpdate/>
+                            </p:messages>
+                            <h5>Nom Utilisateur</h5>
+                            <span class="ui-float-label">
+                                <p:inputText id="username" value="#{loginMBean.login}" style="width: 350px" 
+                                             required="true" requiredMessage="veuillez renseigner votre login" />
+                                <p:outputLabel for="@previous" />
+                            </span>
+                            <h5>Mot de Passe</h5>
+                            <span class="ui-float-label">
+                                <p:password id="password" value="#{loginMBean.motDePasse}" 
+                                            style="width:350px" required="true" requiredMessage="veuillez renseigner votre mot de passe"/>
+                                <p:outputLabel for="@previous" value="password" />
+                            </span>
+                            <div  style="margin-top: 30px;margin-left: 260px">
+                                 <p:commandButton type="submit" value="s'identifier" 
+                                                  styleClass="ui-button-raised ui-button-help" action="#{loginMBean.connexionUtilisateur()}" />
+                            </div>    
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col-6">
+                <p:graphicImage name="images/logoTchad.png" library="default" width="600" class="p-col" style="margin-top: 110px" />
+            </div>
+        </div>
+        <p>powered by Socitech Business Solution</p>
+    </h:body>
+</html>
+

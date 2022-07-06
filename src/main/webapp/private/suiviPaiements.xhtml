@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>SUIVI PAIEMENTS</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="3">
+                                <p:menuitem value="Nouveau  paiement MOOV" outcome="/private/paiementMoovAfrica">
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Nouveau  paiement AIRTEL" outcome="/private/emissionPaiements">
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+                                <p:menuitem value="Paiements à valider (#{monProfilMBean.nbrePaiementEnAttente})" outcome="/private/paiementEnAttente">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>
+                                <p:menuitem value="Paiements opérateurs (#{monProfilMBean.nbrePaiementAenvoyeAOp})" outcome="/private/suiviPaiements">
+                                    <f:param name="i" value="3"/>
+                                </p:menuitem>
+                                <p:menuitem value="Suivi des transactions" outcome="/private/suivitransactions" disabled="true">
+                                    <f:param name="i" value="4"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form>
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-wallet p-px-2"/>                                                
+                                <p:outputLabel value=" " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Paiements à envoyer a l'opérateur" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider />
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="A envoyer a l'opérateur">
+                                        <div class="card">
+                                            <h:form id="form">
+                                                <p:growl id="messages" sticky="true" showDetail="true" />
+                                                <p:dataTable var="paiement" value="#{suiviPaieMBean.listePaiementEnAttenteDenvoi}"  id="paiementsEnAttente" emptyMessage="Aucune(s) transaction(s) en cours..."
+                                                             style="margin-bottom:0" paginator="true" rows="3" selectionPageOnly="false" rowKey="#{paiement.idpaiement}" selectionMode="single" selection="#{suiviPaieMBean.selectedPaiement}">
+                                                    <f:facet name="header">
+                                                        <p:outputLabel  value="#{monProfilMBean.nbrePaiementAenvoyeAOp}" /> paiement en attente d'envoi vers l'opérateur
+                                                    </f:facet>
+                                                    <p:column headerText="libellé">
+                                                        <h:outputText value="#{paiement.libelle}" />
+                                                    </p:column>
+                                                    <p:column headerText="Détails">
+                                                        <h:outputText value="#{paiement.details}" />
+                                                    </p:column>
+                                                    <p:column headerText="Montant total">
+                                                        <h:outputText value="#{paiement.montanttotal}" />
+                                                    </p:column>
+                                                    <p:column headerText="Montant restant">
+                                                        <h:outputText value="#{paiement.montantrestant}" />
+                                                    </p:column>
+                                                    <p:column headerText="Mois de paiement">
+                                                        <h:outputText value="#{paiement.mois}" />
+                                                    </p:column>
+                                                    <p:column headerText="Date de saisie ">
+                                                        <h:outputText value="#{paiement.datesaisiepaiement}" />
+                                                    </p:column>
+                                                    <p:column headerText="Date de paiement ">
+                                                        <h:outputText value="#{paiement.datepaiement}" />
+                                                    </p:column>
+                                                    <p:column headerText="Opérateur Télécom ">
+                                                        <h:outputText value="#{paiement.operateurmobile}" />
+                                                    </p:column>
+                                                    <p:column headerText=""  exportable="false" >
+                                                        <p:commandButton style="margin-left: 5px"  icon="pi pi-send" type="submit" oncomplete="PF('deleteUserDialog').show()"  process="@this"  
+                                                                         title="envoyer le paiement a l'opérateur" styleClass="rounded-button ui-button-success" rendered="#{loginMBean.utilisateur.profilIdprofil.btnvalidepaiement}"  >
+                                                            <f:setPropertyActionListener value="#{paiement}" target="#{suiviPaieMBean.selectedPaiement}"/>
+                                                        </p:commandButton>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- debut pop up suppression utilisateur-->
+                                                <p:confirmDialog widgetVar="deleteUserDialog" showEffect="fade" width="300" message="Envoyer ce paiement à l'opérateur?" header="Confirm" severity="warn">
+                                                    <p:commandButton value="Oui" icon="pi pi-check"   actionListener="#{suiviPaieMBean.sendPaieToTelcoCsv()}" process="@this" oncomplete="PF('deleteUserDialog').hide()" />
+                                                    <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deleteUserDialog').hide()"/>
+                                                </p:confirmDialog>
+
+                                            </h:form>
+                                        </div>
+                                    </p:panel>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

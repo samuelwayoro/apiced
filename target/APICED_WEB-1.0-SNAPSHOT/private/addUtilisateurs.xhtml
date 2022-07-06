@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>AJOUTER UTILISATEUR</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body>
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-10">
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <h:form>
+                            <p:breadCrumb>
+                                <p:menuitem value="Electronics"/>
+                                <p:menuitem value="Mon Profil"/>
+                            </p:breadCrumb>
+                        </h:form>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="Création d'un nouvel utilisateur"  >
+
+                                        <f:facet name="actions">
+                                            <h:form>
+                                                <p:commandLink  action="gestionUtilisateurs"  >
+                                                    <h:outputText styleClass="ui-icon pi pi-arrow-left"  title="retour" />
+                                                </p:commandLink>
+                                            </h:form>
+                                        </f:facet>
+                                        <div class="card">
+                                            <h:form id="creationUser">
+                                                <p:messages id="messages"  closable="true">
+                                                    <p:autoUpdate/>
+                                                </p:messages>
+                                                <div class="card">
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-field p-col-12 p-md-6">
+                                                            <p:outputLabel for="Nom" value="Nom"/>
+                                                            <p:inputText id="Nom" value="#{usersMBean.nomUtilisateur}" required="true" requiredMessage="veuillez renseigner le nom" />
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-6">
+                                                            <p:outputLabel for="Prenom" value="Prenom"/>
+                                                            <p:inputText id="Prenom" value="#{usersMBean.prenomsUtilisateur}" required="true" requiredMessage="veuillez renseigner le prénoms"/>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-6">
+                                                            <p:outputLabel for="Login" value="Login"/>
+                                                            <p:inputText id="Login"  value="#{usersMBean.loginUtilisateur}" required="true" requiredMessage="veuillez renseigner le login" />
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel for="profil" value="profil"/>
+                                                            <p:selectOneMenu id="profil" value="#{usersMBean.profilUtilisateur}">
+                                                                <f:selectItems value="#{usersMBean.listNomsProfils}"/>
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-6">
+                                                            <p:outputLabel for="Email" value="Email"/>
+                                                            <p:inputText id="Email"  value="#{usersMBean.emailUtilisateur}" required="true" requiredMessage="veuillez renseigner le mail" />
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-10">
+
+                                                        </div>
+                                                        <div class="p-col-10 p-md-1">
+                                                            <p:button value="retour" styleClass="rounded-button ui-button-danger" outcome="gestionUtilisateurs" />
+                                                        </div>
+                                                        <div class="p-col-10 p-md-1">
+                                                            <p:commandButton value="valider" styleClass="rounded-button ui-button-success" id="ajouter" action="#{usersMBean.addNewUtilisateur()}" update="creationUser" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </h:form>
+                                        </div>
+                                    </p:panel>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

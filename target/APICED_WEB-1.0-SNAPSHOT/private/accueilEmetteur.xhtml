@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>TABLEAU DE BORD APICED</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">actifs
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">  
+                        <h:form>
+                            <p:tabMenu activeIndex="#{param.i}">
+<!--                                <p:menuitem value="Tableau de bord" outcome="/private/gestionUtilisateurs" >-->
+                                <p:menuitem value="Tableau de bord">
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form> 
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-fw pi-home"/>                                              
+                                <p:outputLabel value="  " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Tableau de bord" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider />
+                    <div class="p-grid nested-grid ">
+                        <div class="p-col-8">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="DERNIERES NOTIFICATIONS">
+                                        <h:form id="form">
+                                            <div class="card crud-demo">
+                                                <p:growl id="messages" showDetail="true"/>
+                                                <p:dataTable  id="dt-products"  var="product"  value="#{accueilEmetteurMBean.listeNotifs}"   
+                                                              widgetVar="dtProducts" reflow="true"  styleClass="products-table"  rowKey="#{product.idnotif}" 
+                                                    paginator="true"  rows="5" selectionMode="single"  selection="#{accueilEmetteurMBean.selectedNotif}"   
+                                                    paginatorPosition="bottom"  rowSelectMode="add" emptyMessage="aucune notification non lue(s)">
+                                                    <p:column headerText="Date" sortBy="#{product.dateinsert}" filterBy="#{product.dateinsert}" >
+                                                        <h:outputText value="#{product.dateinsert}" style="font-weight: 700"/>
+                                                    </p:column>
+                                                    <p:column headerText="Titre" sortBy="#{product.titre}" filterBy="#{product.titre}">
+                                                        <h:outputText value="#{product.titre}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Initiateur" filterBy="#{product.createur}">
+                                                        <h:outputText value="#{product.createur}" /> 
+                                                    </p:column>
+                                                    <p:column exportable="false">
+                                                        <p:commandButton   icon="pi pi-check-circle" rendered="#{product.btncorrigemc}"   update=":form:manage-view-info-content" 
+                                                                           oncomplete="PF('viewMcDialog').show()"  styleClass="edit-button rounded-button ui-button-help" process="@this">
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{accueilEmetteurMBean.selectedNotif}"/>
+                                                            <p:resetInput   target=":form:manage-view-info-content"/>
+                                                        </p:commandButton>
+                                                        <p:commandButton   icon="pi pi-search-plus"  rendered="#{product.btndetail}"   update=":form:manage-view-details-content" 
+                                                                           oncomplete="PF('viewDetailsDialog').show()"  styleClass="edit-button rounded-button ui-button-danger" process="@this">
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{accueilEmetteurMBean.selectedNotif}"/>
+                                                            <p:resetInput   target=":form:manage-view-details-content"/>
+                                                        </p:commandButton>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!--correction de mc -->
+                                                <p:dialog header="Maitre a corriger" showEffect="fade" modal="true" widgetVar="viewMcDialog" responsive="true" >
+                                                    <p:outputPanel id="manage-view-info-content" class="ui-fluid" >
+                                                        <p:outputPanel rendered="#{not empty accueilEmetteurMBean.selectedNotif}">
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Titre  : </p:outputLabel>
+                                                                    <p:inputTextarea rows="3" cols="25" value="#{accueilEmetteurMBean.selectedNotif.titre}"  disabled="true" style="font-size: large" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Détail  : </p:outputLabel>
+                                                                    <p:inputTextarea rows="3" cols="25" value="#{accueilEmetteurMBean.selectedNotif.information}"  disabled="true" style="font-size: large" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Initiateur : </p:outputLabel>
+                                                                    <p:inputText value="#{accueilEmetteurMBean.selectedNotif.createur}" disabled="true" style="font-size:large" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Date création : </p:outputLabel>
+                                                                    <p:inputText value="#{accueilEmetteurMBean.selectedNotif.dateinsert}" disabled="true" style="font-size: large" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <div class="p-grid ui-fluid">
+                                                            </div>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewMcDialog').hide()" styleClass="ui-button-danger"  iconPos="right" />
+                                                        <p:commandButton icon="pi pi-check-circle" value="aller a la validation" actionListener="#{accueilEmetteurMBean.archiverNotif()}" 
+                                                                         styleClass="ui-button-success" iconPos="right" action="maitreAcorriger.xhtml?faces-redirect=true"/>
+                                                    </f:facet> 
+                                                </p:dialog>
+                                                <!--fin de correction mc -->
+                                                <!-- debut pop up suppression utilisateur-->
+                                                <p:confirmDialog widgetVar="deleteUserDialog" showEffect="fade" width="300" message="marquer comme lue ?" header="Confirm" severity="warn">
+                                                    <p:commandButton value="Oui" icon="pi pi-check"   actionListener="#{accueilEmetteurMBean.archiverNotif()}" process="@this" oncomplete="PF('deleteUserDialog').hide()" />
+                                                    <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deleteUserDialog').hide()"/>
+                                                </p:confirmDialog>
+                                                <!-- fin pop suppression -->
+
+                                                <!-- pop up details notif-->
+                                                <p:dialog header="Détails" showEffect="fade" modal="true" widgetVar="viewDetailsDialog" responsive="true" >
+                                                    <p:outputPanel id="manage-view-details-content" class="ui-fluid" >
+                                                        <p:outputPanel rendered="#{not empty accueilEmetteurMBean.selectedNotif}">
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Titre  : </p:outputLabel>
+                                                                    <p:inputTextarea rows="3" cols="25" value="#{accueilEmetteurMBean.selectedNotif.titre}"  disabled="true" style="font-size: large" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Détail  : </p:outputLabel>
+                                                                    <p:inputTextarea rows="3" cols="25" value="#{accueilEmetteurMBean.selectedNotif.information}"  disabled="true" style="font-size: large" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Initiateur : </p:outputLabel>
+                                                                    <p:inputText value="#{accueilEmetteurMBean.selectedNotif.createur}" disabled="true" style="font-size:large" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Date création : </p:outputLabel>
+                                                                    <p:inputText value="#{accueilEmetteurMBean.selectedNotif.dateinsert}" disabled="true" style="font-size: large" />
+                                                                </div>
+                                                            </p:outputPanel>                                                        
+                                                            <div class="p-grid ui-fluid">
+                                                            </div>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewDetailsDialog').hide()" styleClass="ui-button-danger"  iconPos="right" actionListener="#{accueilEmetteurMBean.archiverNotif()}" />
+                                                    </f:facet> 
+                                                </p:dialog>
+                                                <!-- fin pop up -->
+                                            </div>
+                                        </h:form>
+                                    </p:panel>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-col-4">
+                            <h:form id="formulaire">
+                                <div class="p-grid">
+                                    <div class="p-col">
+                                        <p:panel header="STATISTIQUES ACTIVITES">
+                                            <div class="p-grid">
+                                                <p:panel header="Nouveaux Maitre en attente de validation" class="p-col-6" style="text-align: center">
+                                                    <div class="card" style="text-align: center">
+                                                        <h3 style="color: blue">#{monProfilMBean.mcEnAttenteDeValidation}</h3>
+                                                    </div>
+                                                </p:panel>
+                                                <p:panel header="Total Maitres communautaires validés" style="text-align: center" class="p-col-6">
+                                                    <div class="card" style="text-align: center">
+                                                        <h3 style="color: blue"> #{monProfilMBean.totalMcValides}</h3>
+                                                    </div>
+                                                </p:panel>
+                                                <p:divider/>
+                                                <p:panel header="Demande de paiement  en attente de validation " style="text-align: center" class="p-col-6">
+                                                    <div class="card"  style="text-align: center">
+                                                        <h3 style="color: blue" >#{monProfilMBean.nbrePaiementEnAttente}</h3>
+                                                    </div>
+                                                </p:panel>
+                                                <p:panel header="Total des Demandes de paiement mensuel " style="text-align: center" class="p-col-6">
+                                                    <div class="card"  style="text-align: center">
+                                                        <h3 style="color: blue">#{monProfilMBean.nbreTotalPaiements}</h3>
+                                                    </div>
+                                                </p:panel>
+                                            </div>
+                                        </p:panel>
+                                    </div>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

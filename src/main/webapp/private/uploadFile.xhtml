@@ -1,0 +1,293 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Annuaire</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+        <style type="text/css">
+            .ui-datatable .ui-datatable-header {
+                text-align: right !important;
+            }
+
+            .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-header .ui-chkbox {
+                display: none;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="3">
+                                <p:menuitem value="Annuaire" outcome="/private/annuaire" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Rechercher" outcome="/private/rechercherMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+<!--                                <p:menuitem value="Maitre(s) en attente " outcome="/private/maitresAValider">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>-->
+                                <p:menuitem value="Ajouter un nouveau maitre" outcome="/private/nouveauMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesnouveaumc}">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>
+                                <p:menuitem value="Ajouter une liste de maitres" outcome="/private/uploadFile" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="3"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form>
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-fw pi-users"/>                                                
+                                <p:outputLabel value=" " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Ajouter une liste de nouveaux Maitres communautaires" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="Télécharger le fichier">
+                                        <div class="card">
+                                            <p:growl id="messages" showDetail="true"/>
+                                            <div class="card">
+                                                <h5>Joindre le fichier : "<i style="color:red"> #{fileUploadView.nomFichierAUploader}</i>  " depuis le repertoire suivant : "<i style="color:red"> #{fileUploadView.NAME}</i>"</h5>
+                                                <h:form enctype="multipart/form-data">
+                                                    <p:fileUpload value="#{fileUploadView.file}" mode="simple" skinSimple="true" />
+                                                    <p:commandButton value="Valider" ajax="false" action="#{fileUploadView.upload}" styleClass="p-mt-3 ui-button-outlined p-d-block ui-button-help" />
+                                                </h:form>
+                                            </div>
+                                        </div>
+                                    </p:panel>
+                                    <p:divider/>
+                                    <p:panel header="Liste des Maitres Communautaires téléchargé(s) ">
+                                        <div class="card">
+                                            <h:form id="form">
+                                                <p:growl id="messages" showDetail="true"/>
+                                                <p:dataTable id="tbl" var="product" value="#{fileUploadView.listeMaitres}" emptyMessage="aucun(s) maitre(s) téléchargé(s)" 
+                                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+                                                             paginator="true" rows="5" styleClass="p-mt-2" 
+                                                             rowKey="#{product.id}" selectionMode="single" 
+                                                             selection="#{fileUploadView.selectedMc}">
+                                                    <p:column  styleClass="p-text-center" sortBy="#{product.nom}" filterBy="#{product.nom}" >
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Nom"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.nom}"/>
+                                                    </p:column>
+                                                    <p:column  styleClass="p-text-center" sortBy="#{product.prenoms}" filterBy="#{product.prenoms}">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Prénoms"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.prenoms}"/>
+                                                    </p:column>
+                                                    <p:column styleClass="p-text-center" sortBy="#{product.ecole}" filterBy="#{product.ecole}">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Ecole" style="width: 150px"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.ecole}"/>
+                                                    </p:column>
+                                                    <p:column styleClass="p-text-center" sortBy="#{product.contactun}" filterBy="#{product.contactun}">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Contact"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.contactun}"/>
+                                                    </p:column>
+                                                    <p:column styleClass="p-text-center"  filterBy="#{product.operatortelco}">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Opérateur"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.operatortelco}"/>
+                                                    </p:column>
+                                                    <p:column styleClass="p-text-center" sortBy="#{product.operatortelco}" filterBy="#{product.operatortelco}">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Bailleur"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.bailleur}"/>
+                                                    </p:column>
+                                                    <p:column styleClass="p-text-center" sortBy="#{product.categoriepro}" filterBy="#{product.categoriepro}">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Catégorie"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.categoriepro}"/>
+                                                    </p:column>
+                <!--                                    <p:column styleClass="p-text-center"  filterBy="#{product.valeureetatretraite}">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Retraite"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.valeureetatretraite}"/>
+                                                    </p:column>-->
+                                                    <p:column exportable="false" width="137px" >
+                                                        <f:facet name="header">
+                                                            <p:commandButton type="button" title="Save" icon="pi pi-th-large" styleClass="warn-button p-mr-2" style="margin-left: 47px" disabled="true" />
+                                                        </f:facet>
+                                                        <!-- btn de modif mineur-->
+                                                        <p:commandButton id="modifMin" style="margin-left: 2px"  icon="pi pi-user-edit" update=":form:manage-modifInfos-mc-content"  
+                                                                         oncomplete="PF('viewModifMcDialog').show()" 
+                                                                         styleClass="rounded-button ui-button-warning" process="@this" rendered="#{loginMBean.utilisateur.profilIdprofil.accesmodifmc}" >
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{fileUploadView.selectedMc}"/>
+                                                            <p:resetInput   target=":form:manage-modifInfos-mc-content"/>
+                                                        </p:commandButton>
+                                                        <!--btn pr retirer un mc du tableau affiché -->
+                                                        <p:commandButton id="deleteMc" style="margin-left: 4px" icon="pi pi-trash" class="ui-button-warning rounded-button" process="@this" oncomplete="PF('deleteMcDialog').show()">
+                                                            <f:setPropertyActionListener value="#{product}" target="#{fileUploadView.selectedMc}"/>
+                                                        </p:commandButton>
+
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- debut modif mineur infos du maitre-->
+                                                <p:dialog header="Validation des Informations du Maitre"  showEffect="fade" modal="true" widgetVar="viewModifMcDialog" responsive="true" >
+                                                    <p:outputPanel class="ui-fluid" id="manage-modifInfos-mc-content" >
+                                                        <p:outputPanel rendered="#{not empty fileUploadView.selectedMc}">
+                                                            <p:outputPanel >
+                                                                <div class="card">
+                                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Nom : <p:outputLabel   class="p-text-bold" value="#{fileUploadView.selectedMc.nom}" /></p:outputLabel>
+                                                                            <p:inputText placeholder="saisir un autre nom" value="#{fileUploadView.selectedMc.nom}" required="true"/>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Prénoms : <p:outputLabel   class="p-text-bold" value="#{fileUploadView.selectedMc.prenoms}" /></p:outputLabel>
+                                                                            <p:inputText placeholder="#{fileUploadView.selectedMc.prenoms}" value="#{fileUploadView.selectedMc.prenoms}"/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Sexe : <p:outputLabel   class="p-text-bold" value="#{fileUploadView.selectedMc.genre}" /></p:outputLabel>
+                                                                            <p:selectOneMenu id="matri" value="#{fileUploadView.selectedMc.genre}" required="true" >
+                                                                                <f:selectItem itemLabel="Selectionnez un autre sexe  " itemValue="" />
+                                                                                <f:selectItem itemLabel="M" itemValue="M" />
+                                                                                <f:selectItem itemLabel="F" itemValue="F"/>
+                                                                            </p:selectOneMenu>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Contact  : <p:outputLabel   class="p-text-bold" value="#{fileUploadView.selectedMc.contactun}" /></p:outputLabel>                                                            
+                                                                            <p:inputText value="#{fileUploadView.selectedMc.contactun}" placeholder="saisir un autre contact " style="font-weight: bold" required="true"/>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Opérateur télécom : ***<p:outputLabel   class="p-text-bold" value="#{fileUploadView.selectedMc.operatortelco}" /></p:outputLabel>
+                                                                            <p:selectOneMenu id="operateurTelecom"  value="#{fileUploadView.operateurTelcoMc}" required="true">
+                                                                                <f:selectItem itemLabel="Selectionnez un Opérateur" itemValue="" />
+                                                                                <f:selectItem itemLabel="AIRTEL" itemValue="AIRTEL" />
+                                                                                <f:selectItem itemLabel="MOOV" itemValue="MOOV"/>
+                                                                            </p:selectOneMenu>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Domicile  :*** <p:outputLabel   class="p-text-bold" value="#{fileUploadView.selectedMc.domicile}" /></p:outputLabel>                                                            
+                                                                            <p:inputText value="#{fileUploadView.domicileMc}" placeholder="saisir le domicile" style="font-weight: bold" required="true"/>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Lieu de naissance  : ***<p:outputLabel value="#{fileUploadView.selectedMc.lieudenaissance}"  class="p-text-bold"/></p:outputLabel>
+                                                                            <p:inputText value="#{fileUploadView.lieuDeNaissanceMc}" placeholder="saisir le lieu de naissance" style="font-weight: bold" required="true"/>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Bailleur  : <p:outputLabel value="#{fileUploadView.selectedMc.bailleur}"  class="p-text-bold"/></p:outputLabel>
+                                                                            <p:selectOneMenu id="nomBailleur" value="#{fileUploadView.selectedMc.bailleur}" required="true">
+                                                                                 <f:selectItem itemLabel="Selectionnez un autre bailleur" itemValue="" />
+                                                                               <f:selectItem itemLabel="PREAT" itemValue="PREAT" />
+                                                                                <f:selectItem itemLabel="PARSET2" itemValue="PARSET2"/>
+                                                                            </p:selectOneMenu>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Milieu de résidence  : <p:outputLabel  class="p-text-bold"  value="#{fileUploadView.selectedMc.milieuResidence}" /></p:outputLabel>
+                                                                            <p:selectOneMenu id="milieuResidence" value="#{fileUploadView.milieuResidenceMc}" required="true">
+                                                                                <f:selectItem itemLabel="Selectionnez un type" itemValue="" />
+                                                                                <f:selectItem itemLabel="Urbain" itemValue="Urbain" />
+                                                                                <f:selectItem itemLabel="Rurale" itemValue="Rurale"/>
+                                                                            </p:selectOneMenu>
+                                                                        </div>
+                                                                        
+                                                                        <div class="p-field p-col-12 p-md-6">
+                                                                            <p:outputLabel>Ecole  : <p:outputLabel value="#{fileUploadView.selectedMc.ecole}"  class="p-text-bold"/></p:outputLabel>
+                                                                            <p:selectOneMenu  id="listeEcoles" value="#{fileUploadView.selectedMc.ecole}" placeholder="#{fileUploadView.selectedMc.ecole}" >
+                                                                                <f:selectItems value="#{fileUploadView.listeNomsEtablissements}"/>
+                                                                            </p:selectOneMenu>
+                                                                            
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel for="dateNaiss"> Date de naissance  :<p:outputLabel   class="p-text-bold"/></p:outputLabel>
+                                                                            <p:inputMask id="dateNaiss" value="#{fileUploadView.newMcDateNaiss}" mask="99/99/9999" placeholder="#{fileUploadView.selectedMc.datenaissance}" />
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Langue :  <p:outputLabel value="#{fileUploadView.selectedMc.langue}"  class="p-text-bold"/> </p:outputLabel>
+                                                                            <p:selectOneMenu id="langue" value="#{fileUploadView.selectedMc.langue}" placeholder="#{fileUploadView.selectedMc.langue}" required="true">
+                                                                                <f:selectItem itemLabel="Choisir la langue" itemValue="" />
+                                                                                <f:selectItem itemLabel="FRANCAIS" itemValue="FRANCAIS" />
+                                                                                <f:selectItem itemLabel="ARABE" itemValue="ARABE"/>
+                                                                                <f:selectItem itemLabel="BILINGUE" itemValue="BILINGUE"/>
+                                                                            </p:selectOneMenu>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Catégorie  : <p:outputLabel  value="#{fileUploadView.selectedMc.categoriepro}"  class="p-text-bold"/></p:outputLabel> 
+                                                                            <p:selectOneMenu  id="listeCategs" value="#{fileUploadView.selectedMc.categoriepro}" placeholder="#{fileUploadView.selectedMc.categoriepro}" >
+                                                                                <f:selectItems value="#{fileUploadView.listeCategs}"/>
+                                                                            </p:selectOneMenu>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ui-fluid p-formgrid p-grid">
+
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Observation BM : <em>(statut compte)</em> : <p:outputLabel  value="#{fileUploadView.selectedMc.statutcompte}" class="p-text-bold"/> </p:outputLabel>
+                                                                            <p:selectOneMenu id="obs" value="#{fileUploadView.selectedMc.statutcompte}" required="true">
+                                                                                <f:selectItem itemLabel="choisir une observation" itemValue="" />
+                                                                                <f:selectItem itemLabel="Abandon" itemValue="Abandon" />
+                                                                                <f:selectItem itemLabel="Absent" itemValue="Absent"/>
+                                                                                <f:selectItem itemLabel="Decédé" itemValue="Decédé"/>
+                                                                                <f:selectItem itemLabel="RAS" itemValue="RAS"/>
+                                                                                <f:selectItem itemLabel="En formation" itemValue="En formation"/>
+                                                                                <f:selectItem itemLabel="Retraité" itemValue="Retraité"/>
+                                                                            </p:selectOneMenu>
+                                                                        </div>
+                                                                    </div>                                                    
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-grid ui-fluid">
+                                                                </div>
+                                                            </p:outputPanel>    
+                                                        </p:outputPanel>
+                                                    </p:outputPanel> 
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="Valider" iconPos="right"  icon="pi pi-check" actionListener="#{fileUploadView.majInfosMc()}" 
+                                                                         update=":form:manage-modifInfos-mc-content" process="manage-modifInfos-mc-content @this" styleClass="ui-button-success" />
+                                                        
+                                                        <p:commandButton value="Fermer" iconPos="right" icon="pi pi-times" onclick="PF('viewModifMcDialog').hide()" styleClass="ui-button-warning" />
+                                                    </f:facet> 
+                                                </p:dialog>
+
+                                                <p:confirmDialog widgetVar="deleteMcDialog" showEffect="fade" width="300" message="Retirer ce maitre de la liste?" header="Confirmer" severity="Warn">
+                                                    <p:commandButton value="Oui" icon="pi pi-check" actionListener="#{fileUploadView.deleteUser()}" process="@this" oncomplete="PF('deleteMcDialog').hide()"/>
+                                                    <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deleteMcDialog').hide()" />
+
+                                                </p:confirmDialog>
+                                            </h:form>
+                                        </div>
+                                    </p:panel>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

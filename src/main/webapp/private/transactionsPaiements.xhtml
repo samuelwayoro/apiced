@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:metadata>
+        <f:viewParam name="info" value="#{transactionsPaiementsMBean.info}"
+                     required="true"/>
+        <f:viewAction action="#{transactionsPaiementsMBean.loadTransactions}"/>
+    </f:metadata>
+    <h:head>
+        <title>LISTE DES TRANSACTIONS</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                           <p:tabMenu activeIndex="0">
+                                <p:menuitem value="Paiements à valider" outcome="/private/paiementEnAttente">
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Suivi des paiements" outcome="/private/suiviPaiements">
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+                                <p:menuitem value="Nouveau  paiement AIRTEL" outcome="/private/emissionPaiements">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>
+                                <p:menuitem value="Nouveau  paiement MOOV AFRICA" outcome="/private/paiementMoovAfrica">
+                                    <f:param name="i" value="3"/>
+                                </p:menuitem>
+                                <p:menuitem value="Suivi des transactions" outcome="/private/suivitransactions">
+                                    <f:param name="i" value="4"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form> 
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-wallet p-px-2"/>                                                
+                                <p:outputLabel value=" " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Paiements en attente de validation" />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Liste des transactions" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider />
+                    <p:panel header="Liste des transactions" >
+                        <f:facet name="actions">
+                            <h:form>
+                                <p:commandLink styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default" action="paiementEnAttente.xhtml?faces-redirect=true">
+                                    <h:outputText styleClass="ui-icon pi pi-arrow-left" style="color: red" />
+                                </p:commandLink>
+                            </h:form>
+                        </f:facet>
+                        <div class="card">
+                            <h:form id="form">
+                                <p:growl id="messages" showDetail="true"/>
+                                <div class="p-d-flex p-jc-between" style="margin-bottom: -72px">
+                                    <div>
+                                        <p:commandButton value="Rapport" type="button" icon="pi pi-print" styleClass="ui-button-raised ui-button-warning">
+                                            <p:printer target="tbl"/>
+                                        </p:commandButton>
+                                        <!--                                            <p:commandButton type="submit" style="margin-left: 25px"  value="valider le paiement" styleClass="ui-button-raised ui-button-help" 
+                                                                                                     rendered="#{loginMBean.utilisateur.profilIdprofil.btnvalidepaiement}" actionListener="#{transactionsPaiementsMBean.genratePaie()}"   />-->
+                                    </div>
+                                    <div>
+                                        <p:commandButton value="XLS" styleClass="p-mr-2 p-mb-2 ui-button-outlined">
+                                            <p:dataExporter type="xls" target="tbl" fileName="products" pageOnly="true"/>
+                                        </p:commandButton>
+
+                                        <p:commandButton value="CSV" styleClass="p-mr-2 p-mb-2 ui-button-outlined">
+                                            <p:dataExporter type="csv" target="tbl" fileName="products" pageOnly="true"/>
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+                                <p:dataTable id="tbl" var="transaction" value="#{transactionsPaiementsMBean.listTransactions}" emptyMessage="aucune transactions en cours..."
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                             paginator="true" rows="5" styleClass="p-mt-2" rowKey="#{transaction.idtransaction}" selectionMode="single" selection="#{transaction.idtransaction}">
+                                    <p:column styleClass="p-text-center" sortBy="#{transaction.contactmaitre}" filterBy="#{transaction.contactmaitre}" >
+                                        <f:facet name="header">
+                                            <h:outputText value="numero_maitre"/>
+                                        </f:facet>
+                                        <h:outputText value="#{transaction.contactmaitre}" />
+                                    </p:column>
+                                    <p:column styleClass="p-text-center" sortBy="#{transaction.operateurs}" filterBy="#{transaction.operateurs}">
+                                        <f:facet name="header">
+                                            <h:outputText value="operateur_telecom" style="width: 150px"/>
+                                        </f:facet>
+                                        <h:outputText value="#{transaction.operateurs}"/>
+                                    </p:column>
+                                    <p:column styleClass="p-text-center"  sortBy="#{transaction.libellepaie}" filterBy="#{transaction.libellepaie}" >
+                                        <f:facet name="header">
+                                            <h:outputText value="libelle_paiement"/>
+                                        </f:facet>
+                                        <h:outputText value="#{transaction.libellepaie}"/>
+                                    </p:column>
+                                    <p:column  styleClass="p-text-center" sortBy="#{transaction.moisanneepaie}" filterBy="#{transaction.moisanneepaie}">
+                                        <f:facet name="header">
+                                            <h:outputText value="mois_paiement"/>
+                                        </f:facet>
+                                        <h:outputText value="#{transaction.moisanneepaie}"/>
+                                    </p:column>
+                                    <p:column styleClass="p-text-center" sortBy="#{transaction.montantsubside}" filterBy="#{transaction.montantsubside}">
+                                        <f:facet name="header">
+                                            <h:outputText value="montant_subside" style="width: 150px"/>
+                                        </f:facet>
+                                        <h:outputText value="#{transaction.montantsubside}"/>
+                                    </p:column>
+                                    <p:column styleClass="p-text-center"  sortBy="#{transaction.nommaitre}" filterBy="#{transaction.nommaitre}">
+                                        <f:facet name="header">
+                                            <h:outputText value="nom_maitre" style="width: 150px"/>
+                                        </f:facet>
+                                        <h:outputText value="#{transaction.nommaitre}"/>
+                                    </p:column>
+                                    <p:column styleClass="p-text-center"  sortBy="#{transaction.prenomsmaitre}" filterBy="#{transaction.prenomsmaitre}">
+                                        <f:facet name="header">
+                                            <h:outputText value="prenoms_maitre" style="width: 150px"/>
+                                        </f:facet>
+                                        <h:outputText value="#{transaction.prenomsmaitre}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:form>
+                        </div>
+                    </p:panel>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

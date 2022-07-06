@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:metadata>
+        <f:viewParam name="idProfil" value="#{profilsMBean.idProfil}" required="true" />
+        <f:viewAction action="#{profilsMBean.loadProfil()}" />
+    </f:metadata>
+    <h:head>
+        <title> MODIFIER UN PROFIL UTILISATEUR</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body>
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-10">
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <h:form>
+                            <p:breadCrumb>
+                                <p:menuitem value="Electronics"/>
+                                <p:menuitem value="Mon Profil"/>
+                            </p:breadCrumb>
+                        </h:form>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header=" modification du profil utilisateur">
+                                        <f:facet name="actions">
+                                            <p:commandLink styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default" action="gestionProfils" >
+                                                <h:outputText styleClass="ui-icon pi pi-arrow-left" />
+                                            </p:commandLink>
+                                        </f:facet>
+                                        <div class="card">
+                                            <h:form>
+                                                <div class="ui-fluid p-formgrid p-grid ">
+                                                    <div class="p-field p-col-12 p-md-4">
+                                                        <p:outputLabel value="Nom du Profil" />
+                                                        <p:inputText value="#{profilsMBean.pro.nom}" id="nomProfil" required="true" requiredMessage="Veuillez saisir le nom du profil" />
+                                                        <p:message id="nomMessage" for="nomProfil" styleClass="error" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="ui-fluid p-formgrid p-grid ">
+                                                    <div class="p-field p-col-12 p-md-4">
+                                                        <p:outputLabel value="Description Profil" />
+                                                        <p:inputTextarea  value="#{profilsMBean.pro.informations}" />
+                                                    </div>
+                                                </div>
+                                                <div class="ui-fluid p-formgrid p-grid ">
+                                                    <div class="p-field p-col-12 p-md-4">
+                                                        <h4>Accès Accueil(Tableau de bord)</h4>
+                                                        <p:selectBooleanButton onLabel="Oui" offLabel="Non" value="#{profilsMBean.pro.accesaccueil}"    
+                                                                               onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem" 
+                                                                               id="suiviePaie" />
+                                                    </div>
+                                                    <div class="p-field p-col-12 p-md-4">
+                                                        <h4>Accès suivi des paiements</h4>
+                                                        <p:selectBooleanButton onLabel="Oui" offLabel="Non" value="#{profilsMBean.pro.accessuivipaie}" 
+                                                                               onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem" 
+                                                                               id="emissionPaie" />
+                                                    </div>
+                                                    <div class="p-field p-col-12 p-md-4">
+                                                        <h4>Accès emission des paiements</h4>
+                                                        <p:selectBooleanButton onLabel="Oui" offLabel="Non" value="#{profilsMBean.pro.accesemissionpaie}"
+                                                                               onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem" 
+                                                                               id="statsPaie" />
+                                                    </div>
+                                                    <div class="p-field p-col-12 p-md-4">
+                                                        <h4>Accès statistique des paiements</h4>
+                                                        <p:selectBooleanButton onLabel="Oui" offLabel="Non" value="#{profilsMBean.pro.accesstatspaie}"
+                                                                               onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem" 
+                                                                               id="rapportPaie" />
+                                                    </div>
+                                                    <div class="p-field p-col-12 p-md-4">
+                                                        <h4>Accès rapport des paiements</h4>
+                                                        <p:selectBooleanButton onLabel="Oui" offLabel="Non" value="#{profilsMBean.pro.accesrapportpaie}"
+                                                                               onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem" 
+                                                                               id="listeMc" />
+                                                    </div>
+                                                    <div class="p-field p-col-12 p-md-4">
+                                                        <h4>Accès à l'annuaire des Maitres</h4>
+                                                        <p:selectBooleanButton onLabel="Oui" offLabel="Non" value="#{profilsMBean.pro.accesannuairemc}"
+                                                                               onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem" 
+                                                                               id="rapportMc" />
+                                                    </div>
+                                                </div>
+                                                <div class="p-grid">
+                                                    <div class="p-col-4"></div>
+                                                    <div class="p-col"></div>
+                                                    <div class="p-col"></div>
+                                                    <div class="p-col"></div>
+                                                    <div class="p-col"></div>
+                                                    <div class="p-col"></div>
+                                                    <div class="p-col"></div>
+                                                    <div class="p-col">
+                                                        <p:commandButton value="retour" styleClass="rounded-button ui-button-danger" action="#{profilsMBean.retour()}" />
+                                                    </div>
+                                                    <div class="p-col">
+                                                        <p:commandButton value="valider" styleClass="rounded-button ui-button-success" action="#{profilsMBean.updateProfil()}">
+                                                            <p:confirm  header="validation" message="êtes vous sure de modifier le profil ?" icon="pi pi-exclamation-triangle" />
+                                                        </p:commandButton>
+                                                    </div>
+                                                </div>
+                                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350" >
+                                                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat" />
+                                                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+                                                </p:confirmDialog>
+                                            </h:form>
+                                        </div>
+                                    </p:panel>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

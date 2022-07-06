@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>PAIEMENTS DE SUBSIDES DES MAITRES</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body>
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-10">
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <h:form>
+                            <p:breadCrumb>
+                                <p:menuitem value="Electronics"/>
+                                <p:menuitem value="TEST"/>
+                                <p:menuitem value="TESTS / TESTS"/>
+                            </p:breadCrumb>
+                        </h:form>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="Emission de paiements de subsides">
+                                        <h:form id="form" >
+                                            <p:growl id="msgs" showDetail="true" skipDetailIfEqualsSummary="true"/>
+                                            <div class="card">
+                                                <p:panel header="Informations  ">
+                                                    <p:growl id="growl" sticky="true" showDetail="true"/>
+
+                                                    <h:panelGrid columns="2" columnClasses="label, value">
+                                                        <h:outputText value="Libellé "/>
+                                                        <p:inputText   id="libelle" value="#{emissionPaieMensuelMBean.libellePaie}"  label="libelle" required="true" placeholder="#{emissionPaieMensuelMBean.libellePaie}" />
+
+                                                        <h:outputText value="Montant Total de Paiement" />
+                                                        <p:inputNumber label="Montant Total " id="totalMontal"  value="#{emissionPaieMensuelMBean.montantPaie}" 
+                                                                       symbol="   F CFA" symbolPosition="s" decimalSeparator="," thousandSeparator="."  
+                                                                       maxValue="10000000000000" type="integer" minValue="0" required="true"/>
+
+                                                        <h:outputText  value="Détails" />
+                                                        <p:inputTextarea id="details" rows="4" cols="50" value="#{emissionPaieMensuelMBean.details}" label="détails" required="true"/>
+
+                                                        <h:outputText value="Paiement du mois de : " />
+                                                        <p:datePicker  label="mois de paiement" id="moisDePaiement" view="month" value="#{emissionPaieMensuelMBean.moisDePaie}" pattern="MM/yyyy" 
+                                                                       yearNavigator="true" yearRange="2000:2030"  required="true" />
+
+                                                        <h:outputText value="Date de paiement (suggeré a l'opérateur) " />
+                                                        <p:datePicker label="Date de paiement" id="dateDePaiement" value="#{emissionPaieMensuelMBean.dateDePaiement}" 
+                                                                      monthNavigator="true" yearNavigator="true" showWeek="true" required="true" />
+
+                                                        <h:outputText value="Choix de l'opérateur " />
+                                                        <p:selectOneRadio id="operateurMobile" value="#{emissionPaieMensuelMBean.choixOperateur}"  required="true"
+                                                                          layout="grid" columns="3" styleClass="grid-radio" label="opérateur Mobile">
+                                                            <p:ajax listener="#{emissionPaieMensuelMBean.onOperateurMobileChange}"/>
+                                                            <f:selectItems value="#{emissionPaieMensuelMBean.listeDesOperateurs}" var="o" itemLabel="#{o.nom}" itemValue="#{o.nom}"/>
+                                                        </p:selectOneRadio>
+
+                                                        <h:outputText value=""/>
+                                                    </h:panelGrid>       
+                                                    <p:commandButton  value="Vérifier" styleClass="rounded-button ui-button-warning" 
+                                                                      update="growl"  
+                                                                      style="margin-top: 6px;margin-left: 250px" 
+                                                                      action="#{emissionPaieMensuelMBean.newPaiementMensuel()}" />
+                                                </p:panel>
+                                            </div>                                            
+                                        </h:form>
+                                    </p:panel>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

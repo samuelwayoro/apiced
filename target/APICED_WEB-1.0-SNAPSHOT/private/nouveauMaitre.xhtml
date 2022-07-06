@@ -1,0 +1,286 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>AJOUTER UN NOUVEAU MAITRE</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="2">
+                                <p:menuitem value="Annuaire" outcome="/private/annuaire" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Rechercher" outcome="/private/rechercherMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+<!--                                <p:menuitem value="Maitre(s) en attente " outcome="/private/maitresAValider">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>-->
+                                <p:menuitem value="Ajouter un nouveau maitre" outcome="/private/nouveauMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesnouveaumc}">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>
+                                <p:menuitem value="Ajouter une liste de maitres" outcome="/private/uploadFile" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="3"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form> 
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-fw pi-users"/>                                                
+                                <p:outputLabel value=" " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Ajouter un nouveau maitre" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider />
+                    <p:panel header="Ajouter un nouveau maitre communautaire ">
+                        <h:form>
+                            <p:growl id="growl" sticky="true" showDetail="true"/>
+                            <p:wizard flowListener="#{userWizardMBean.onFlowProcess}" id="process">
+                                <p:tab id="Civilité" title="Générales">
+                                    <p:panel header="Informations générales ">
+                                        <p:growl/>
+                                        <h:panelGrid columns="6" columnClasses="label, value">
+                                            <h:outputText value="Genre" />
+                                            <p:selectOneMenu id="genre" value="#{userWizardMBean.mc.genre}" required="true" label="Sexe">
+                                                <f:selectItem itemLabel="Choisir le genre"/>
+                                                <f:selectItem itemLabel="Masculin" itemValue="M"/>
+                                                <f:selectItem itemLabel="Feminin" itemValue="F"/>
+                                            </p:selectOneMenu>
+                                            <h:outputText value="Nom "/>
+                                            <p:inputText value="#{userWizardMBean.mc.nom}" required="true" label="Nom"/>
+
+                                            <h:outputText value="Prénoms "/>
+                                            <p:inputText value="#{userWizardMBean.mc.prenoms}" required="true" label="Prénoms"/>
+
+                                            <h:outputText value="Lieu de naissance"/>
+                                            <p:selectOneMenu id="lieu_de_naissance" value="#{userWizardMBean.lieudenaissance}" converter="#{userWizardMBean.villesConverter}"
+                                                             required="true" label="Lieu de naissance">
+                                                <f:selectItems value="#{userWizardMBean.listeDesVilles}" var="v" itemLabel="#{v.nomville}" itemValue="#{v}" itemLabelEscaped="true"  />
+                                            </p:selectOneMenu>
+
+                                            <h:outputLabel for="date" value="Date de naissance "/>
+                                            <p:inputText id="date" required="true" value="#{userWizardMBean.datedenaissance}" label="date de naissance" placeholder="01/01/1970">
+                                                <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                            </p:inputText>
+
+                                            <h:outputText value="Milieu de résidence :" />
+                                            <p:selectOneMenu id="milieuResidence" value="#{userWizardMBean.mc.milieuResidence}">
+                                                <f:selectItem itemLabel="Selectionnez un type" itemValue="" />
+                                                <f:selectItem itemLabel="Urbain" itemValue="Urbain" />
+                                                <f:selectItem itemLabel="Rurale" itemValue="Rurale"/>
+                                            </p:selectOneMenu>
+
+                                            <h:outputText value="Domicile" />
+                                            <p:selectOneMenu id="domicile" value="#{userWizardMBean.domicileUtilisateur}" converter="#{userWizardMBean.villesConverter}"
+                                                             required="true" label="Domicile">
+                                                <f:selectItems value="#{userWizardMBean.listeDesVilles}" var="v" itemLabel="#{v.nomville}" itemValue="#{v}" itemLabelEscaped="true"  />
+                                            </p:selectOneMenu>
+
+                                            <!--                                            <h:outputText value="Type de pièce administrative" />
+                                                                                        <p:selectOneMenu id="pieceAdmin"  required="true" value="#{userWizardMBean.typePiece}" label="Type de pièce administrative">
+                                                                                            <f:selectItems value="#{userWizardMBean.listeTypePiece}" itemLabelEscaped="true" />
+                                                                                        </p:selectOneMenu>-->
+                                            <!--
+                                                                                        <h5>choisir le fichier</h5>
+                                                                                        <h:form enctype="multipart/form-data">
+                                                                                            <p:fileUpload value="#{userWizardMBean.file}" mode="simple" skinSimple="true"/>
+                                                                                            <p:commandButton value="Submit" ajax="false" action="#{userWizardMBean.upload()}" styleClass="p-mt-3 ui-button-outlined p-d-block"/>
+                                                                                        </h:form>-->
+                                            <h:outputText value=""/>
+                                            <h:selectBooleanCheckbox value="#{userWizardMBean.skip}" disabled="true"/>
+                                        </h:panelGrid>
+                                    </p:panel>
+                                </p:tab>
+                                <p:tab id="address" title="Professionnelle">
+                                    <p:panel header="Professionnelles">
+                                        <p:growl/>
+                                        <h:panelGrid columns="4" columnClasses="label, value">
+
+                                            <h:outputText value="Bailleur " />
+                                            <p:selectOneMenu id="nomBailleur" value="#{userWizardMBean.mc.bailleur}" required="true">
+                                                <f:selectItems value="#{userWizardMBean.listeNomsBailleurs}"  itemLabelEscaped="true"  />
+                                            </p:selectOneMenu>
+
+                                            <h:outputText value="Catégorie " />
+                                            <p:selectOneMenu id="idcategoriepro" value="#{userWizardMBean.mc.categoriepro}" required="true">
+                                                <f:selectItems value="#{userWizardMBean.listeCategories}"   itemLabelEscaped="true"  />
+                                            </p:selectOneMenu>
+
+                                            <h:outputText value="Date de Prise de fonction "/>
+                                            <p:inputText id="datePriseFonction" required="true" value="#{userWizardMBean.dateprisedefonction}" label="date de prise de fonction" placeholder="01/01/1970">
+                                                <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                            </p:inputText>
+
+                                            <h:outputText value="Etablissement "/>
+                                            <p:selectOneMenu required="true" id="établissement" value="#{userWizardMBean.mc.ecole}" label="Etablissement">
+                                                <f:selectItems value="#{userWizardMBean.listeNomsEtablissement}"/>
+                                            </p:selectOneMenu>
+
+                                            <h:outputText value="Observation BM : "/>
+                                            <p:selectOneMenu id="obs" value="#{userWizardMBean.mc.statutcompte}">
+                                                <f:selectItem itemLabel="choisir une observation" itemValue="" />
+                                                <f:selectItem itemLabel="Abandon" itemValue="Abandon" />
+                                                <f:selectItem itemLabel="Absent" itemValue="Absent"/>
+                                                <f:selectItem itemLabel="Decédé" itemValue="Decédé"/>
+                                                <f:selectItem itemLabel="R.A.S" itemValue="R.A.S"/>
+                                                <f:selectItem itemLabel="En formation" itemValue="En formation"/>
+                                            </p:selectOneMenu>
+                                            <h:outputText value="Classe affectees " />
+                                            <p:selectCheckboxMenu id="classesAffectees" value="#{userWizardMBean.classesAffectees}" label="choisir la/les classe(s)" style="min-width: 10rem" 
+                                                                  multiple="true" filter="true" filterMatchMode="startsWith" panelStyle="width: 30rem" scrollHeight="250" required="true">
+                                                <f:selectItems value="#{userWizardMBean.listeClassesAffectees}" />
+                                            </p:selectCheckboxMenu>
+                                            <h:outputText value=""/>
+                                            <h:selectBooleanCheckbox value="#{userWizardMBean.skip}"  disabled="true"/>
+
+                                            <!-- Post validation de la categorie en fonction du bailleur choisi -->
+                                            <f:event listener="#{userWizardMBean.validateCategoriePro}" type="postValidate" />
+
+
+                                        </h:panelGrid>
+                                    </p:panel>
+                                </p:tab>
+                                <p:tab id="contact" title="Paiement">
+                                    <p:panel header="Information de paiements">
+                                        <p:growl/>
+                                        <h:panelGrid columns="6" columnClasses="label, value">
+                                            <h:outputText value="Opérateur télécom "/>
+                                            <p:selectOneMenu id="nomOperateur" value="#{userWizardMBean.operateurMc}" required="true" label="Opérateur télécom">
+                                                <f:selectItems value="#{userWizardMBean.listeOperateurs}"/>
+                                            </p:selectOneMenu>
+
+                                            <h:outputText value="Numéro téléphone paiement *"/>
+                                            <p:inputMask mask="99 99 99 99" validateMask="true" value="#{userWizardMBean.mc.contactun}" required="true" label="numéro de paiement"/>
+
+                                            <h:outputText value="Numéro sécondaire "/>
+                                            <p:inputMask mask="99 99 99 99"  validateMask="true" value="#{userWizardMBean.mc.contactdeux}"/>
+
+                                            <!--                                            <h:outputText value="Etat compte mobile money"  />
+                                                                                        <p:selectBooleanButton value="#{userWizardMBean.etatMoMo}"  id="momo" onLabel="Oui" offLabel="Non" onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem"  disabled="true" />
+                                            
+                                                                                        <h:outputText value="  "  />
+                                                                                        <p:commandButton value="vérifier" actionListener="#{userWizardMBean.verifMobileMoney()}"  update="momo" styleClass="ui-button-success" icon="pi pi-search-plus" />-->
+                                        </h:panelGrid>
+                                    </p:panel>
+                                </p:tab>
+                                <p:tab id="confirm" title="Confirmation">
+                                    <div class="card">
+                                        <!--                                        <p:commandButton value="Print" type="button" icon="pi pi-print" styleClass="p-d-block p-shadow-2 p-mb-3">
+                                                                                    <p:printer target="resume"/>
+                                                                                </p:commandButton>-->
+                                    </div>
+                                    <p:panel id="resume" header="Confirmation">
+                                        <div class="ui-fluid p-formgrid p-grid">                                            
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="Nom" value="Nom : "/>
+                                                <p:inputText id="Nom" value="#{userWizardMBean.mc.nom}"  disabled="true"/>
+                                            </div>
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="prenoms" value=" Prénoms :  "/>
+                                                <p:inputText id="prenoms" value="#{userWizardMBean.mc.prenoms}" disabled="true" />
+                                            </div>
+
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="sexe" value="Sexe : "/>
+                                                <p:inputText  id="sexe" value="#{userWizardMBean.mc.genre}" disabled="true"/>
+                                            </div>
+
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="dateNaissance" value="Date De Naissance : "/>
+                                                <p:inputText id="dateNaissance" value="#{userWizardMBean.datedenaissance}" disabled="true">
+                                                    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                                </p:inputText>
+                                            </div>
+
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="ObservationPro" value="Observation  : "/>
+                                                <p:inputText id="ObservationPro" value="#{userWizardMBean.mc.statutcompte}" disabled="true" />
+                                            </div>
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="nbreEfant" value="Bailleur  : "/>
+                                                <p:inputText id="nbreEfant" value="#{userWizardMBean.mc.bailleur}" disabled="true" />
+                                            </div>
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="domicilemc" value="Domicile : "/>
+                                                <p:inputText id="domicilemc" value="#{userWizardMBean.domicileUtilisateur.nomville}" disabled="true" />
+                                            </div>
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="niveau_scolaire" value="Milieu de Résidence :  "/>
+                                                <p:inputText id="niveau_scolaire" value="#{userWizardMBean.mc.milieuResidence}" disabled="true"/>
+                                            </div>
+
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="datePriseFonctionmc" value="Date de prise de fonction :  "/>
+                                                <p:inputText id="datePriseFonctionmc" value="#{userWizardMBean.dateprisedefonction}" disabled="true">
+                                                    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                                </p:inputText>
+                                            </div>
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="categorie" value="Catégorie professionnelle :  "/>
+                                                <p:inputText id="categorie" value="#{userWizardMBean.mc.categoriepro}" disabled="true"/>
+                                            </div>
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="etablissement" value="Etablissement :  "/>
+                                                <p:inputText id="etablissement" value="#{userWizardMBean.mc.ecole}" disabled="true"/>
+                                            </div>
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="classes_affectee" value=" Classe(s) affectee(s)  "/>
+                                                <p:inputText id="classes_affectee" value="#{userWizardMBean.classesAffectees}" disabled="true"/>
+                                            </div>
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="operateurTelco" value="Opérateur Télécom :  "/>
+                                                <p:inputText id="operateurTelco" value="#{userWizardMBean.operateurMc}" disabled="true"/>
+                                            </div>
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="contactUn" value="Contact Principal :  "/>
+                                                <p:inputText id="contactUn" value="#{userWizardMBean.mc.contactun}" disabled="true"/>
+                                            </div>
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="etatCompteMc" value="Etat compte mobile money :  "/><br/>
+                                                <p:selectBooleanButton id="etatCompteMc" onLabel="actif" offLabel="non actif" style="width:6rem" value="#{userWizardMBean.etatMoMo}" disabled="true" />
+                                            </div>
+                                            <div class="p-field p-col-12 p-md-3">
+                                                <p:outputLabel for="contactDeux" value="Contact second :  "/>
+                                                <p:inputText id="contactDeux" value="#{userWizardMBean.mc.contactdeux}" disabled="true"/>
+                                            </div>
+                                        </div>
+                                        <h:panelGrid columns="6" columnClasses="label, value">
+                                        </h:panelGrid>
+                                        <br/> 
+                                    </p:panel>
+                                    <p:divider/>                                     
+                                    <div class="p-grid">
+                                        <div class="p-col-9">
+                                            <div class="box"></div>
+                                        </div>
+                                        <div class="p-col">
+                                            <p:button value="Nouveau" outcome="nouveauMaitre"  class=""  icon="pi pi-replay" iconPos="right"  />
+                                        </div>
+                                        <div class="p-col" >
+                                            <p:commandButton value="Valider" action="#{userWizardMBean.save}" update="growl" process="@this"  styleClass="ui-button-help" class="" icon="pi pi-check-square" iconPos="right" />                                        
+                                        </div>
+                                    </div>
+                                </p:tab>
+                            </p:wizard>
+                        </h:form>
+                    </p:panel>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

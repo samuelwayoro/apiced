@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>GESTION DES MAITRE COMMUNAUTAIRES</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+        <script type="text/javascript">
+            PrimeFaces.locales['es'] = {
+                closeText: 'Cerrar',
+                prevText: 'Anterior',
+                nextText: 'Siguiente',
+                monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+                dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+                weekHeader: 'Semana',
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: '',
+                timeOnlyTitle: 'Sólo hora',
+                timeText: 'Tiempo',
+                hourText: 'Hora',
+                minuteText: 'Minuto',
+                secondText: 'Segundo',
+                currentText: 'Fecha actual',
+                ampm: false,
+                month: 'Mes',
+                week: 'Semana',
+                day: 'Día',
+                allDayText: 'Todo el día',
+                today: 'Hoy',
+                clear: 'Claro'
+            };
+            PrimeFaces.locales ['de'] = {
+                closeText: 'Schließen',
+                prevText: 'Zurück',
+                nextText: 'Weiter',
+                monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+                dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+                dayNamesShort: ['Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam'],
+                dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+                weekHeader: 'Woche',
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: '',
+                timeOnlyTitle: 'Nur Zeit',
+                timeText: 'Zeit',
+                hourText: 'Stunde',
+                minuteText: 'Minute',
+                secondText: 'Sekunde',
+                currentText: 'Aktuelles Datum',
+                ampm: false,
+                month: 'Monat',
+                week: 'Woche',
+                day: 'Tag',
+                allDayText: 'Ganzer Tag',
+                today: 'Heute',
+                clear: 'Löschen'
+            };
+        </script>
+
+        <script type="text/javascript">
+            //<![CDATA[
+            function dateTemplateFunc(date) {
+                return '<span style="background-color:' + ((date.day < 21 && date.day > 10) ? '#81C784' : 'inherit') + ';border-radius:50%;width: 2.5rem;height: 2.5rem;line-height: 2.5rem;display: flex;align-items: center;justify-content: center;">' + date.day + '</span>';
+            }
+
+            //]]>
+        </script>
+    </h:head>
+    <h:body>
+        <ui:composition template="./template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-10">
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <h:form>
+                            <p:breadCrumb>
+                                <p:menuitem value="Electronics"/>
+                                <p:menuitem value="Gestion Maitres Communautaires"/>
+                                <p:menuitem value="Nouveau Maitre "/>
+                            </p:breadCrumb>
+                        </h:form>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="Nouveau Maitre">
+                                        <h:form id="profil" >
+                                            <div class="card">
+                                                <p:tabView>
+                                                    <p:tab title="Identité">
+                                                        <p class="p-m-0">
+                                                            <h:form id="infosPersoForm">
+                                                                <div class="p-field">
+                                                                    <p:outputLabel for="username1" styleClass="p-d-block">Nom</p:outputLabel>
+                                                                    <p:inputText id="username1" styleClass="p-d-block"/>
+                                                                    <small class="p-d-block">Enter your username to reset your password.</small>
+                                                                </div>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel for="username2" styleClass="p-d-block">Prénoms</p:outputLabel>
+                                                                    <p:inputText id="username2" styleClass="p-d-block"/>
+                                                                    <small class="p-d-block">Enter your username to reset your password.</small>
+                                                                </div>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel for="date" value="Date" styleClass="p-d-block"/>
+                                                                    <p:inputMask id="date" value="#{maskView.date}" mask="99/99/9999"/>
+                                                                </div>
+                                                                <div class="p-field p-col-12 p-md-5">
+                                                                    <p:selectOneMenu id="option" value="#{selectOneMenuView.selectedOption}">
+                                                                        <f:selectItem itemLabel="Etablissement" itemValue=""/>
+                                                                        <f:selectItem itemLabel="école 1" itemValue="Option1"/>
+                                                                        <f:selectItem itemLabel="école 2" itemValue="Option2"/>
+                                                                        <f:selectItem itemLabel="école 3" itemValue="Option3"/>
+                                                                        
+                                                                    </p:selectOneMenu>
+                                                                </div>
+
+                                                                <p:commandButton type="button" value="Valider" />
+
+                                                            </h:form>
+                                                        </p>
+                                                    </p:tab>
+                                                    <p:tab title="Information professionnelle">
+                                                        <p class="p-m-0">
+                                                            <h:form enctype="multipart/form-data">
+                                                                <p:fileUpload value="#{fileUploadView.files}" mode="simple" skinSimple="true" multiple="true"/>
+                                                                <p:commandButton value="Submit" ajax="false" action="#{fileUploadView.uploadMultiple}" styleClass="p-mt-3 ui-button-outlined p-d-block"/>
+                                                            </h:form>
+                                                        </p>
+                                                    </p:tab>
+                                                    <p:tab title="Ma Photo">
+                                                        <p class="p-m-0">
+                                                            <h:form>
+                                                                <p:growl id="messages" showDetail="true"/>
+
+                                                                <p:fileUpload mode="advanced"
+                                                                              multiple="false"
+                                                                              sizeLimit="102400" allowTypes="/(\.|\/)(gif|jpe?g|png)$/"
+                                                                              invalidSizeMessage="Maximum file size allowed is 100 KB"
+                                                                              invalidFileMessage="only gif | jpg | jpeg | png is allowed"
+                                                                              update="messages cropperPanel"
+                                                                              listener="#{cropUploaderBean.handleFileUpload}"/>
+
+                                                                <p:outputPanel id="cropperPanel">
+
+                                                                    <h:panelGrid columns="1" rendered="#{not empty cropUploaderBean.originalImageFile}">
+
+                                                                        <p:commandButton value="Crop"
+                                                                                         action="#{cropUploaderBean.crop}"
+                                                                                         update="cropped messages" styleClass="p-my-3"/>
+
+                                                                        <h:panelGrid columns="2" cellpadding="7">
+
+                                                                            <p:imageCropper
+                                                                                value="#{cropUploaderBean.croppedImage}"
+                                                                                id="imageCropper" cache="false"
+                                                                                image="#{cropUploaderBean.image}"
+                                                                                initialCoords="50,50,150,100"
+                                                                                minSize="50,50" maxSize="350,350"/>
+
+                                                                            <p:outputPanel id="cropped">
+                                                                                <p:graphicImage cache="false"
+                                                                                                rendered="#{not empty cropUploaderBean.croppedImage}"
+                                                                                                value="#{cropUploaderBean.cropped}"/>
+                                                                            </p:outputPanel>
+
+                                                                        </h:panelGrid>
+
+
+                                                                    </h:panelGrid>
+                                                                </p:outputPanel>
+                                                            </h:form>
+                                                        </p>
+                                                    </p:tab>
+
+                                                </p:tabView>
+                                            </div>
+                                        </h:form>
+
+                                    </p:panel>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

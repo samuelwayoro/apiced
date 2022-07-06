@@ -1,0 +1,315 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>PAIEMENTS EN ATTENTE</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+        <script type="text/javascript">
+            //<![CDATA[
+            function dateTemplateFunc(date) {
+                return '<span style="background-color:' + ((date.day < 21 && date.day > 10) ? '#81C784' : 'inherit') + ';border-radius:50%;width: 2.5rem;height: 2.5rem;line-height: 2.5rem;display: flex;align-items: center;justify-content: center;">' + date.day + '</span>';
+            }
+
+            //]]>
+        </script>
+        <style type="text/css">
+            .label {
+                width: 20%;
+                padding: 4px;
+            }
+
+            .value {
+                width: 80%;
+                padding: 4px;
+            }
+
+            .grid {
+                width: 100%;
+            }
+
+            .error {
+                color: red;
+            }
+
+            .outputLabel {
+                font-weight: bold;
+            }
+
+            .grid {
+                width: 33%;
+                padding: 4px;
+            }
+        </style>
+        <style type="text/css">
+            .label {
+                width: 20%;
+                padding: 4px;
+            }
+
+            .value {
+                width: 80%;
+                padding: 4px;
+            }
+
+            .grid {
+                width: 100%;
+            }
+
+            .error {
+                color: red;
+            }
+
+            .outputLabel {
+                font-weight: bold;
+            }
+
+            .grid {
+                width: 33%;
+                padding: 4px;
+            }
+        </style>
+        <style type="text/css">
+            .value {
+                font-weight: bold;
+            }
+        </style>
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="2">
+                                <p:menuitem value="Nouveau  paiement MOOV" outcome="/private/paiementMoovAfrica">
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Nouveau  paiement AIRTEL" outcome="/private/emissionPaiements">
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+                                <p:menuitem value="Paiements à valider (#{monProfilMBean.nbrePaiementEnAttente})" outcome="/private/paiementEnAttente">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>
+                                <p:menuitem value="Paiements opérateurs (#{monProfilMBean.nbrePaiementAenvoyeAOp})" outcome="/private/suiviPaiements">
+                                    <f:param name="i" value="3"/>
+                                </p:menuitem>
+                                <p:menuitem value="Suivi des transactions" outcome="/private/suivitransactions" disabled="true">
+                                    <f:param name="i" value="4"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form>
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-wallet p-px-2"/>                                                
+                                <p:outputLabel value=" " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Paiements en attente de validation" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider />
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="Liste des paiements">
+                                        <h:form id="form">
+                                            <p class="p-m-0" id="notifsPerso">
+                                                <p:growl id="messages" sticky="true" showDetail="true" />
+                                                <div class="card" id="cadre">
+                                                    <p:dataTable var="paiement" value="#{paiementEnAttenteMBean.listePaiementEnAttente}"  id="paiementsEnAttente" emptyMessage="Aucun paiement en attente de validation"
+                                                                 style="margin-bottom:0" paginator="true" rows="3" selectionPageOnly="false" rowKey="#{paiement.idpaiement}" selectionMode="single" selection="#{paiementEnAttenteMBean.selectedPaiement}">
+                                                        <f:facet name="header">
+                                                            <p:outputLabel  value="#{monProfilMBean.nbrePaiementEnAttente}" /> demande(s) de paiement en attente de validation
+                                                        </f:facet>
+                                                        <p:column headerText="libellé">
+                                                            <h:outputText value="#{paiement.libelle}" />
+                                                        </p:column>
+                                                        <p:column headerText="Détails">
+                                                            <h:outputText value="#{paiement.details}" />
+                                                        </p:column>
+                                                        <p:column headerText="Montant total">
+                                                            <h:outputText value="#{paiement.montanttotal}" />
+                                                        </p:column>
+                                                        <p:column headerText="Mois de paiement">
+                                                            <h:outputText value="#{paiement.mois}" />
+                                                        </p:column>
+                                                        <p:column headerText="Date de saisie ">
+                                                            <h:outputText value="#{paiement.datepaiement}" />
+                                                        </p:column>
+                                                        <p:column headerText="Opérateur Télécom ">
+                                                            <h:outputText value="#{paiement.operateurmobile}" />
+                                                        </p:column>
+                                                        <p:column headerText=""  exportable="false" >                                                          
+                                                            <p:linkButton outcome="transactionsPaiements"  icon="pi pi-list" style="margin-left: 5px" title="liste des transactions" styleClass="edit-button rounded-button ui-button-help">
+                                                                <f:param name="info"  value="#{paiement.idpaiement}" />
+                                                            </p:linkButton>
+                                                            <p:commandButton style="margin-left: 5px"  icon="pi pi-check-circle" type="submit" oncomplete="PF('validerPaiement').show()"  process="@this" rendered="#{loginMBean.utilisateur.profilIdprofil.btnvalidepaiement}"  
+                                                                             title="valider le paiement "  styleClass="rounded-button ui-button-success" update=":form:paiementsEnAttente" >
+                                                                <f:setPropertyActionListener value="#{paiement}" target="#{paiementEnAttenteMBean.selectedPaiement}"/>
+                                                            </p:commandButton>
+                                                            <p:commandButton style="margin-left: 5px"  icon="pi pi-pencil" oncomplete="PF('managePaiementDialog').show()" rendered="#{loginMBean.utilisateur.profilIdprofil.gestionpaiebyemetteur}"
+                                                                             update=":form:manage-paiement-content"  styleClass="edit-button rounded-button ui-button-success" process="@this" >
+                                                                <f:setPropertyActionListener value="#{paiement}"  target="#{paiementEnAttenteMBean.selectedPaiement}"/>
+                                                                <p:resetInput   target=":form:manage-paiement-content"/>
+                                                            </p:commandButton>
+                                                            <p:commandButton style="margin-left: 5px"  icon="pi pi-trash" type="submit" oncomplete="PF('deletePaiementDialog').show()"  process="@this" rendered="#{loginMBean.utilisateur.profilIdprofil.gestionpaiebyemetteur}"  
+                                                                             title="supprimer ce paiement ?"  styleClass="rounded-button ui-button-danger" update=":form:paiementsEnAttente" >
+                                                                <f:setPropertyActionListener value="#{paiement}" target="#{paiementEnAttenteMBean.selectedPaiement}"/>
+                                                            </p:commandButton>
+                                                        </p:column>
+                                                    </p:dataTable>
+                                                    <!-- pop up suppresion paiement-->
+                                                    <p:confirmDialog widgetVar="deletePaiementDialog" showEffect="fade" width="300" message="Etes vous sûr de supprimer cet paiement ?" header="Confirm" severity="warn">
+                                                        <p:commandButton value="Oui" icon="pi pi-check"   actionListener="#{paiementEnAttenteMBean.deletePaiement()}" process="@this" oncomplete="PF('deletePaiementDialog').hide()" />
+                                                        <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deletePaiementDialog').hide()"/>
+                                                    </p:confirmDialog>
+                                                    <!--pup up validation de paiement -->
+                                                    <p:confirmDialog widgetVar="validerPaiement" showEffect="fade" width="300" message="Valider ce paiement ?" header="Confirm" severity="warn">
+                                                        <p:commandButton value="Oui" icon="pi pi-check"   actionListener="#{paiementEnAttenteMBean.validerPaie()}" process="@this" oncomplete="PF('validerPaiement').hide()" />
+                                                        <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('validerPaiement').hide()"/>
+                                                    </p:confirmDialog>
+                                                    <p:dialog header="Rapport Paiement" showEffect="fade" modal="true" widgetVar="viewPaiementDialog" responsive="true" id="rapportPaie" >
+                                                        <p:outputPanel id="manage-view-paiement" class="ui-fluid" >
+                                                            <div class="ui-fluid p-formgrid p-grid">
+                                                                <p:outputPanel class="p-field p-col-12 p-md-2" >
+                                                                    <p:outputLabel for="libelle" value="Libellé paiement"/>
+                                                                    <p:inputText   id="libelle" placeholder="#{paiementEnAttenteMBean.selectedPaiement.libelle}"   disabled="true"/>
+                                                                </p:outputPanel>
+                                                                <p:outputPanel class="p-field p-col-12 p-md-2" >
+                                                                    <p:outputLabel for="montantPaiement" value="Montant du paiement"/>
+                                                                    <p:inputText   id="montantPaiement" placeholder="#{paiementEnAttenteMBean.selectedPaiement.montanttotal}"   disabled="true"/>
+                                                                </p:outputPanel>
+                                                                <p:outputPanel class="p-field p-col-12 p-md-2" >
+                                                                    <p:outputLabel for="moisPaie" value="Paiement du mois de :"/>
+                                                                    <p:inputText   id="moisPaie" placeholder="#{paiementEnAttenteMBean.selectedPaiement.mois}"   disabled="true"/>
+                                                                </p:outputPanel>
+                                                                <p:outputPanel class="p-field p-col-12 p-md-2" >
+                                                                    <p:outputLabel for="dateSuggeree" value="Date suggeré(e) de paiement"/>
+                                                                    <p:inputText   id="dateSuggeree" placeholder="#{paiementEnAttenteMBean.selectedPaiement.datepaiement}"   disabled="true"/>
+                                                                </p:outputPanel>
+                                                                <p:outputPanel class="p-field p-col-12 p-md-2" >
+                                                                    <p:outputLabel for="emetteur" value="Emetteur du paiement"/>
+                                                                    <p:inputText   id="emetteur" placeholder="#{paiementEnAttenteMBean.selectedPaiement.emeteur.nom}"   disabled="true"/>
+                                                                </p:outputPanel>
+                                                                <p:outputPanel class="p-field p-col-12 p-md-2" >
+                                                                    <p:outputLabel for="detailsInfos" value="Détails du paiement :"/>
+                                                                    <p:inputText   id="detailsInfos" placeholder="#{paiementEnAttenteMBean.selectedPaiement.details}"   disabled="true"/>
+                                                                </p:outputPanel>
+                                                            </div>
+                                                            <!--                                                            <p:panel header="Liste des transactions a envoyer">
+                                                                                                                            <p:messages/>
+                                                                                                                            <h:panelGrid columns="2" columnClasses="label, value">
+                                                                                                                                <h:form>
+                                                                                                                                    <p:dataTable id="tbl" var="product"   emptyMessage="Aucune(s) transaction(s) enregistrée(s)" styleClass="p-mt-2" value="#{paiementEnAttenteMBean.selectedPaiement}">
+                                                                                                                                        <p:column headerText="nom  maitre">
+                                                                                                                                            <h:outputText value="#{product.nommaitre}"/>
+                                                                                                                                        </p:column>
+                                                                                                                                        <p:column headerText="Prénoms  maitre">
+                                                                                                                                            <h:outputText value="#{product.prenomsmaitre}"/>
+                                                                                                                                        </p:column>
+                                                                                                                                        <p:column headerText="numéro  maitre">
+                                                                                                                                            <h:outputText value="#{product.contactmaitre}"/>
+                                                                                                                                        </p:column>
+                                                                                                                                        <p:column headerText="libellé  paiement">
+                                                                                                                                            <h:outputText value="#{product.libellepaie}"/>
+                                                                                                                                        </p:column>
+                                                                                                                                        <p:column headerText="Paiement  mois de ">
+                                                                                                                                            <h:outputText value="#{product.moisanneepaie}"/>
+                                                                                                                                        </p:column>
+                                                                                                                                        <p:column headerText="Opérateur télécom ">
+                                                                                                                                            <h:outputText value="#{product.operateurs}"/>
+                                                                                                                                        </p:column>
+                                                                                                                                        <p:column headerText="à payer le  :">
+                                                                                                                                            <h:outputText value="#{product.datepaiementdemandee}"/>
+                                                                                                                                        </p:column>
+                                                                                                                                    </p:dataTable>
+                                                                                                                                </h:form>
+                                                            
+                                                                                                                            </h:panelGrid>
+                                                                                                                        </p:panel>-->
+                                                        </p:outputPanel>
+                                                        <f:facet name="footer" transient="true">
+                                                            <p:commandButton value="Print" type="button" icon="pi pi-print" styleClass="ui-button-raised ui-button-warning">
+                                                                <p:printer target="rapportPaie"/>
+                                                            </p:commandButton>
+                                                            <p:commandButton value="valider"  rendered="#{loginMBean.utilisateur.profilIdprofil.accesvalidationmc}"  icon="pi pi-check" actionListener="#{paiementEnAttenteMBean.validerPaiement()}" update=":form:manage-view-paiement" process="manage-view-paiement @this" styleClass="ui-button-raised ui-button-success" />                                                            
+                                                            <p:commandButton value="Rejeter"  rendered="#{loginMBean.utilisateur.profilIdprofil.accesvalidationmc}"  onclick="PF('viewPaiementDialog').hide()"  actionListener="#{paiementEnAttenteMBean.rejeterLePaiement()}"   styleClass="ui-button-raised ui-button-danger" />
+                                                            <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewPaiementDialog').hide()" class="ui-button-secondary" />
+                                                        </f:facet>
+                                                    </p:dialog>
+                                                    <p:dialog header="modifier paiement" showEffect="fade" modal="true" widgetVar="managePaiementDialog" responsive="true" >
+                                                        <p:outputPanel id="manage-paiement-content" class="ui-fluid" >
+                                                            <p:outputPanel rendered="#{not empty paiementEnAttenteMBean.selectedPaiement}">
+                                                                <p:outputPanel >
+                                                                    <div class="p-field">
+                                                                        <p:outputLabel>libellé du paiement : </p:outputLabel>
+                                                                        <p:inputText value="#{paiementEnAttenteMBean.selectedPaiement.libelle}" 
+                                                                                     placeholder="#{paiementEnAttenteMBean.selectedPaiement.libelle}"  />
+                                                                    </div>
+                                                                </p:outputPanel>
+                                                                <p:outputPanel>
+                                                                    <div class="p-field">
+                                                                        <p:outputLabel>montant total du paiement : </p:outputLabel>
+                                                                        <p:inputMask id="totalMontal" placeholder="#{paiementEnAttenteMBean.selectedPaiement.montanttotal}"  value="#{paiementEnAttenteMBean.newMontanttotalPaiement}"  label="Montant Total" mask="9[9999999]"
+                                                                                     validateMask="false">
+                                                                            <f:validateLength minimum="2" maximum="10"/>
+                                                                        </p:inputMask>
+                                                                    </div>
+                                                                </p:outputPanel>
+                                                                <p:outputPanel>
+                                                                    <div class="p-field">
+                                                                        <p:outputLabel>Paiement du mois de :  </p:outputLabel>
+                                                                        <p:datePicker  label="mois de paiement" id="moisDePaiement" 
+                                                                                       placeholder="#{paiementEnAttenteMBean.selectedPaiement.mois}"
+                                                                                       view="month" value="#{paiementEnAttenteMBean.newMoisPaiement}" pattern="MM/yyyy" 
+                                                                                       yearNavigator="true" yearRange="2000:2030" />
+                                                                    </div>
+                                                                </p:outputPanel>
+
+                                                                <p:outputPanel>
+                                                                    <div class="p-field">
+                                                                        <p:outputLabel>Date de paiement (suggeré a l'opérateur) : </p:outputLabel>
+                                                                        <p:datePicker id="navigator" value="#{paiementEnAttenteMBean.newDatepaiementPaiement}" 
+                                                                                      placeholder="#{paiementEnAttenteMBean.selectedPaiement.datepaiement}"
+                                                                                      monthNavigator="true"
+                                                                                      yearNavigator="true"
+                                                                                      showWeek="true"/>
+                                                                    </div>
+                                                                </p:outputPanel>
+                                                                <p:outputPanel>
+                                                                    <div class="p-field">
+                                                                        <p:outputLabel>Détails : </p:outputLabel>
+                                                                        <p:inputTextarea id="details" rows="4" cols="22" placeholder="#{paiementEnAttenteMBean.selectedPaiement.details}"
+                                                                                         value="#{paiementEnAttenteMBean.selectedPaiement.details}"  label="détails"/>
+                                                                    </div>
+                                                                </p:outputPanel>
+                                                            </p:outputPanel>    
+                                                        </p:outputPanel>
+                                                        <f:facet name="footer">
+                                                            <p:commandButton value="enregistrer" icon="pi pi-check" actionListener="#{paiementEnAttenteMBean.updatePaiement()}"  
+                                                                             update=":form:manage-paiement-content" process="manage-paiement-content @this" />
+                                                            <p:commandButton value="annuler" icon="pi pi-times" onclick="PF('managePaiementDialog').hide()" class="ui-button-secondary" />
+                                                        </f:facet> 
+                                                    </p:dialog>
+                                                </div>
+                                            </p>
+                                        </h:form>
+                                    </p:panel>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

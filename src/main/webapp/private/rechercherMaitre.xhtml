@@ -1,0 +1,413 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>rechercher un maitre</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+        <style type="text/css">
+            .ui-datatable .ui-datatable-header {
+                text-align: right !important;
+            }
+
+            .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-header .ui-chkbox {
+                display: none;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="1">
+                                <p:menuitem value="Annuaire" outcome="/private/annuaire" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Rechercher" outcome="/private/rechercherMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+<!--                                <p:menuitem value="Maitre(s) en attente " outcome="/private/maitresAValider">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>-->
+                                <p:menuitem value="Ajouter un nouveau maitre" outcome="/private/nouveauMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesnouveaumc}">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>
+                                <p:menuitem value="Ajouter une liste de maitres" outcome="/private/uploadFile" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="3"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form>
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <h:form id="printAnnuaire">
+                                    <i class="pi pi-fw pi-users"/>                                                
+                                    <p:outputLabel value=" " />
+                                    <i class="pi pi-chevron-right p-px-2"/>
+                                    <p:outputLabel value="Rechercher un maitre communautaire dans l'annuaire : " />
+                                </h:form>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <div class="p-grid">
+                                        <div class="p-col-6">
+                                            <p:panel header="Rechercher un maitre ">
+                                                <div class="card">
+                                                    <h:form id="searcheFormOne">
+                                                        <div class="p-formgroup-inline">
+                                                            <div class="p-field">
+                                                                <label for="nom" class="p-sr-only">Nom </label>
+                                                                <p:inputText id="nom" type="text"  value="#{rechercherMBean.nomMc}" />
+                                                            </div>
+                                                            <div class="p-field">
+                                                                <label for="prénoms" class="p-sr-only">Prénoms </label>
+                                                                <p:inputText id="prenom" type="text"  value="#{rechercherMBean.prenomsMc}" />
+                                                            </div>
+                                                            <div class="p-field">
+                                                                <p:commandButton type="submit" value="rechercher"    
+                                                                                 styleClass="ui-button-raised ui-button-help"  
+                                                                                 actionListener="#{rechercherMBean.searchByfirstnameAndLastname()}"
+                                                                                 update=":listMcForm:maitresTrouves"/>
+                                                            </div>
+                                                            <i style="color:red">Veuillez saisir en majuscule*</i>
+                                                        </div>
+                                                    </h:form>
+                                                </div>
+                                            </p:panel>
+                                        </div>
+                                        <div class="p-col-6">
+                                            <p:panel header="Rechercher un maitre" class="">
+                                                <div class="card">
+                                                    <h:form id="searcheFormTwo">
+                                                        <div class="p-formgroup-inline">
+                                                            <div class="p-field">
+                                                                <label for="lastname" class="p-sr-only">Matricule</label>
+                                                                <p:inputText id="matricule" type="text" placeholder="Matricule" value="#{rechercherMBean.matricule}" />
+                                                            </div>
+                                                            <div class="p-field">
+                                                                <p:commandButton type="submit" value="rechercher"    
+                                                                                 styleClass="ui-button-raised ui-button-help" 
+                                                                                 actionListener="#{rechercherMBean.searchByMatricule()}"
+                                                                                 update=":listMcForm:maitresTrouves"/>
+                                                            </div>
+                                                        </div>
+                                                        <br/>
+                                                    </h:form>
+                                                </div>
+                                            </p:panel>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h:form id="listMcForm">
+                                <p:growl id="messages" showDetail="true"/>
+                                <div class="card">
+                                    <p:dataTable var="maitre" value="#{rechercherMBean.mcs}" emptyMessage="aucun maitre recherché" id="maitresTrouves"
+                                                 rows="5"
+                                                 paginator="true"
+                                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'All'}" selection="#{rechercherMBean.selectedMc}" rowKey="#{maitre.id}">
+                                        <p:column headerText="Matricule" filterBy="#{maitre.matricule}">
+                                            <h:outputText value="#{maitre.matricule}" />
+                                        </p:column>
+
+                                        <p:column headerText="Nom">
+                                            <h:outputText value="#{maitre.nom}" />
+                                        </p:column>
+
+                                        <p:column headerText="Prénoms">
+                                            <h:outputText value="#{maitre.prenoms}" />
+                                        </p:column>
+
+                                        <p:column headerText="Categorie" filterBy="#{maitre.categoriepro}">
+                                            <h:outputText value="#{maitre.categoriepro}" />
+                                        </p:column>
+
+                                        <p:column exportable="false" width="137px" >
+                                            <f:facet name="header">
+                                                <p:commandButton type="button" title="Save" icon="pi pi-th-large" styleClass="ui-button-raised ui-button-help" style="margin-left: 47px" disabled="true" />
+                                            </f:facet>
+
+                                            <p:commandButton id="btnZoom" style="margin-left: 5px"  icon="pi pi-search-plus" update=":listMcForm:manage-view-profil-content" 
+                                                             oncomplete="PF('viewUserDialog').show()"
+                                                             styleClass="edit-button rounded-button ui-button-alert" process="@this">
+                                                <f:setPropertyActionListener value="#{maitre}"  target="#{rechercherMBean.selectedMc}"/>
+                                                <p:resetInput   target=":listMcForm:manage-view-profil-content"/>
+                                            </p:commandButton>
+
+                                            <p:commandButton id="modifMin" style="margin-left: 2px"  icon="pi pi-user-edit" update=":listMcForm:manage-modifInfos-mc-content"  
+                                                             oncomplete="PF('viewModifMcDialog').show()" 
+                                                             rendered="#{loginMBean.utilisateur.profilIdprofil.accesmodifmc}"
+                                                             styleClass="rounded-button ui-button-warning" process="@this" >
+                                                <f:setPropertyActionListener value="#{maitre}"  target="#{rechercherMBean.selectedMc}"/>
+                                                <p:resetInput   target=":listMcForm:manage-modifInfos-mc-content"/>
+                                            </p:commandButton>
+                                        </p:column>                                        
+                                    </p:dataTable>
+                                    <!-- POP UP DETAIL MC SELECTIONNE-->
+                                    <p:dialog header="Détails Maitre"  showEffect="fade" modal="true" widgetVar="viewUserDialog" responsive="true" >
+                                        <p:outputPanel class="ui-fluid" id="manage-view-profil-content" >
+                                            <p:outputPanel rendered="#{not empty rechercherMBean.selectedMc}">
+                                                <p:outputPanel>
+                                                </p:outputPanel>
+                                                <p:outputPanel>
+                                                    <div class="card">
+                                                        <div class="ui-fluid p-formgrid p-grid">
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Nom  : </p:outputLabel>
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.nom}"  disabled="true" style="font-weight: bold"/>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Prénoms  : </p:outputLabel>
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.prenoms}" disabled="true" style="font-weight: bold" />
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Matricule  : </p:outputLabel>
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.matricule}" disabled="true" style="font-weight: bold" />
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Catégorie : </p:outputLabel>
+                                                                <p:inputText placeholder="#{rechercherMBean.selectedMc.categoriepro}"   value="#{rechercherMBean.selectedMc.categoriepro}" disabled="true" style="font-weight: bold" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="ui-fluid p-formgrid p-grid">
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Sex  : </p:outputLabel>
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.genre}" disabled="true" style="font-weight: bold"/>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel for="dateNaissance">
+                                                                    Date de naissance  : 
+                                                                </p:outputLabel>
+                                                                <p:inputText  disabled="true"  placeholder="#{rechercherMBean.selectedMc.datenaissance}" value="#{rechercherMBean.newMcDateNaiss}" id="dateNaissance" style="font-weight: bold">
+                                                                    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                                                </p:inputText>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Lieu de naissance  : </p:outputLabel>
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.lieudenaissance}" disabled="true" style="font-weight: bold"/>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Etablissement  : </p:outputLabel>
+                                                                <p:inputText placeholder="#{rechercherMBean.selectedMc.ecole}"   value="#{rechercherMBean.selectedMc.ecole}"  disabled="true" style="font-weight: bold"/>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="ui-fluid p-formgrid p-grid">
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Domicile  : </p:outputLabel>                                                            
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.domicile}" disabled="true" style="font-weight: bold"/>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Milieu résidence  : </p:outputLabel>
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.milieuResidence}" disabled="true" style="font-weight: bold"/>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Langue : </p:outputLabel>
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.langue}" disabled="true" style="font-weight: bold"/>
+                                                            </div>
+                                                            <div class="p-field p-col-10 p-md-3">
+                                                                <p:outputLabel>Opérateur télécom :  </p:outputLabel>
+                                                                <p:inputText placeholder="#{rechercherMBean.selectedMc.operatortelco}"   value="#{rechercherMBean.selectedMc.operatortelco}"  disabled="true" style="font-weight: bold" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="ui-fluid p-formgrid p-grid">
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Contact 1  : </p:outputLabel>
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.contactun}" disabled="true" style="font-weight: bold"/>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Date de prise de fonction  :  </p:outputLabel>
+                                                                <p:inputText  disabled="true" id="datePriseFonction" value="#{rechercherMBean.newMcDatePriseFonction}" label="date de prise de fonction" placeholder="01/01/1970">
+                                                                    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                                                </p:inputText>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-3">
+                                                                <p:outputLabel>Source finance : </p:outputLabel>
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.bailleur}" disabled="true" style="font-weight: bold"/>
+                                                            </div>
+                                                        </div>                                                   
+                                                    </div>
+                                                </p:outputPanel>
+                                                <p:outputPanel>
+                                                    <div class="p-grid ui-fluid">
+                                                    </div>
+                                                </p:outputPanel>    
+                                            </p:outputPanel>
+                                        </p:outputPanel> 
+                                        <f:facet name="footer">
+                                            <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewUserDialog').hide()" styleClass="ui-button-success" />
+                                        </f:facet>
+                                    </p:dialog>
+                                    <!--FIN POP UP ZOOM MC SELECTION  -->
+
+                                    <p:dialog header="Modification Informations du Maitre"  showEffect="fade" modal="true" widgetVar="viewModifMcDialog" responsive="true" >
+                                        <p:outputPanel class="ui-fluid" id="manage-modifInfos-mc-content" >
+                                            <p:outputPanel rendered="#{not empty rechercherMBean.selectedMc}">
+                                                <p:outputPanel >
+                                                    <div class="card">
+                                                        <div class="ui-fluid p-formgrid p-grid">
+                                                            <div class="p-col-12 p-md-4">
+                                                                <div class="ui-inputgroup">
+                                                                    <div class="ui-inputgroup-addon" style="width: 150px">Matricule </div>
+                                                                    <p:inputText placeholder="#{rechercherMBean.selectedMc.matricule}" value="#{rechercherMBean.selectedMc.matricule}" disabled="true" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="p-col-12 p-md-4">
+                                                                <div class="ui-inputgroup">
+                                                                    <div class="ui-inputgroup-addon" style="width: 150px">Nom </div>
+                                                                    <p:inputText placeholder="#{rechercherMBean.selectedMc.nom}" value="#{rechercherMBean.selectedMc.nom}"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="p-col-12 p-md-4">
+                                                                <div class="ui-inputgroup">
+                                                                    <div class="ui-inputgroup-addon" style="width: 150px">Prénoms </div>
+                                                                    <p:inputText placeholder="#{rechercherMBean.selectedMc.prenoms}" value="#{rechercherMBean.selectedMc.prenoms}"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <p:divider/>
+                                                        <div class="ui-fluid p-formgrid p-grid">
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Sexe :</p:outputLabel>
+                                                                <p:selectOneMenu id="matri" value="#{rechercherMBean.genreMc}">
+                                                                    <f:selectItem itemLabel="Selectionnez un genre " itemValue="" />
+                                                                    <f:selectItem itemLabel="M" itemValue="M" />
+                                                                    <f:selectItem itemLabel="F" itemValue="F"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Contact N° 1 : <p:outputLabel   class="p-text-bold"/></p:outputLabel>
+                                                                <p:inputMask mask="99 99 99 99" placeholder="#{rechercherMBean.selectedMc.contactun}" validateMask="true" value="#{rechercherMBean.selectedMc.contactun}"/>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Opérateur télécom : <p:outputLabel  class="p-text-bold"/></p:outputLabel>
+                                                                <p:selectOneMenu id="operateurTelecom"  value="#{rechercherMBean.selectedMc.operatortelco}">
+                                                                    <f:selectItem itemLabel="Selectionnez un Opérateur" itemValue="" />
+                                                                    <f:selectItem itemLabel="AIRTEL" itemValue="AIRTEL" />
+                                                                    <f:selectItem itemLabel="MOOV" itemValue="MOOV"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="ui-fluid p-formgrid p-grid">
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Domicile  : <p:outputLabel value="#{rechercherMBean.selectedMc.domicile}"  class="p-text-bold"/></p:outputLabel>                                                            
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.domicile}" placeholder="#{rechercherMBean.selectedMc.domicile}" style="font-weight: bold"/>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Lieu de naissance  : <p:outputLabel value="#{rechercherMBean.selectedMc.lieudenaissance}"  class="p-text-bold"/></p:outputLabel>
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.lieudenaissance}" placeholder="#{rechercherMBean.selectedMc.lieudenaissance}" style="font-weight: bold"/>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Contact N° 2  : <p:outputLabel value="#{rechercherMBean.selectedMc.contactdeux}"  class="p-text-bold"/></p:outputLabel>
+                                                                <p:inputMask mask="99 99 99 99" placeholder="#{rechercherMBean.selectedMc.contactdeux}" validateMask="true" value="#{rechercherMBean.contactDeuxMc}"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="ui-fluid p-formgrid p-grid">
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Milieu de résidence  : <p:outputLabel  class="p-text-bold"/></p:outputLabel>
+                                                                <p:selectOneMenu id="milieuResidence" value="#{rechercherMBean.selectedMc.milieuResidence}">
+                                                                    <f:selectItem itemLabel="Selectionnez un type" itemValue="" />
+                                                                    <f:selectItem itemLabel="Urbain" itemValue="Urbain" />
+                                                                    <f:selectItem itemLabel="Rurale" itemValue="Rurale"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Etablissement  : <p:outputLabel value="#{rechercherMBean.selectedMc.ecole}"  class="p-text-bold"/></p:outputLabel>
+                                                                <p:selectOneMenu id="advanced" value="#{rechercherMBean.etsMc}" converter="#{rechercherMBean.etablissementConverter}"  panelStyle="width:180px" var="e" filter="true" filterMatchMode="startsWith">
+                                                                    <f:selectItems value="#{rechercherMBean.etablissements}" var="ets" itemLabel="#{ets.nom}" itemValue="#{ets}" />
+                                                                    <p:column>
+                                                                        <f:facet name="header">
+                                                                            <h:outputText value="Noms"/>
+                                                                        </f:facet>
+                                                                        <h:outputText value="#{e.nom}" title="nom"/>
+                                                                    </p:column>
+                                                                    <f:facet name="footer">
+                                                                        <h:outputText value="#{rechercherMBean.etablissements.size()} écoles" style="font-weight:bold;" styleClass="p-py-1 p-d-block"/>
+                                                                    </f:facet>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="ui-fluid p-formgrid p-grid">
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Retraite : <p:outputLabel  value="#{rechercherMBean.selectedMc.valeureetatretraite}" class="p-text-bold"/> </p:outputLabel>
+                                                                <p:selectOneMenu id="retraiter" value="#{rechercherMBean.selectedMc.valeureetatretraite}">
+                                                                    <f:selectItem itemLabel="Activez le retraite ?" itemValue="" />
+                                                                    <f:selectItem itemLabel="Oui" itemValue="Oui" />
+                                                                    <f:selectItem itemLabel="Non" itemValue="Non"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel for="dateNaiss"> Date de naissance  :</p:outputLabel>
+                                                                <p:inputText  placeholder="#{rechercherMBean.selectedMc.datenaissance}" value="#{rechercherMBean.newMcDateNaiss}" id="dateNaiss">
+                                                                    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                                                </p:inputText>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Langue : </p:outputLabel>
+                                                                <p:selectOneMenu id="langue" value="#{rechercherMBean.selectedMc.langue}">
+                                                                    <f:selectItem itemLabel="Choisir la langue" itemValue="" />
+                                                                    <f:selectItem itemLabel="Français" itemValue="Francais" />
+                                                                    <f:selectItem itemLabel="Arabe" itemValue="Arabe"/>
+                                                                    <f:selectItem itemLabel="Bilingue" itemValue="Bilingue"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                        </div>
+                                                        <div class="ui-fluid p-formgrid p-grid">
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Catégorie  : <p:outputLabel  value="#{rechercherMBean.selectedMc.categoriepro}"  class="p-text-bold"/></p:outputLabel>  
+                                                                <p:selectOneMenu id="cateMc" value="#{rechercherMBean.newCateMc}" converter="#{rechercherMBean.categoriesConverter}">
+                                                                    <f:selectItems value="#{rechercherMBean.listeCategories}" var="c" itemLabel="#{c.libelle}" itemValue="#{c}" itemLabelEscaped="true"  />
+                                                                </p:selectOneMenu>
+                                                            </div>
+                                                            <div class="p-field p-col-12 p-md-4">
+                                                                <p:outputLabel>Observation BM : <em>(statut compte)</em> : <p:outputLabel  value="#{rechercherMBean.selectedMc.statutcompte}" class="p-text-bold"/> </p:outputLabel>
+                                                                <p:selectOneMenu id="obs" value="#{rechercherMBean.selectedMc.statutcompte}">
+                                                                    <f:selectItem itemLabel="choisir une observation" itemValue="" />
+                                                                    <f:selectItem itemLabel="Abandon" itemValue="Abandon" />
+                                                                    <f:selectItem itemLabel="Absent" itemValue="Absent"/>
+                                                                    <f:selectItem itemLabel="Decédé" itemValue="Decédé"/>
+                                                                    <f:selectItem itemLabel="R.A.S" itemValue="R.A.S"/>
+                                                                    <f:selectItem itemLabel="En formation" itemValue="En formation"/>
+                                                                </p:selectOneMenu>
+                                                            </div>
+
+                                                        </div>                                                    
+                                                    </div>
+                                                </p:outputPanel>
+                                                <p:outputPanel>
+                                                    <div class="p-grid ui-fluid">
+                                                    </div>
+                                                </p:outputPanel>    
+                                            </p:outputPanel>
+                                        </p:outputPanel> 
+                                        <f:facet name="footer">
+                                            <p:commandButton value="Valider" iconPos="right"  icon="pi pi-check" actionListener="#{rechercherMBean.modifMineurInfos()}" update=":listMcForm:manage-modifInfos-mc-content" process="manage-modifInfos-mc-content @this" styleClass="ui-button-success" />
+                                            <p:commandButton value="Fermer" iconPos="right" icon="pi pi-times" onclick="PF('viewModifMcDialog').hide()" styleClass="ui-button-warning" />
+                                        </f:facet> 
+                                    </p:dialog>
+
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

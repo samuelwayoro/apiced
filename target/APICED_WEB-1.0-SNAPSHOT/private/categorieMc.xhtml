@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>PARAMETRES CATEGORIE MAITRES</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body>
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <h:form>
+                            <p:breadCrumb>
+                                <p:menuitem value="Electronics" action="accueil.xhtml?faces-redirect=true"/>
+                                <p:menuitem value="Paramétrages"/>
+                                <p:menuitem value="Catégorie Maitres Communautaires"/>
+                            </p:breadCrumb>
+                        </h:form>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="Parametrage Catégorie Maitres communautaires"  >
+                                        <h:form id="form">
+                                            <div class="card crud-demo">
+                                                <p:growl id="messages" showDetail="true"/>
+                                                <p:toolbar>
+                                                    <p:toolbarGroup align="left">
+                                                    </p:toolbarGroup>
+                                                    <p:toolbarGroup>
+                                                        <p:commandButton icon="pi pi-plus" oncomplete="PF('addOperateurDialog').show()"  
+                                                                         styleClass="edit-button rounded-button ui-button-success"  style="margin-right: .5rem">
+                                                        </p:commandButton>
+                                                    </p:toolbarGroup>
+                                                </p:toolbar>
+                                                <p:dataTable id="dt-products" widgetVar="dtProducts" var="product" 
+                                                             value="#{categorieMcMbean.listeCategories}"  reflow="true" styleClass="products-table" 
+                                                             rowKey="#{product.idcategorie}" selection="#{categorieMcMbean.selectedCategories}" selectionMode="single"
+                                                             paginator="true" rows="5" rowSelectMode="add" paginatorPosition="bottom">
+                                                    <p:column headerText="Noms">
+                                                        <h:outputText value="#{product.libelle}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Montant Subside">
+                                                        <h:outputText value="#{product.montantsubside}" style="font-weight: 700"></h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Gestion" exportable="false">
+                                                        <p:commandButton style="margin-left: 5px"  icon="pi pi-pencil" 
+                                                                         update=":form:manage-operateur-content" oncomplete="PF('manageOperateurDialog').show()" styleClass="edit-button rounded-button ui-button-success" process="@this" >
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{categorieMcMbean.selectedCategorie}"/>
+                                                            <p:resetInput   target=":form:manage-operateur-content"/>
+                                                        </p:commandButton>
+                                                        
+                                                        <p:commandButton style="margin-left: 5px" icon="pi pi-trash" oncomplete="PF('deleteOperateurDialog').show()" 
+                                                                         process="@this"  title="supprimer l'opérateur"   styleClass="rounded-button ui-button-danger" update=":form:dt-products">
+                                                            <f:setPropertyActionListener target="#{categorieMcMbean.selectedCategorie}" value="#{product}" />
+                                                        </p:commandButton>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!-- debut pop up suppression d'opérateur-->
+                                                <p:confirmDialog widgetVar="deleteOperateurDialog" showEffect="fade" width="300" message="Supprimer cet opérateur ?" header="Confirm" severity="warn">
+                                                    <p:commandButton value="Oui" icon="pi pi-check" actionListener="#{categorieMcMbean.deleteCategorie()}" process="@this" oncomplete="PF('deleteOperateurDialog').hide()"/>
+                                                    <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deleteOperateurDialog').hide()"/>
+                                                </p:confirmDialog>
+                                                <!-- fin pop suppression -->
+                                                <!-- debut pop up modification -->
+                                                <p:dialog header="Mise à jour Catégorie" showEffect="fade" modal="true" widgetVar="manageOperateurDialog" responsive="true" >
+                                                    <p:outputPanel id="manage-operateur-content" class="ui-fluid" >
+                                                        <p:outputPanel rendered="#{not empty categorieMcMbean.selectedCategories}">
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Libellé catégorie : </p:outputLabel>
+                                                                    <p:inputText value="#{categorieMcMbean.selectedCategorie.libelle}"  />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Montant subsides : </p:outputLabel>
+                                                                    <p:inputText value="#{categorieMcMbean.selectedCategorie.montantsubside}" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <div class="p-grid ui-fluid">
+                                                            </div>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="enregistrer" icon="pi pi-check" actionListener="#{categorieMcMbean.updateCategorieMc()}" update=":form:manage-operateur-content" process="manage-operateur-content @this" />
+                                                        <p:commandButton value="annuler" icon="pi pi-times" onclick="PF('manageOperateurDialog').hide()" class="ui-button-secondary" />
+                                                    </f:facet> 
+                                                </p:dialog>
+                                                <!--pop up ajout d'un nouvel opérateur -->
+                                                <p:dialog header="Ajouter une catégorie " showEffect="fade" modal="true" widgetVar="addOperateurDialog" responsive="true" >
+                                                    <p:outputPanel id="manage-add-Operateur-content" class="ui-fluid" >
+                                                        <p:outputPanel >
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Libellé catégorie </p:outputLabel>
+                                                                <p:inputText value="#{categorieMcMbean.libelleCategorie}" id="libelleCate" required="true" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <p:outputPanel >
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Montant Subside </p:outputLabel>
+                                                                <p:inputText value="#{categorieMcMbean.montantSubside}" id="montantSubside" required="true" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="enregistrer" id="ajouter" actionListener="#{categorieMcMbean.addCategorie()}"  icon="pi pi-check"  
+                                                                         update="manage-add-Operateur-content" process="manage-add-Operateur-content @this" />
+                                                        <p:commandButton value="annuler" icon="pi pi-times" onclick="PF('addOperateurDialog').hide()" class="ui-button-secondary" />
+                                                    </f:facet> 
+                                                </p:dialog>
+                                                <!-- fin pop up ajout profil-->
+                                            </div>
+                                        </h:form>
+                                    </p:panel>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

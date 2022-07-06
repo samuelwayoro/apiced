@@ -1,0 +1,22 @@
+<pretty-config xmlns="http://ocpsoft.org/schema/rewrite-config-prettyfaces" 
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+               xsi:schemaLocation="http://ocpsoft.org/schema/rewrite-config-prettyfaces
+                      http://ocpsoft.org/xml/ns/prettyfaces/rewrite-config-prettyfaces.xsd">
+         
+    <url-mapping id="DetailMaitreCo">
+        <pattern value="/private/DetailMaitre/#{info}"/>
+        <view-id value="/private/DetailMaitreCo.xhtml"/>
+    </url-mapping>
+    
+    <url-mapping id="annuaire">
+        <pattern value="/private/annuairemcs"/>
+        <view-id value="/private/annuaire.xhtml"/>
+    </url-mapping>
+    
+    <url-mapping id="accueilCoordo">
+        <pattern value="/secured/homeCoordo"/>
+        <view-id value="/private/accueilCoordonnatteur.xhtml"/>
+    </url-mapping>
+
+
+</pretty-config>

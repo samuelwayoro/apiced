@@ -1,0 +1,309 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Annuaire</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+        <style type="text/css">
+            .ui-datatable .ui-datatable-header {
+                text-align: right !important;
+            }
+
+            .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-header .ui-chkbox {
+                display: none;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="3">
+                                <p:menuitem value="Annuaire" outcome="/private/annuaire" >
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Nouveaux Ajoutés" outcome="/private/maitresAValider">
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+<!--                                <p:menuitem value="Maitres(s) à corriger" outcome="/private/maitreAcorriger">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>-->
+                                <p:menuitem value="Ajouter Maitre" outcome="/private/nouveauMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesnouveaumc}">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>
+                                <p:menuitem value="Gestion carrière" outcome="/private/gestMc" rendered="#{loginMBean.utilisateur.profilIdprofil.accesvalidationmc}">
+                                    <f:param name="i" value="3"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+
+                        </h:form> 
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-fw pi-users"/>                                                
+                                <p:outputLabel value=" " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Gestion Informations Maitres" />
+
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="Liste des Maitres Commuanautaires">
+                                        <div class="card">
+                                            <h:form id="form">
+                                                <p:growl id="messages" showDetail="true"/>
+                                                <p:growl id="message"/>
+                                                <p:dataTable id="dt-products"  var="product" value="#{annuaireMBean.listeAnnuaire}"  widgetVar="dtProducts" reflow="true" styleClass="products-table" rowKey="#{product.matricule}" paginator="true" rows="5" selectionMode="single" selection="#{annuaireMBean.selectedMc}"  paginatorPosition="bottom" rowSelectMode="add">
+                                                    <p:column headerText="N° matricule">
+                                                        <p:link outcome="DetailMaitreCo?matricule=#{product.matricule}"  value="#{product.matricule}" />
+                                                    </p:column>
+                                                    <p:column headerText="Noms" sortBy="#{product.nom}" filterBy="#{product.nom}" >
+                                                        <h:outputText value="#{product.nom}" style="font-weight: 700"/>
+                                                    </p:column>
+                                                    <p:column headerText="Prénoms" sortBy="#{product.prenoms}" filterBy="#{product.prenoms}">
+                                                        <h:outputText value="#{product.prenoms}"/>
+                                                    </p:column>
+                                                    <p:column exportable="false" width="250px" >
+                                                        <!-- btn de modif du matricule-->
+                                                        <p:commandButton id="btnZoom" style="margin-left: 5px"  icon="pi pi-id-card" update=":form:manage-modif-matricule" 
+                                                                         title="modifier le matricule"
+                                                                         oncomplete="PF('modifMatriculeDialog').show()" 
+                                                                         styleClass="edit-button rounded-button ui-button-alert" process="@this" >
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{annuaireMBean.selectedMc}"/>
+                                                            <p:resetInput   target=":form:manage-modif-matricule"/>
+                                                        </p:commandButton>
+                                                        <!-- btn de modif de matricule-->
+                                                        <!--CATEGGORI PRO -->
+                                                        <p:commandButton rendered="#{loginMBean.utilisateur.profilIdprofil.accesvalidationmc}" id="modifCategPro" style="margin-left: 2px"  icon="pi pi-sitemap" update=":form:manage-modif-categoriePro" 
+                                                                         title="catégorie professionnelle"  
+                                                                         oncomplete="PF('modifCategorieProDialog').show()" 
+                                                                         styleClass="rounded-button ui-button-warning" process="@this" >
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{annuaireMBean.selectedMc}"/>
+                                                            <p:resetInput   target=":form:manage-modif-categoriePro"/>
+                                                        </p:commandButton>
+                                                        <!-- -->
+                                                        <!-- ETABLISSEMENT-->
+                                                        <p:commandButton   id="modifEts" style="margin-left: 2px"  icon="pi pi-briefcase" update=":form:manage-modif-etablissement"  
+                                                                           title="modifier établissement"
+                                                                           oncomplete="PF('modifEtablissementDialog').show()"
+                                                                           styleClass="rounded-button ui-button-help" process="@this" 
+                                                                           rendered="#{loginMBean.utilisateur.profilIdprofil.accesmodifmc}" >
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{annuaireMBean.selectedMc}"/>
+                                                            <p:resetInput   target=":form:manage-modif-etablissement"/>
+                                                        </p:commandButton>
+                                                        <!-- INFOS PAIEMENT-->
+                                                        <p:commandButton   id="modifInfosPaie" style="margin-left: 2px"  icon="pi pi-wallet" update=":form:manage-modif-infoPaie"  
+                                                                           title="informations de paiement" 
+                                                                           oncomplete="PF('modifInfosPaieDialog').show()" 
+                                                                           styleClass="rounded-button ui-button-success" process="@this" >
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{annuaireMBean.selectedMc}"/>
+                                                            <p:resetInput   target=":form:manage-modif-infoPaie"/>
+                                                        </p:commandButton>
+                                                        <!--MISE A LA RETRAITE -->
+                                                        <p:commandButton    id="retraite" style="margin-left: 4px"  icon="pi pi-times" update=":form:manage-retraite" 
+                                                                            oncomplete="PF('retraiteDialog').show()"
+                                                                            title="mettre en retraite "
+                                                                            styleClass="rounded-button ui-button-danger" process="@this"  >
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{annuaireMBean.selectedMc}"/>
+                                                            <p:resetInput   target=":form:manage-retraite"/>
+                                                        </p:commandButton>
+                                                    </p:column>
+                                                </p:dataTable>
+
+                                                <p:dialog header="Modification du matricule"  showEffect="fade" modal="true" widgetVar="modifMatriculeDialog" responsive="true" >
+                                                    <p:outputPanel class="ui-fluid" id="manage-modif-matricule" >
+                                                        <p:outputPanel rendered="#{not empty annuaireMBean.selectedMc}">
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <h:outputText value="#{annuaireMBean.selectedMc.nom} #{annuaireMBean.selectedMc.prenoms}" style="font-size: large; font-style: italic ; color: #9C27B0 "/>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Matricule  : </p:outputLabel>
+                                                                    <p:inputText value="#{annuaireMBean.selectedMc.matricule}"/>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Motif : </p:outputLabel>
+                                                                    <p:inputTextarea rows="6" cols="33" placeholder="veuillez renseigner le motif du changement..." value="#{annuaireMBean.motifModif}" required="true" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <div class="p-grid ui-fluid">
+                                                            </div>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('modifMatriculeDialog').hide()" styleClass="ui-button-danger" />
+                                                        <p:commandButton value="Enregistrer" icon="pi pi-check" styleClass="ui-button-success" actionListener="#{annuaireMBean.modifMatriculeWithMotif()}"
+                                                                         update=":form:manage-modif-matricule" process="manage-modif-matricule @this" />
+                                                    </f:facet> 
+                                                </p:dialog>
+
+                                                <p:dialog header="Modification de la catégorie professionnelle"  showEffect="fade"  modal="true" widgetVar="modifCategorieProDialog" responsive="true" >
+                                                    <p:outputPanel class="ui-fluid" id="manage-modif-categoriePro" >
+                                                        <p:outputPanel rendered="#{not empty annuaireMBean.selectedMc}">
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <h:outputText value="#{annuaireMBean.selectedMc.nom} #{annuaireMBean.selectedMc.prenoms}" style="font-size: large; font-style: italic ; color: #9C27B0 "/>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>catégorie Professionnelle  : <p:chip label="#{annuaireMBean.selectedMc.idcategoriepro.libelle}" styleClass="p-mr-2 custom-chip"/> </p:outputLabel>
+                                                                    <p:selectOneMenu required="true" id="categPro" value="#{annuaireMBean.libelleCate}" label="Catégorie professionelle">
+                                                                        <f:selectItems value="#{annuaireMBean.listNomsCategorieMc}"/>
+                                                                    </p:selectOneMenu>                                                                
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Motif : </p:outputLabel>
+                                                                    <p:inputTextarea rows="6" cols="33" placeholder="veuillez renseigner le motif du changement..." value="#{annuaireMBean.motifModif}" required="true"/>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <div class="p-grid ui-fluid">
+                                                            </div>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('modifCategorieProDialog').hide()" styleClass="ui-button-warning" iconPos="right" />
+                                                        <p:commandButton value="Enregistrer" icon="pi pi-check" styleClass="ui-button-success" actionListener="#{annuaireMBean.modifCategProWithMotif()}"
+                                                                         update=":form:manage-modif-categoriePro" process="manage-modif-categoriePro @this" iconPos="right" />
+                                                    </f:facet> 
+                                                </p:dialog>
+
+                                                <p:dialog header="Modification de l'établissement"  showEffect="fade" 
+                                                          modal="true" widgetVar="modifEtablissementDialog" responsive="true" >
+                                                    <p:outputPanel class="ui-fluid" id="manage-modif-etablissement" >
+                                                        <p:outputPanel rendered="#{not empty annuaireMBean.selectedMc}">
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Etablissement d'enseignement  : <p:chip label="#{annuaireMBean.selectedMc.etablissement.nom}" styleClass="p-mr-2 custom-chip"/> </p:outputLabel>
+                                                                    <p:selectOneMenu  id="établissement" value="#{annuaireMBean.nouvelEts}" label="Etablissement">
+                                                                        <f:selectItems value="#{annuaireMBean.listeNomsEtablissement}"/>
+                                                                    </p:selectOneMenu>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Motif : </p:outputLabel>
+                                                                    <p:inputTextarea rows="6" cols="33" placeholder="veuillez renseigner le motif du changement... " value="#{annuaireMBean.motifModif}" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <div class="p-grid ui-fluid">
+                                                            </div>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="Enregistrer" icon="pi pi-check" styleClass="ui-button-success" actionListener="#{annuaireMBean.modifEtsWithMotif()}"
+                                                                         update=":form:manage-modif-etablissement" process="manage-modif-etablissement @this" />
+                                                        <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('modifEtablissementDialog').hide()" styleClass="ui-button-warning" />
+                                                    </f:facet> 
+                                                </p:dialog>
+
+                                                <p:dialog header="Modification des informations de paiement"  showEffect="fade"  modal="true" widgetVar="modifInfosPaieDialog" responsive="true" >
+                                                    <p:outputPanel class="ui-fluid" id="manage-modif-infoPaie" >
+                                                        <p:outputPanel rendered="#{not empty annuaireMBean.selectedMc}">
+                                                            <div class="card">
+                                                                <p:outputPanel>
+                                                                    <div class="p-field">
+                                                                        <h:outputText value="#{annuaireMBean.selectedMc.nom} #{annuaireMBean.selectedMc.prenoms}" style="font-size: large; font-style: italic ; color: #9C27B0 "/>
+                                                                    </div>
+                                                                </p:outputPanel>
+                                                                <div class="ui-fluid p-formgrid p-grid">
+                                                                    <div class="p-field p-col-12 p-md-3">
+                                                                        <p:outputLabel>Opérateur  : <p:chip label="#{annuaireMBean.selectedMc.operatortelco}" styleClass="p-mr-2 custom-chip"/></p:outputLabel>
+                                                                        <p:selectOneMenu id="nomOperateur" value="#{annuaireMBean.newOperateurMc}">
+                                                                            <f:selectItem itemLabel="Select One" itemValue="#{annuaireMBean.selectedMc.operatortelco}"/>
+                                                                            <f:selectItems value="#{annuaireMBean.listeOperateurs}"  />
+                                                                        </p:selectOneMenu>
+                                                                    </div>
+                                                                    <div class="p-field p-col-12 p-md-4">
+                                                                        <p:outputLabel>Numéro Principal  : <p:chip label="#{annuaireMBean.selectedMc.contactun}" styleClass="p-mr-2 custom-chip"/></p:outputLabel>
+                                                                        <p:inputMask mask="99 99 99 99" placeholder="#{annuaireMBean.selectedMc.contactun}" validateMask="true" value="#{annuaireMBean.numeroPrincipal}" label="numéro de paiement"/>
+                                                                    </div>
+                                                                    <div class="p-field p-col-12 p-md-5">
+                                                                        <p:outputLabel>Compte Mobile Money  : <p:chip label="#{annuaireMBean.selectedMc.valeurestatutwallet}"  styleClass="p-mr-2 custom-chip"/> </p:outputLabel><br/>
+                                                                        <p:toggleSwitch value="#{annuaireMBean.selectedMc.statutwallet}">
+                                                                            <p:ajax listener="#{annuaireMBean.addMessage()}" update="message"/>
+                                                                        </p:toggleSwitch>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Motif : </p:outputLabel>
+                                                                    <p:inputTextarea rows="6" cols="33" placeholder="veuillez renseigner le motif du changement... " required="true" value="#{annuaireMBean.motifModif}"/>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <div class="p-grid ui-fluid">
+                                                            </div>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="Enregistrer" icon="pi pi-check" styleClass="ui-button-success" actionListener="#{annuaireMBean.infosPaieWithMotif()}"
+                                                                         update=":form:manage-modif-infoPaie" process="manage-modif-infoPaie @this" iconPos="right" />
+                                                        <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('modifInfosPaieDialog').hide()" styleClass="ui-button-warning" iconPos="right"/>
+                                                    </f:facet> 
+                                                </p:dialog>
+
+                                                <p:dialog header="Mise à la retraite du maitre"  showEffect="fade" modal="true" widgetVar="retraiteDialog" responsive="true" >
+                                                    <p:outputPanel class="ui-fluid" id="manage-retraite" >
+                                                        <p:outputPanel rendered="#{not empty annuaireMBean.selectedMc}">
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <h:outputText value="#{annuaireMBean.selectedMc.nom} #{annuaireMBean.selectedMc.prenoms}" style="font-size: large; font-style: italic ; color: #9C27B0 "/>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <div class="card">
+                                                                <div class="ui-fluid p-formgrid p-grid">
+                                                                    <div class="p-field p-col-12 p-md-8">
+                                                                        <p:outputLabel>Etat retraite du maitre  :</p:outputLabel>
+                                                                        <p:selectBooleanButton  required="true" value="#{annuaireMBean.selectedMc.etatretraite}"  id="etatRetraite" onLabel="Retraité" offLabel="En Activité" onIcon="pi pi-check" offIcon="pi pi-times" style="width:10rem" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Motif : </p:outputLabel>
+                                                                    <p:inputTextarea rows="6" cols="33" placeholder="veuillez renseigner le motif du changement... " required="true" value="#{annuaireMBean.motifModif}"/>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <div class="p-grid ui-fluid">
+                                                            </div>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="Enregistrer" iconPos="right" icon="pi pi-check" styleClass="ui-button-success" actionListener="#{annuaireMBean.miseEnRetraiteWithMotif()}" update=":form:manage-retraite" process="manage-retraite @this" />
+                                                        <p:commandButton value="Fermer" icon="pi pi-times" iconPos="right" onclick="PF('retraiteDialog').hide()" styleClass="ui-button-warning" />
+                                                    </f:facet> 
+                                                </p:dialog>
+
+                                            </h:form>
+                                        </div>
+                                    </p:panel>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

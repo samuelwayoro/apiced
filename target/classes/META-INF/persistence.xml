@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+  <!-- Define Persistence Unit -->
+  <persistence-unit name="myPersistence" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>jdbc/apicedwebpool</jta-data-source>
+    <class>com.sbs.apiced_web.entities.Menu</class>
+    <class>com.sbs.apiced_web.entities.Sousmenu</class>
+    <class>com.sbs.apiced_web.entities.MaitreCom</class>
+    <class>com.sbs.apiced_web.entities.Auditlog</class>
+    <class>com.sbs.apiced_web.entities.Etablissement</class>
+    <class>com.sbs.apiced_web.entities.Profil</class>
+    <class>com.sbs.apiced_web.entities.Notifications</class>
+    <class>com.sbs.apiced_web.entities.Utilisateur</class>
+    <class>com.sbs.apiced_web.entities.Etatpaiement</class>
+    <class>com.sbs.apiced_web.entities.Promotion</class>
+    <class>com.sbs.apiced_web.entities.Sequence</class>
+    <class>com.sbs.apiced_web.entities.Statupaieparop</class>
+    <class>com.sbs.apiced_web.entities.Operateur</class>
+    <class>com.sbs.apiced_web.entities.Categorie</class>
+    <class>com.sbs.apiced_web.entities.Lignespaiements</class>
+    <class>com.sbs.apiced_web.entities.Parametres</class>
+    <class>com.sbs.apiced_web.entities.Motifsuspensionmc</class>
+    <class>com.sbs.apiced_web.entities.Typenotifs</class>
+    <class>com.sbs.apiced_web.entities.Niveauscolaire</class>
+    <class>com.sbs.apiced_web.entities.Villes</class>
+    <class>com.sbs.apiced_web.entities.Paiement</class>
+    <class>com.sbs.apiced_web.entities.Diplome</class>
+    <class>com.sbs.apiced_web.entities.Classeaffectee</class>
+    <class>com.sbs.apiced_web.entities.Mcenmodif</class>
+    <class>com.sbs.apiced_web.entities.Transactions</class>
+    <class>com.sbs.apiced_web.entities.Notificationsutilisateur</class>
+    <class>com.sbs.apiced_web.entities.Usersnotifs</class>
+    <class>com.sbs.apiced_web.entities.Typepieceadministrative</class>
+    <class>com.sbs.apiced_web.entities.Bailleur</class>
+    <class>com.sbs.apiced_web.entities.Ipep</class>
+    <class>com.sbs.apiced_web.entities.Iden</class>
+    <class>com.sbs.apiced_web.entities.Person</class>
+    <class>com.sbs.apiced_web.entities.Drej</class>
+    <class>com.sbs.apiced_web.entities.Test</class>
+    <class>com.sbs.apiced_web.entities.Maitrecommunautaire</class>
+    <class>com.sbs.apiced_web.entities.LazyMaitreCommunautaireDataModel</class>
+    <properties>
+      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.logging.parameters" value="true"/>
+    </properties>
+  </persistence-unit>
+</persistence>

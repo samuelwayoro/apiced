@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>TABLEAU DE BORD APICED</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="#{param.i}">
+                                <p:menuitem value="Tableau de bord" outcome="/private/gestionUtilisateurs" >
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form> 
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-fw pi-home"/>                                              
+                                <p:outputLabel value="  " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Tableau de bord" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider />
+                    <div class="p-grid nested-grid ">
+                        <div class="p-col-8">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="DERNIERES NOTIFICATIONS">
+                                        <h:form id="form">
+                                            <p:growl id="messages" showDetail="true"/>
+                                            <p:dataTable  id="dt-products"  var="product" value="#{homeCoordoMBean.listeNotifs}"  widgetVar="dtProducts" reflow="true" 
+                                                styleClass="products-table" rowKey="#{product.idnotif}" paginator="true" rows="5" selectionMode="single" selection="#{homeCoordoMBean.selectedNotif}"  paginatorPosition="bottom" rowSelectMode="add" emptyMessage="aucune notification non lue(s)">
+                                                <p:column headerText="Date" sortBy="#{product.dateinsert}" filterBy="#{product.dateinsert}" >
+                                                    <h:outputText value="#{product.dateinsert}" style="font-weight: 600;color: red"/>
+                                                </p:column>
+                                                <p:column headerText="Titre" sortBy="#{product.titre}" filterBy="#{product.titre}">
+                                                    <h:outputText value="#{product.titre}" style="font-weight: 500;color: darkblue"/>
+                                                </p:column>
+                                                <p:column headerText="Initiateur" filterBy="#{product.createur}">
+                                                    <h:outputText value="#{product.createur}" style="font-weight: 500;color: darkblue" /> 
+                                                </p:column>
+                                                <p:column exportable="false">
+                                                    <!--btn de pop up validation de maitre -->
+                                                    <p:commandButton   icon="pi pi-save" rendered="#{product.btnvalidemc}"  
+                                                                       update=":form:manage-view-profil-content" oncomplete="PF('viewUserDialog').show()" 
+                                                                       styleClass="edit-button rounded-button ui-button-success" process="@this">
+                                                        <f:setPropertyActionListener value="#{product}"  target="#{homeCoordoMBean.selectedNotif}"/>
+                                                        <p:resetInput   target=":form:manage-view-profil-content"/>
+                                                    </p:commandButton>
+                                                    <!-- bnt de pop up de validation de paiement-->
+                                                    <p:commandButton   icon="pi pi-save" rendered="#{product.btnvalidepaie}"  
+                                                                       update=":form:manage-view-paie-content" oncomplete="PF('viewPaieDialog').show()" 
+                                                                       styleClass="edit-button rounded-button ui-button-help" process="@this">
+                                                        <f:setPropertyActionListener value="#{product}"  target="#{homeCoordoMBean.selectedNotif}"/>
+                                                        <p:resetInput   target=":form:manage-view-paie-content"/>
+                                                    </p:commandButton>
+                                                    <p:commandButton   icon="pi pi-search-plus"  rendered="#{product.btndetail}"  
+                                                                           update=":form:manage-view-details-content" oncomplete="PF('viewDetailsDialog').show()" 
+                                                                           styleClass="edit-button rounded-button ui-button-alert" process="@this">
+                                                        <f:setPropertyActionListener value="#{product}"  target="#{homeCoordoMBean.selectedNotif}"/>
+                                                            <p:resetInput   target=":form:manage-view-details-content"/>
+                                                        </p:commandButton>
+<!--                                                    <p:commandButton style="margin-left: 5px"  icon="pi pi-trash" type="submit" oncomplete="PF('deleteUserDialog').show()"  process="@this"  
+                                                                     title="Archiver la notification"  styleClass="rounded-button ui-button-warning" update=":form:dt-products" >
+                                                        <f:setPropertyActionListener value="#{product}" target="#{homeCoordoMBean.selectedNotif}"/>
+                                                    </p:commandButton>-->
+                                                </p:column>
+                                            </p:dataTable>
+                                            <p:dialog header="Détails Notification" showEffect="fade" modal="true" widgetVar="viewUserDialog" responsive="true" >
+                                                <p:outputPanel id="manage-view-profil-content" class="ui-fluid" >
+                                                    <p:outputPanel rendered="#{not empty homeCoordoMBean.selectedNotif}">
+                                                        <p:outputPanel >
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Titre  : </p:outputLabel>
+                                                                <p:inputTextarea rows="3" cols="25" value="#{homeCoordoMBean.selectedNotif.titre}"  disabled="true" style="font-size: large" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <p:outputPanel >
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Détail  : </p:outputLabel>
+                                                                <p:inputTextarea rows="3" cols="25" value="#{homeCoordoMBean.selectedNotif.information}"  disabled="true" style="font-size: large" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <p:outputPanel >
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Initiateur : </p:outputLabel>
+                                                                <p:inputText value="#{homeCoordoMBean.selectedNotif.createur}" disabled="true" style="font-size:large" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <p:outputPanel>
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Date création : </p:outputLabel>
+                                                                <p:inputText value="#{homeCoordoMBean.selectedNotif.dateinsert}" disabled="true" style="font-size: large" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <div class="p-grid ui-fluid">
+                                                        </div>
+                                                    </p:outputPanel>    
+                                                </p:outputPanel>
+                                                <f:facet name="footer">
+                                                    <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewUserDialog').hide()" styleClass="ui-button-danger"  iconPos="right" />
+                                                    <p:commandButton icon="pi pi-check-circle" value="aller a la validation" actionListener="#{homeCoordoMBean.archiverNotif()}" styleClass="ui-button-success" iconPos="right" action="maitresAValider.xhtml?faces-redirect=true"/>
+                                                </f:facet> 
+                                            </p:dialog>
+                                            
+                                            <p:confirmDialog widgetVar="deleteUserDialog" showEffect="fade" width="300" message="marquer comme lue ?" header="Confirm" severity="warn">
+                                                <p:commandButton value="Oui" icon="pi pi-check"   actionListener="#{homeCoordoMBean.archiverNotif()}" process="@this" oncomplete="PF('deleteUserDialog').hide()" />
+                                                <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deleteUserDialog').hide()"/>
+                                            </p:confirmDialog>
+                                            
+                                            <p:dialog header="Détails Notification" showEffect="fade" modal="true" widgetVar="viewPaieDialog" responsive="true" >
+                                                <p:outputPanel id="manage-view-paie-content" class="ui-fluid" >
+                                                    <p:outputPanel rendered="#{not empty homeCoordoMBean.selectedNotif}">
+                                                        <p:outputPanel >
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Titre  : </p:outputLabel>
+                                                                <p:inputTextarea rows="3" cols="25" value="#{homeCoordoMBean.selectedNotif.titre}"  disabled="true" style="font-size: large" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <p:outputPanel >
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Détail  : </p:outputLabel>
+                                                                <p:inputTextarea rows="3" cols="25" value="#{homeCoordoMBean.selectedNotif.information}"  disabled="true" style="font-size: large" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <p:outputPanel >
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Initiateur : </p:outputLabel>
+                                                                <p:inputText value="#{homeCoordoMBean.selectedNotif.createur}" disabled="true" style="font-size:large" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <p:outputPanel>
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Date création : </p:outputLabel>
+                                                                <p:inputText value="#{homeCoordoMBean.selectedNotif.dateinsert}" disabled="true" style="font-size: large" />
+                                                            </div>
+                                                        </p:outputPanel>
+<!--                                                        <p:outputPanel>
+                                                            <div class="p-field">
+                                                                <p:outputLabel>valeur des btn valide paie : </p:outputLabel>
+                                                                <p:inputText value="#{homeCoordoMBean.selectedNotif.btnvalidemc}" disabled="true" style="font-size: large" />
+                                                            </div>
+                                                        </p:outputPanel>    -->
+                                                        <div class="p-grid ui-fluid">
+                                                        </div>
+                                                    </p:outputPanel>    
+                                                </p:outputPanel>
+                                                <f:facet name="footer">
+                                                    <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewPaieDialog').hide()" styleClass="ui-button-danger"  iconPos="right" />
+                                                    <p:commandButton icon="pi pi-check-circle" value="aller a la validation" styleClass="ui-button-success" iconPos="right" actionListener="#{homeCoordoMBean.archiverNotif()}" action="paiementEnAttente.xhtml?faces-redirect=true"/>
+                                                </f:facet> 
+                                            </p:dialog>
+                                            
+                                            <!-- pop up details notif-->
+                                                <p:dialog header="Détails " showEffect="fade" modal="true" widgetVar="viewDetailsDialog" responsive="true" >
+                                                    <p:outputPanel id="manage-view-details-content" class="ui-fluid" >
+                                                        <p:outputPanel rendered="#{not empty homeCoordoMBean.selectedNotif}">
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Titre  : </p:outputLabel>
+                                                                    <p:inputTextarea rows="3" cols="25" value="#{homeCoordoMBean.selectedNotif.titre}"  disabled="true" style="font-size: large;color: darkblue" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Détail  : </p:outputLabel>
+                                                                    <p:inputTextarea rows="3" cols="25" value="#{homeCoordoMBean.selectedNotif.information}"  disabled="true" style="font-size: large;color: darkblue" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Initiateur : </p:outputLabel>
+                                                                    <p:inputText value="#{homeCoordoMBean.selectedNotif.createur}" disabled="true" style="font-size:large;color: darkblue" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Date création : </p:outputLabel>
+                                                                    <p:inputText value="#{homeCoordoMBean.selectedNotif.dateinsert}" disabled="true" style="font-size: large;color: red" />
+                                                                </div>
+                                                            </p:outputPanel>                                                        
+                                                            <div class="p-grid ui-fluid">
+                                                            </div>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewDetailsDialog').hide()" actionListener="#{homeCoordoMBean.archiverNotif()}"  styleClass="ui-button-danger"  iconPos="right" />
+                                                    </f:facet> 
+                                                </p:dialog>
+                                                <!-- fin pop up -->
+                                        </h:form>
+                                    </p:panel>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-col-4">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="STATISTIQUES ACTIVITES">
+                                        <div class="p-grid">
+                                            <p:panel header="Total maîtres dans la base de données " class="p-col-6">
+                                                <div class="card" style="text-align: center">
+                                                    <h3 style="color: red" >#{homeCoordoMBean.totalMcs}</h3>  
+                                                </div>
+                                            </p:panel>
+                                            <p:panel header="Total Maîtres crée(s) aujourd'hui " class="p-col-6">
+                                                <div class="card" style="text-align: center">
+                                                    <h3 style="color: red" >#{homeCoordoMBean.totalMcAddToday}</h3>  
+                                                </div>
+                                            </p:panel>
+                                            <p:divider/>
+                                            <p:panel header="Paiement mensuel en attente de validation " class="p-col-6">
+                                                <div class="card"  style="text-align: center">
+                                                    <h3 style="color: red" >  #{homeCoordoMBean.nbrePaiementEnAttente}</h3>  
+                                                </div>
+                                            </p:panel>
+                                            <p:panel header="Total paiement mensuel validés aujourd'hui " class="p-col-6">
+                                                <div class="card"  style="text-align: center">
+                                                    <h3 style="color: red" >  #{homeCoordoMBean.nbreTotalPaiements}</h3>  
+                                                </div>
+                                            </p:panel>
+                                        </div>
+                                    </p:panel>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

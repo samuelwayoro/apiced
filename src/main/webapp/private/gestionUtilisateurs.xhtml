@@ -1,0 +1,251 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>GESTION DES PROFILS UTILISATEURS</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body>
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <h:form>
+                            <p:breadCrumb>
+                                <p:menuitem value="Electronics" action="accueil.xhtml?faces-redirect=true"/>
+                                <p:menuitem value="Paramétrages"/>
+                                <p:menuitem value="Gestion  Utilisateurs"/>
+                            </p:breadCrumb>
+                        </h:form>
+                    </div>
+                                        <p:divider/>
+
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="Liste des utilisateurs">
+                                        <h:form id="form">
+                                            <div class="card crud-demo">
+                                                <p:growl id="messages" showDetail="true"/>
+                                                <p:toolbar>
+                                                    <p:toolbarGroup>
+                                                    </p:toolbarGroup>
+                                                    <p:toolbarGroup>
+                                                        <p:commandButton icon="pi pi-plus" oncomplete="PF('addUserDialog').show()"   styleClass="edit-button rounded-button ui-button-success"  style="margin-right: .5rem"></p:commandButton>
+                                                    </p:toolbarGroup>
+                                                </p:toolbar>
+                                                <p:dataTable 
+                                                             id="dt-products" 
+                                                             var="product" 
+                                                             value="#{usersMBean.listeUtilisateurs}"  
+                                                             widgetVar="dtProducts"
+                                                             reflow="true" 
+                                                             styleClass="products-table" 
+                                                             rowKey="#{product.idutilisateur}" 
+                                                             paginator="true" 
+                                                             rows="5" 
+                                                             selectionMode="single" 
+                                                             selection="#{usersMBean.selectedUser}"  
+                                                             paginatorPosition="bottom" 
+                                                             rowSelectMode="add">
+                                                    <p:column headerText="Noms" sortBy="#{product.nom}" filterBy="#{product.nom}" >
+                                                        <h:outputText value="#{product.nom}" style="font-weight: 700"/>
+                                                    </p:column>
+                                                    <p:column headerText="Prénoms" sortBy="#{product.prenoms}" filterBy="#{product.prenoms}">
+                                                        <h:outputText value="#{product.prenoms}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Login" filterBy="#{product.login}">
+                                                        <h:outputText value="#{product.login}" /> 
+                                                    </p:column>
+                                                    <p:column headerText="Profils" sortBy="#{product.profilIdprofil}" filterBy="#{product.profilIdprofil}">
+                                                        <h:outputText value="#{product.profilIdprofil.libelle}"/>
+                                                    </p:column>
+                                                    <p:column headerText="Status" sortBy="#{product.activer}"   >
+                                                        <p:selectBooleanButton onLabel="activé" offLabel="désactivé" 
+                                                                               value="#{product.activer}" title="status" 
+                                                                               onIcon="pi pi-check" offIcon="pi pi-times" style="width:7rem" 
+                                                                               id="Etat" disabled="true" />
+                                                    </p:column>
+                                                    <p:column exportable="false" headerText="">
+
+                                                        <p:commandButton style="margin-left: 5px"  icon="pi pi-pencil" oncomplete="PF('manageUserDialog').show()"
+                                                                         update=":form:manage-user-content"  styleClass="edit-button rounded-button ui-button-success" process="@this" >
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{usersMBean.selectedUser}"/>
+                                                            <p:resetInput   target=":form:manage-user-content"/>
+                                                        </p:commandButton>
+
+                                                        <p:commandButton style="margin-left: 5px"  icon="pi pi-search-plus" 
+                                                                         update=":form:manage-view-profil-content" oncomplete="PF('viewUserDialog').show()" 
+                                                                         styleClass="edit-button rounded-button ui-button-alert" process="@this" >
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{usersMBean.selectedUser}"/>
+                                                            <p:resetInput   target=":form:manage-view-profil-content"/>
+                                                        </p:commandButton>
+
+                                                        <p:commandButton style="margin-left: 5px"  icon="pi pi-trash" type="submit" oncomplete="PF('deleteUserDialog').show()"  process="@this"  
+                                                                         title="supprimer l'utilisateur"  styleClass="rounded-button ui-button-danger" update=":form:dt-products" >
+                                                            <f:setPropertyActionListener value="#{product}" target="#{usersMBean.selectedUser}"/>
+                                                        </p:commandButton>
+                                                    </p:column>
+                                                </p:dataTable>
+                                                <!--début affichage détails utilisateur -->
+                                                <p:dialog header="Détails Profil" showEffect="fade" modal="true" widgetVar="viewUserDialog" responsive="true" >
+                                                    <p:outputPanel id="manage-view-profil-content" class="ui-fluid" >
+                                                        <p:outputPanel rendered="#{not empty usersMBean.selectedUser}">
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Nom Utilisateur : </p:outputLabel>
+                                                                    <p:inputText value="#{usersMBean.selectedUser.nom}"  disabled="true" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Prénoms utilisateur : </p:outputLabel>
+                                                                    <p:inputText value="#{usersMBean.selectedUser.prenoms}" disabled="true" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Profil utilisateur : </p:outputLabel>
+                                                                    <p:inputText value="#{usersMBean.selectedUser.profilIdprofil.libelle}" disabled="true" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Email : </p:outputLabel>
+                                                                    <p:inputText value="#{usersMBean.selectedUser.email}" disabled="true" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <div class="p-grid ui-fluid">
+                                                            </div>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewUserDialog').hide()" class="ui-button-secondary" />
+                                                    </f:facet> 
+                                                </p:dialog>
+                                                <!-- fin affichage détails utilisateur-->
+
+                                                <!-- debut pop up suppression utilisateur-->
+                                                <p:confirmDialog widgetVar="deleteUserDialog" showEffect="fade" width="300" message="Etes vous sûr de supprimer cet utilisateur ?" header="Confirm" severity="warn">
+                                                    <p:commandButton value="Oui" icon="pi pi-check"   actionListener="#{usersMBean.deleteUtilisateur()}" process="@this" oncomplete="PF('deleteUserDialog').hide()" />
+                                                    <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deleteUserDialog').hide()"/>
+                                                </p:confirmDialog>
+                                                <!-- fin pop suppression -->
+                                                <!-- pop up modification utilisateurs -->
+                                                <p:dialog header="Détails Utilisateur" showEffect="fade" modal="true" widgetVar="manageUserDialog" responsive="true" >
+                                                    <p:outputPanel id="manage-user-content" class="ui-fluid" >
+                                                        <p:outputPanel rendered="#{not empty usersMBean.selectedUser}">
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Nom : </p:outputLabel>
+                                                                    <p:inputText value="#{usersMBean.selectedUser.nom}"  />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Prénoms : </p:outputLabel>
+                                                                    <p:inputText value="#{usersMBean.selectedUser.prenoms}" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Login : </p:outputLabel>
+                                                                    <p:inputText  value="#{usersMBean.selectedUser.login}" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel  value="profil de l'utilisateur :"  />
+                                                                    <p:selectOneMenu id="profilUser" value="#{usersMBean.profilUtilisateur}" required="true" converter="#{usersMBean.profilConverter}">
+                                                                        <f:selectItem itemLabel="#{usersMBean.selectedUser.profilIdprofil.libelle}" itemValue="#{usersMBean.selectedUser.profilIdprofil}" />
+                                                                        <f:selectItems value="#{usersMBean.listProfils}" var="pr" itemLabel="#{pr.libelle}" itemValue="#{pr}" itemLabelEscaped="true"  />
+                                                                    </p:selectOneMenu>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>adresse mail : </p:outputLabel>
+                                                                    <p:inputText  value="#{usersMBean.selectedUser.email}" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel value="compte activé ou désactivé   :  " />
+                                                                    <p:selectBooleanButton onLabel="Oui" offLabel="Non" value="#{usersMBean.selectedUser.activer}" onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem"  id="activationUser" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="enregistrer" icon="pi pi-check" actionListener="#{usersMBean.updateUtilisateur()}" update=":form:manage-user-content" process="manage-user-content @this" />
+                                                        <p:commandButton value="annuler" icon="pi pi-times" onclick="PF('manageUserDialog').hide()" class="ui-button-secondary" />
+                                                    </f:facet> 
+                                                </p:dialog>
+                                                <!-- fin du pop up -->
+                                                <!-- pop up ajout d'utilisateurs -->
+                                                <p:dialog header="Ajouter un utilisateur" showEffect="fade" modal="true" widgetVar="addUserDialog" responsive="true" >
+                                                    <p:outputPanel id="manage-add-user-content" class="ui-fluid" >
+                                                        <p:outputPanel>
+                                                            <p:outputPanel >
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Nom : </p:outputLabel>
+                                                                    <p:inputText id="Nom" value="#{usersMBean.nomUtilisateur}" required="true" requiredMessage="veuillez renseigner le nom" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Prénoms : </p:outputLabel>
+                                                                    <p:inputText id="Prenom" value="#{usersMBean.prenomsUtilisateur}" required="true" requiredMessage="veuillez renseigner le prénoms"/>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Login : </p:outputLabel>
+                                                                    <p:inputText id="Login"  value="#{usersMBean.loginUtilisateur}" required="true" requiredMessage="veuillez renseigner le login" />
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel  value="profil de l'utilisateur :"  />
+                                                                    <p:selectOneMenu id="profilUtilisateur" value="#{usersMBean.profilUtilisateur}" required="true" converter="#{usersMBean.profilConverter}">
+                                                                        <f:selectItems value="#{usersMBean.listProfils}" var="p" itemLabel="#{p.libelle}" itemValue="#{p}" itemLabelEscaped="true" />
+                                                                    </p:selectOneMenu>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-field">
+                                                                    <p:outputLabel>Email : </p:outputLabel>
+                                                                    <p:inputText id="Email"  value="#{usersMBean.emailUtilisateur}" required="true" 
+                                                                                 requiredMessage="veuillez renseigner l'adresse mail" validatorMessage="l'email a un format incorrect">
+                                                                        <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+                                                                    </p:inputText>
+                                                                </div>
+                                                            </p:outputPanel>
+                                                        </p:outputPanel>    
+                                                    </p:outputPanel>
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="enregistrer"  id="ajouter" action="#{usersMBean.addNewUtilisateur()}"  icon="pi pi-check"  update=":form:manage-add-user-content" process="manage-add-user-content @this" />
+                                                        <p:commandButton value="annuler" icon="pi pi-times" onclick="PF('addUserDialog').hide()" class="ui-button-secondary" />
+                                                    </f:facet> 
+                                                </p:dialog>
+                                                <!-- fin du pop up ajout d'utilisateur -->
+                                            </div>
+                                        </h:form>
+                                    </p:panel>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

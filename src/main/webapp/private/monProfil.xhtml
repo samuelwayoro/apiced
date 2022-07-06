@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>GESTION DES PROFILS UTILISATEURS</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body>
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <!--fil d'ariane -->
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="#{param.i}">
+                                <p:menuitem value="Mon compte" outcome="/private/monProfil" >
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form> 
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-user"/>                                    
+                                <p:outputLabel value=" " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Mon compte" />
+
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider />
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="Mon compte">
+                                        <div class="card">
+                                            <p:tabView>
+<!--                                                <p:tab title="Notifications">
+                                                    <p class="p-m-0" id="notifsPerso">
+                                                        <div class="card">
+                                                            <p:dataTable var="product" value="#{monProfilMBean.listeNotifs}" style="margin-bottom:0" paginator="true" rows="3" selectionPageOnly="false">
+                                                                <f:facet name="header">
+                                                                    <p:outputLabel value="#{monProfilMBean.notifEnAttente}"/> notification(s) en attente de validation
+                                                                </f:facet>
+
+                                                                <p:column headerText="N°">
+                                                                    <h:outputText value="#{product.idnotif}" />
+                                                                </p:column>
+
+                                                                <p:column headerText="Date">
+                                                                    <h:outputText value="#{product.datecreation}" />
+                                                                </p:column>
+
+                                                                <p:column headerText="Titre">
+                                                                    <h:outputText value="#{product.libelle}" />
+                                                                </p:column>
+
+                                                                <p:column headerText="Détails">
+                                                                    <h:outputText value="#{product.details}" />
+                                                                </p:column>
+                                                            </p:dataTable>
+                                                        </div>
+                                                    </p>
+                                                </p:tab>-->
+                                                <p:tab title="Mon mot de passe">
+                                                    <p class="p-m-0">
+                                                        <h:form id="passwordForm">
+                                                            <p:messages id="messages"  closable="true">
+                                                                <p:autoUpdate/>
+                                                            </p:messages>
+                                                            <div class="p-field">
+                                                                <p:outputLabel styleClass="p-d-block">Mot de passe Actuel </p:outputLabel>
+                                                                <p:password id="actualPass"  toggleMask="true" redisplay="false" value="#{monProfilMBean.passwordUser}" required="true" requiredMessage="veuillez saisir le mot de passe actuel svp"/>
+                                                                <small class="p-d-block">veuillez saisir votre mot de passe actuel</small>
+                                                            </div>
+                                                            <div class="p-field">
+                                                                <p:outputLabel styleClass="p-d-block">Nouveau mot de passe</p:outputLabel>
+                                                                <p:password id="newPassOne"  toggleMask="true" redisplay="false" value="#{monProfilMBean.newPassOne}" required="true" requiredMessage="veuillez rempli le champ nouveau mot de passe "/>
+                                                                <small class="p-d-block">veuillez saisir votre nouveau mot de passe</small>
+                                                            </div>
+                                                            <div class="p-field">
+                                                                <p:outputLabel styleClass="p-d-block">Confirmation </p:outputLabel>
+                                                                <p:password id="newPassTwo"  toggleMask="true" redisplay="false" value="#{monProfilMBean.newPassTwo}" required="true"  requiredMessage="veuillez rempli le champ confirmation"/>
+                                                                <small class="p-d-block">Confirmer ce nouveau mot de passe</small>
+                                                            </div>
+                                                            <div class="p-field">
+                                                                <p:commandButton type="submit" value="Modifier"  action="#{monProfilMBean.modifPassword}" update="passwordForm actualPass" />
+                                                            </div>
+                                                        </h:form>
+                                                    </p>
+                                                </p:tab>
+                                            </p:tabView>
+                                        </div>
+                                    </p:panel>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

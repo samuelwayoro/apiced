@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>APICED WEB</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+        <h:outputStylesheet library="default" name="css/monStyle.css" />
+    </h:head>
+    <h:body>
+        <div class="p-grid">
+            <ui:insert name="menu_du_haut">
+                <!--Menu du haut -->
+                <div class="p-col-12">                
+                    <div class="card">
+                        <h:form>
+                            <p:menubar>
+                                <p:autoUpdate  />
+                                <p:menuitem value="Accueil"  class="" icon="pi pi-fw pi-home" outcome="/private/#{loginMBean.utilisateur.profilIdprofil.pageaccueil}" rendered="#{!loginMBean.utilisateur.profilIdprofil.accesparametres}"  />
+                                <p:menuitem value="Gestion des paiements" icon="pi pi-fw pi-wallet" outcome="/private/paiementEnAttente" rendered="#{!loginMBean.utilisateur.profilIdprofil.accesparametres}"/>
+                                <p:menuitem value="Gestion des maitres" icon="pi pi-fw pi-users" outcome="/private/annuaire" rendered="#{!loginMBean.utilisateur.profilIdprofil.accesparametres}" />
+                                <p:menuitem value="Statistiques" icon="pi pi-fw pi-chart-bar" outcome="/private/statistiquesM" rendered="#{!loginMBean.utilisateur.profilIdprofil.accesparametres}"  />
+                                <p:submenu label="Parametrages" icon="pi pi-fw pi-cog" rendered="#{loginMBean.utilisateur.profilIdprofil.accesparametres}">
+                                    <p:menuitem value="utilisateurs" icon="pi pi-fw pi-users" outcome="/private/gestionUtilisateurs"/>
+                                    <p:menuitem value="profils" icon="pi pi-fw pi-user-edit" outcome="/private/gestionProfils" />
+                                    <p:menuitem value="Opérateurs" icon="pi pi-fw pi-th-large"  outcome="/private/parametreOperateurs" />
+                                    <p:menuitem value="Catégorie Maitres" icon="pi pi-fw pi-user-edit" outcome="/private/categorieMc" />
+                                </p:submenu>
+                                <f:facet name="options">
+                                    <div class="card">
+                                        <p:badge value="#{monProfilMBean.notifEnAttente}" severity="danger">
+                                            <p:menuButton icon="pi pi-user" value="#{loginMBean.utilisateur.login} #{loginMBean.utilisateur.prenoms}"  styleClass="ui-button-raised ui-button-help" >
+                                                <p:menuitem value="Mon Profil"  icon="pi pi-id-card" outcome="/private/monProfil" />
+                                                <p:divider />
+                                                <p:menuitem value="deconnection" icon="pi pi-fw pi-sign-out" actionListener="#{loginMBean.deconnexion()}" />
+                                            </p:menuButton>
+                                        </p:badge>
+                                    </div>
+                                </f:facet>
+                            </p:menubar>
+                        </h:form>
+                    </div>
+                </div>
+            </ui:insert>
+            <ui:insert name="centre">
+            </ui:insert>
+        </div>
+    </h:body>
+</html>
+

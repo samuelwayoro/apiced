@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>TABLEAU DE BORD APICED</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="#{param.i}">
+                                <p:menuitem value="Accueil" outcome="/private/gestionUtilisateurs" >
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form>
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-fw pi-home"/>
+                                <p:outputLabel value="  " onclick =""/>
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Tableau de bord" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider />
+                    <div class="p-grid nested-grid ">
+                        <div class="p-col-8">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="HISTORIQUE NOTIFICATIONS">
+                                        <h:form id="form">
+                                            <p:dataTable
+                                                id="dt-products"
+                                                var="product"
+                                                value="#{accueilCoordonnateur.listeNotifs}"
+                                                widgetVar="dtProducts"
+                                                reflow="true"
+                                                styleClass="products-table"
+                                                rowKey="#{product.idnotif}"
+                                                paginator="true"
+                                                rows="5"
+                                                selectionMode="single"
+                                                selection="#{accueilCoordonnateur.selectedNotif}"
+                                                paginatorPosition="bottom"
+                                                rowSelectMode="add"
+                                                emptyMessage="aucune notification non lue(s)">
+                                                <p:column headerText="Date" sortBy="#{product.dateinsert}" filterBy="#{product.dateinsert}" >
+                                                    <h:outputText value="#{product.dateinsert}" style="font-weight: 700"/>
+                                                </p:column>
+                                                <p:column headerText="Titre" sortBy="#{product.titre}" filterBy="#{product.titre}">
+                                                    <h:outputText value="#{product.titre}"/>
+                                                </p:column>
+                                                <p:column headerText="Initiateur" filterBy="#{product.createur}">
+                                                    <h:outputText value="#{product.createur}" />
+                                                </p:column>
+                                                <p:column headerText="Détails" filterBy="#{product.information}">
+                                                    <h:outputText value="#{product.information}" />
+                                                </p:column>
+                                                <p:column exportable="false" headerText="">
+                                                    <p:commandButton   icon="pi pi-search-plus"  rendered="#{product.btndetail}"  rendererType="false"
+                                                                       update=":form:manage-view-details-content" oncomplete="PF('viewDetailsDialog').show()"
+                                                                       styleClass="edit-button rounded-button ui-button-alert" process="@this">
+                                                        <f:setPropertyActionListener value="#{product}"  target="#{accueilMBean.selectedNotif}"/>
+                                                        <p:resetInput   target=":form:manage-view-details-content"/>
+                                                    </p:commandButton>
+                                                </p:column>
+                                            </p:dataTable>
+
+                                            <!-- pop up details notif-->
+                                            <p:dialog header="Détails Notification" showEffect="fade" modal="true" widgetVar="viewDetailsDialog" responsive="true" >
+                                                <p:outputPanel id="manage-view-details-content" class="ui-fluid" >
+                                                    <p:outputPanel rendered="#{not empty accueilMBean.selectedNotif}">
+                                                        <p:outputPanel >
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Titre  : </p:outputLabel>
+                                                                <p:inputTextarea rows="3" cols="25" value="#{accueilMBean.selectedNotif.titre}"  disabled="true" style="font-size: large" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <p:outputPanel >
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Détail  : </p:outputLabel>
+                                                                <p:inputTextarea rows="3" cols="25" value="#{accueilMBean.selectedNotif.information}"  disabled="true" style="font-size: large" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <p:outputPanel >
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Initiateur : </p:outputLabel>
+                                                                <p:inputText value="#{accueilMBean.selectedNotif.createur}" disabled="true" style="font-size:large" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <p:outputPanel>
+                                                            <div class="p-field">
+                                                                <p:outputLabel>Date création : </p:outputLabel>
+                                                                <p:inputText value="#{accueilMBean.selectedNotif.dateinsert}" disabled="true" style="font-size: large" />
+                                                            </div>
+                                                        </p:outputPanel>
+                                                        <div class="p-grid ui-fluid">
+                                                        </div>
+                                                    </p:outputPanel>
+                                                </p:outputPanel>
+                                                <f:facet name="footer">
+                                                    <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewDetailsDialog').hide()"  styleClass="ui-button-danger"  iconPos="right"
+                                                                     actionListener="#{accueilMBean.archiverNotif()}" ajax="" update="form:dt-products"/>
+                                                </f:facet>
+                                            </p:dialog>
+                                            <!-- fin pop up -->
+                                        </h:form>
+                                    </p:panel>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-col-4">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="STATISTIQUES ACTIVITES">
+                                        <div class="p-grid">
+                                            <p:panel header="Création Maitres en attente de validation" class="p-col-6">
+                                                <div class="card" style="text-align: center">
+                                                    <h3 style="color: red" >#{accueilCoordonnateur.mcEnAttenteDeValidation}</h3>
+                                                </div>
+                                            </p:panel>
+                                            <p:panel header="Total création de Maitres communautaires " class="p-col-6">
+                                                <div class="card" style="text-align: center">
+                                                    <h3 style="color: red" >#{accueilCoordonnateur.totalMcValides}</h3>
+                                                </div>
+                                            </p:panel>
+                                            <p:divider/>
+                                            <p:panel header="Paiement mensuel en attente de validation " class="p-col-6">
+                                                <div class="card"  style="text-align: center">
+                                                    <h3 style="color: red" >  #{accueilCoordonnateur.nbrePaiementEnAttente}</h3>
+                                                </div>
+                                            </p:panel>
+                                            <p:panel header="Total paiement mensuel validés " class="p-col-6">
+                                                <div class="card"  style="text-align: center">
+                                                    <h3 style="color: red" >  #{accueilCoordonnateur.nbreTotalPaiements}</h3>
+                                                </div>
+                                            </p:panel>
+                                        </div>
+                                    </p:panel>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

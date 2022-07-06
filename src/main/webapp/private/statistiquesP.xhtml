@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>STATISTIQUES PAIEMENTS</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="1">
+                                <p:menuitem value="Statistiques sur Maitres " outcome="/private/statistiquesM" >
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Statistiques sur paiements" outcome="/private/statistiquesP">
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form> 
+                    </div>
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <h:form id="printAnnuaire">
+                                    <i class="pi pi-fw pi-users"/>                                                
+                                    <p:outputLabel value=" " />
+                                    <i class="pi pi-chevron-right p-px-2"/>
+                                    <p:outputLabel value="Statistiques sur les paiements de subsides  " />
+                                </h:form>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider/>
+                    <p:panel header="Liste des Maitres Communautaires :">
+                        <div class="card">
+                            <h:form id="form">
+                                
+                            </h:form>
+                        </div>
+                    </p:panel>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

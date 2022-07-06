@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Maitres en attente de validation</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+        <style type="text/css">
+            .ui-datatable .ui-datatable-header {
+                text-align: right !important;
+            }
+
+            .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-header .ui-chkbox {
+                display: none;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="2">
+                                <p:menuitem value="Annuaire" outcome="/private/annuaire" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Rechercher" outcome="/private/rechercherMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+                                <p:menuitem value="Maitre(s) en attente " outcome="/private/maitresAValider">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>
+                                <p:menuitem value="Ajouter un nouveau maitre" outcome="/private/nouveauMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesnouveaumc}">
+                                    <f:param name="i" value="3"/>
+                                </p:menuitem>
+                                <p:menuitem value="Ajouter une liste de maitres" outcome="/private/uploadFile" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="4"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form>
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-fw pi-users"/>                                                
+                                <p:outputLabel value=" " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Nouveaux maitres ajoutées" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header=" #{maitresAvaliderMBean.nbreMcAvalider}  Maitre(s) a valider" id="panelInfo">
+                                        <div class="card">
+                                            <h:form id="form">
+                                                <p:growl id="messages" showDetail="true"/>
+                                                <div class="p-d-flex p-jc-between" style="margin-bottom: -70px">
+                                                    <div>
+                                                        <p:commandButton value="XLS" styleClass="p-mr-2 p-mb-2 ui-button-help">
+                                                            <p:dataExporter type="xls" target="tbl" fileName="products"/>
+                                                        </p:commandButton>
+                                                        <p:commandButton value="XLXS" styleClass="p-mr-2 p-mb-2 ui-button-help">
+                                                            <p:dataExporter type="xlsxstream" target="tbl" fileName="products"/>
+                                                        </p:commandButton>
+                                                        <p:commandButton value="PDF" styleClass="p-mr-2 p-mb-2 ui-button-help">
+                                                            <p:dataExporter type="pdf" target="tbl" fileName="products"/>
+                                                        </p:commandButton>
+                                                    </div>
+                                                </div>
+                                                <p:dataTable id="tbl" var="product" 
+                                                             value="#{maitresAvaliderMBean.listeMcEnAttenteDeValider}"
+                                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                             paginator="true" rows="5" styleClass="p-mt-2" rowKey="#{product.id}" 
+                                                             selectionMode="single" selection="#{maitresAvaliderMBean.selectedMc}"
+                                                             rowSelectMode="add"
+                                                             emptyMessage="aucun maitre a valider ">
+
+                                                    <p:column sortBy="#{product.matricule}" filterBy="#{product.matricule}" >
+                                                        <f:facet name="header">
+                                                            <h:outputText value="matricule"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.matricule}" />
+                                                    </p:column>
+                                                    <p:column  sortBy="#{product.nom}" filterBy="#{product.nom}" >
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Nom"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.nom}"/>
+                                                    </p:column>
+                                                    <p:column  styleClass="p-text-center" sortBy="#{product.prenoms}" filterBy="#{product.prenoms}">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Prénoms"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.prenoms}"/>
+                                                    </p:column>
+                                                    <p:column styleClass="p-text-right" sortBy="#{product.ecole}" filterBy="#{product.ecole}">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Etablissement"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{product.ecole}"/>
+                                                    </p:column>
+                                                    <p:column exportable="false" width="137px" >
+                                                        <!-- btn de modif mineur-->
+                                                        <p:commandButton id="modifMin" style="margin-left: 2px" rendered="#{loginMBean.utilisateur.profilIdprofil.accesvalidationmc}" icon="pi pi-user-edit" update=":form:manage-modifInfos-mc-content"  oncomplete="PF('viewModifMcDialog').show()" 
+                                                                         styleClass="rounded-button ui-button-warning" process="@this">
+                                                            <f:setPropertyActionListener value="#{product}"  target="#{maitresAvaliderMBean.selectedMc}"/>
+                                                            <p:resetInput   target=":form:manage-modifInfos-mc-content"/>
+                                                        </p:commandButton>
+                                                    </p:column>
+                                                </p:dataTable>
+
+                                                <p:dialog header="Valider le maitre"  showEffect="fade" modal="true" widgetVar="viewModifMcDialog" responsive="true" >
+                                                    <p:outputPanel class="ui-fluid" id="manage-modifInfos-mc-content" >
+                                                        <p:outputPanel rendered="#{not empty maitresAvaliderMBean.selectedMc}">
+                                                            <p:outputPanel >
+                                                                <div class="card">
+                                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Nom  : </p:outputLabel><br/>
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.nom}" styleClass="p-mr-2 custom-chip"/>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Prénoms  : </p:outputLabel><br/>
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.prenoms}" styleClass="p-mr-2 custom-chip"/>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Sexe  : </p:outputLabel><br/>
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.genre}" styleClass="p-mr-2 custom-chip"/> 
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Situation matrimoniale  : </p:outputLabel><br/>
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.sitmatrimonial}" styleClass="p-mr-2 custom-chip"/> 
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Nombre d'enfants  : </p:outputLabel><br/>
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.nbreenfants}" styleClass="p-mr-2 custom-chip"/>
+                                                                        </div>                                                        
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Date de naissance  :</p:outputLabel><br/>
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.datenaissance}" styleClass="p-mr-2 custom-chip"/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Lieu de naissance  : </p:outputLabel><br/>
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.lieudenaissance}" styleClass="p-mr-2 custom-chip"/>
+                                                                        </div>
+
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Domicile  : </p:outputLabel><br/>                                                            
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.domicile}" styleClass="p-mr-2 custom-chip"/>
+                                                                        </div>
+
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Niveau scolaire  : </p:outputLabel><br/>
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.niveauscolaire}" styleClass="p-mr-2 custom-chip"/>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Dernier diplôme  : </p:outputLabel><br/>
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.dernierdiplome}" styleClass="p-mr-2 custom-chip"/>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Date de prise de fonction  : </p:outputLabel><br/>
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.dateprisefonction}" styleClass="p-mr-2 custom-chip"/>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>Classes affecte(é)s  : </p:outputLabel><br/>
+                                                                            <p:chip label="#{maitresAvaliderMBean.selectedMc.classeaffectee}" styleClass="p-mr-2 custom-chip"/> 
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:outputLabel>numéro téléphone N° 2  : <p:chip label="#{maitresAvaliderMBean.selectedMc.contactdeux}" styleClass="p-mr-2 custom-chip"/> </p:outputLabel>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:selectOneButton value="#{maitresAvaliderMBean.sortMc}">
+                                                                                <f:selectItem itemLabel="Rejeter" itemValue="rejeter"/>
+                                                                                <f:selectItem itemLabel="Valider" itemValue="valider"/>
+                                                                            </p:selectOneButton>
+                                                                        </div>
+                                                                        <div class="p-field p-col-12 p-md-4">
+                                                                            <p:inputTextarea rows="3" cols="10" placeholder="#{maitresAvaliderMBean.selectedMc.motifrejetvalidation}" 
+                                                                                             value="#{maitresAvaliderMBean.selectedMc.motifrejetvalidation}" required="true" />
+                                                                        </div>
+                                                                    </div>                                                                    
+                                                                </div>
+                                                            </p:outputPanel>
+                                                            <p:outputPanel>
+                                                                <div class="p-grid ui-fluid">
+                                                                </div>
+                                                            </p:outputPanel>    
+                                                        </p:outputPanel>
+                                                    </p:outputPanel> 
+                                                    <f:facet name="footer">
+                                                        <p:commandButton value="Enregistrer" icon="pi pi-check" actionListener="#{maitresAvaliderMBean.validerMc()}" update=":form:manage-modifInfos-mc-content" process="manage-modifInfos-mc-content @this" styleClass="ui-button-success" />
+                                                        <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewModifMcDialog').hide()" styleClass="ui-button-warning" />
+                                                    </f:facet> 
+                                                </p:dialog>
+                                                <!--fin du pop up de modif -->
+                                            </h:form>
+                                        </div>
+                                    </p:panel>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>SUIVI PAIEMENTS</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="4">
+                                <p:menuitem value="Nouveau  paiement MOOV" outcome="/private/paiementMoovAfrica">
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Nouveau  paiement AIRTEL" outcome="/private/emissionPaiements">
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+                                <p:menuitem value="Paiements à valider (#{monProfilMBean.nbrePaiementEnAttente})" outcome="/private/paiementEnAttente">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>
+                                <p:menuitem value="Paiements opérateurs (#{monProfilMBean.nbrePaiementAenvoyeAOp})" outcome="/private/suiviPaiements">
+                                    <f:param name="i" value="3"/>
+                                </p:menuitem>
+                                <p:menuitem value="Suivi des transactions" outcome="/private/suivitransactions">
+                                    <f:param name="i" value="4"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form>
+
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-wallet p-px-2"/>                                                
+                                <p:outputLabel value=" " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Suivi des transactions" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider />
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <p:panel header="Suivi des Transactions">
+                                        <div class="card">
+                                            <h:form id="form">
+                                                <p:growl id="messages" sticky="true" showDetail="true" />
+                                                <p:dataTable var="transaction" value="#{suiviPaieMBean.listeTransactionsEnCours}"  id="paiementsEnAttente" emptyMessage="Aucune(s) transaction(s) en cours..."
+                                                             style="margin-bottom:0" paginator="true" rows="10" selectionPageOnly="false" rowKey="#{transaction.idtransaction}" selectionMode="single">
+                                                    <f:facet name="header">
+                                                        <p:outputLabel  value="#{suiviPaieMBean.nbrePaiementEnCours}" /> transactions en cours de paiement
+                                                    </f:facet>
+                                                    <p:column headerText="libellé du paiement de la transaction">
+                                                        <h:outputText value="#{transaction.libellepaie}" />
+                                                    </p:column>
+                                                    <p:column headerText="Montant de la transaction">
+                                                        <h:outputText value="#{transaction.montantsubside}" />
+                                                    </p:column>
+                                                    <p:column headerText="contact du maitre">
+                                                        <h:outputText value="#{transaction.contactmaitre}" />
+                                                    </p:column>
+                                                    <p:column headerText="etat du paiement">
+                                                        <p:tag styleClass="p-mr-2" value="#{transaction.etattransaction}" severity="#{transaction.responsemessage}" rounded="true"></p:tag>
+                                                    </p:column>
+                                                    <p:column headerText="date d'envoi a l'opérateur">
+                                                        <h:outputText value="#{transaction.dateenvoi}" />
+                                                    </p:column>
+                                                    <p:column headerText="Nom et prénoms du maitre ">
+                                                        <h:outputText value="#{transaction.nommaitre} #{transaction.prenomsmaitre}" />
+                                                    </p:column>
+                                                    <p:column headerText=" date limite de paiement">
+                                                        <h:outputText value="#{transaction.datelimitepaiement}" />
+                                                    </p:column>
+                                                    <p:column headerText="Opérateur Télécom ">
+                                                        <h:outputText value="#{transaction.operateurs}" />
+                                                    </p:column>
+                                                </p:dataTable>
+
+                                            </h:form>
+                                        </div>
+                                    </p:panel>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

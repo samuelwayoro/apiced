@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>TABLEAU DE BORD EMETTEUR</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+        <style type="text/css">
+            .grid-radio td {
+                padding: .5rem;
+            }
+        </style>
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-10">
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <h:form>
+                            <p:breadCrumb>
+                                <p:menuitem value="Electronics"/>
+                            </p:breadCrumb>
+                        </h:form>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid nested-grid ">
+                        <div class="p-col-10">
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <h:form>
+                                        <p:panel header="statistique sur paiements en cours" toggleable="true" closable="true" toggleSpeed="500"
+                                                 closeSpeed="500" widgetVar="panel1" collapsed="true" >
+                                            <p class="p-m-0">
+                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+                                                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                            </p>
+                                            <p class="p-m-0">
+                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+                                                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                            </p>
+                                            <p class="p-m-0">
+                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+                                                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                            </p>                                            
+                                        </p:panel>
+                                        <p:panel header="statistique sur maitres communautaires" toggleable="true" closable="true" toggleSpeed="500"
+                                                 closeSpeed="500" widgetVar="panel2" collapsed="true" >
+                                            <p class="p-m-0">
+                                                <div class="card">
+                                                    <p:donutChart model="#{chartJsView.donutModel}" style="width: 100%; height: 500px;"/>
+                                                </div>
+                                            </p>                                           
+                                        </p:panel>
+                                    </h:form>
+                                </div>
+                            </div>                            
+                        </div>
+                        <div class="p-col-2">
+                            <p:panel header="selection reporting ">
+                                <div class="card">
+                                    <h:form>
+                                        <p:selectOneButton onchange="PF('panel1').toggle()" >
+                                            <f:selectItem itemLabel="stats 1" itemValue="Option1" noSelectionOption="test" />
+                                        </p:selectOneButton>
+                                        <br/>
+                                        <p:selectOneButton onchange="PF('panel2').toggle()" >
+                                            <f:selectItem itemLabel="stats 2" itemValue="Option2"  />
+                                        </p:selectOneButton>
+                                    </h:form>
+                                </div>
+                            </p:panel>
+
+
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

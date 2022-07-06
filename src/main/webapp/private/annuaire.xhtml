@@ -1,0 +1,492 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>GESTION DES MAITRES</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="0">
+                                <p:menuitem value="Annuaire" outcome="/private/annuaire" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Rechercher" outcome="/private/rechercherMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+<!--                                <p:menuitem value="Maitre(s) en attente " outcome="/private/maitresAValider">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>-->
+                                <p:menuitem value="Ajouter un nouveau maitre" outcome="/private/nouveauMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesnouveaumc}">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>
+                                <p:menuitem value="Ajouter une liste de maitres" outcome="/private/uploadFile" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
+                                    <f:param name="i" value="3"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form> 
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <h:form id="printAnnuaire">
+                                    <i class="pi pi-fw pi-users"/>                                                
+                                    <p:outputLabel value=" " />
+                                    <i class="pi pi-chevron-right p-px-2"/>
+                                    <p:outputLabel value="Annuaire : " />
+                                    <i style="color:red">
+                                        <i style="width: 0.2rem"> 
+                                        </i>#{annuaireMBean.totalMaitreCommunautaire}</i>
+                                    <i style="width: 0.2rem"> </i>
+                                    <i>Maitres communautaires </i>
+                                    <i style="width: 0.8rem"> </i>
+                                </h:form>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider />
+                    <p:panel header="Liste des Maitres Communautaires :">
+                        <div class="card">
+                            <h:form id="form">
+                                <p:growl id="messages" showDetail="true"/>
+                                <div class="p-d-flex p-jc-between" style="margin-bottom: -70px">
+                                    <div>
+                                        <p:commandButton value="XLS" styleClass="p-mr-2 p-mb-2  ui-button-help">
+                                            <p:dataExporter type="xls" target="tbl" fileName="Annuaire_Maitres_communautaires"/>
+                                        </p:commandButton>
+                                        <p:commandButton value="PDF" styleClass="p-mr-2 p-mb-2  ui-button-help" 
+                                                         ajax="false" id="pdfExport" actionListener="#{annuaireMBean.printPDF()}" /> 
+                                    </div>
+                                </div>
+                                <p:dataTable id="tbl" var="product" value="#{annuaireMBean.allMc}" emptyMessage="aucun maitre dans l'annuaire" 
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" 
+                                             paginator="true" rows="5" styleClass="p-mt-2" 
+                                             rowKey="#{product.id}" selectionMode="single" 
+                                             selection="#{annuaireMBean.selectedMc}">
+                                    <p:column  styleClass="p-text-center" sortBy="#{product.id}" filterBy="#{product.id}" >
+                                        <f:facet name="header">
+                                            <h:outputText value="Matricule"/>
+                                        </f:facet>
+                                        <h:outputText value="#{product.matricule}" />
+                                    </p:column>
+                                    <p:column  styleClass="p-text-center" sortBy="#{product.nom}" filterBy="#{product.nom}" >
+                                        <f:facet name="header">
+                                            <h:outputText value="Nom"/>
+                                        </f:facet>
+                                        <h:outputText value="#{product.nom}"/>
+                                    </p:column>
+                                    <p:column  styleClass="p-text-center" sortBy="#{product.prenoms}" filterBy="#{product.prenoms}">
+                                        <f:facet name="header">
+                                            <h:outputText value="Prénoms"/>
+                                        </f:facet>
+                                        <h:outputText value="#{product.prenoms}"/>
+                                    </p:column>
+                                    <p:column styleClass="p-text-center" sortBy="#{product.ecole}" filterBy="#{product.ecole}">
+                                        <f:facet name="header">
+                                            <h:outputText value="Ecole" style="width: 150px"/>
+                                        </f:facet>
+                                        <h:outputText value="#{product.ecole}"/>
+                                    </p:column>
+                                    <p:column styleClass="p-text-center" sortBy="#{product.contactun}" filterBy="#{product.contactun}">
+                                        <f:facet name="header">
+                                            <h:outputText value="Contact"/>
+                                        </f:facet>
+                                        <h:outputText value="#{product.contactun}"/>
+                                    </p:column>
+                                    <p:column styleClass="p-text-center"  filterBy="#{product.operatortelco}">
+                                        <f:facet name="header">
+                                            <h:outputText value="Opérateur"/>
+                                        </f:facet>
+                                        <h:outputText value="#{product.operatortelco}"/>
+                                    </p:column>
+                                    <p:column styleClass="p-text-center" sortBy="#{product.operatortelco}" filterBy="#{product.operatortelco}">
+                                        <f:facet name="header">
+                                            <h:outputText value="Bailleur"/>
+                                        </f:facet>
+                                        <h:outputText value="#{product.bailleur}"/>
+                                    </p:column>
+                                    <p:column styleClass="p-text-center" sortBy="#{product.categoriepro}" filterBy="#{product.categoriepro}">
+                                        <f:facet name="header">
+                                            <h:outputText value="Catégorie"/>
+                                        </f:facet>
+                                        <h:outputText value="#{product.categoriepro}"/>
+                                    </p:column>
+<!--                                    <p:column styleClass="p-text-center"  filterBy="#{product.valeureetatretraite}">
+                                        <f:facet name="header">
+                                            <h:outputText value="Retraite"/>
+                                        </f:facet>
+                                        <h:outputText value="#{product.valeureetatretraite}"/>
+                                    </p:column>-->
+                                    <p:column exportable="false" width="137px" >
+                                        <f:facet name="header">
+                                            <p:commandButton type="button" title="Save" icon="pi pi-th-large" styleClass="warn-button p-mr-2 ui-button-help" style="margin-left: 47px" disabled="true" />
+                                        </f:facet>
+                                        <!-- btn de zoom-->
+                                        <!--                                        <p:commandButton id="btnZoom" style="margin-left: 5px"  icon="pi pi-search-plus" update=":form:manage-view-profil-content" 
+                                                                                                 oncomplete="PF('viewUserDialog').show()" 
+                                                                                                 styleClass="edit-button rounded-button ui-button-help" process="@this" >
+                                                                                    <f:setPropertyActionListener value="#{product}"  target="#{annuaireMBean.selectedMc}"/>
+                                                                                    <p:resetInput   target=":form:manage-view-profil-content"/>
+                                                                                </p:commandButton>-->
+                                        <p:linkButton outcome="pretty:DetailMaitreCo" icon="pi pi-search-plus"
+                                                      style="margin-left: 5px" title="détails maitre" styleClass="rounded-button ui-button-help">
+                                            <f:param name="info" value="#{product.contactun}" />
+                                        </p:linkButton>
+                                        
+                                        <!-- btn de zoom-->
+                                        <!-- btn de modif mineur-->
+                                        <p:commandButton id="modifMin" style="margin-left: 2px"  icon="pi pi-user-edit" update=":form:manage-modifInfos-mc-content"  
+                                                         oncomplete="PF('viewModifMcDialog').show()" 
+                                                         styleClass="rounded-button ui-button-warning" process="@this" rendered="#{loginMBean.utilisateur.profilIdprofil.accesmodifmc}" >
+                                            <f:setPropertyActionListener value="#{product}"  target="#{annuaireMBean.selectedMc}"/>
+                                            <p:resetInput   target=":form:manage-modifInfos-mc-content"/>
+                                        </p:commandButton>
+                                    </p:column>
+                                </p:dataTable>
+                                <!--début affichage détails utilisateur -->
+                                <p:dialog header="Détails Maitre"  showEffect="fade" modal="true" widgetVar="viewUserDialog" responsive="true" >
+                                    <p:outputPanel class="ui-fluid" id="manage-view-profil-content" >
+                                        <p:outputPanel rendered="#{not empty annuaireMBean.selectedMc}">
+                                            <p:outputPanel>
+                                            </p:outputPanel>
+                                            <p:outputPanel >
+                                                <div class="card">
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Nom  : </p:outputLabel>
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.nom}"  disabled="true" style="font-weight: bold"/>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Prénoms  : </p:outputLabel>
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.prenoms}" disabled="true" style="font-weight: bold" />
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Matricule  : </p:outputLabel>
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.matricule}" disabled="true" style="font-weight: bold" />
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Catégorie : </p:outputLabel>
+                                                            <p:inputText placeholder="#{annuaireMBean.selectedMc.categoriepro}"   value="#{annuaireMBean.selectedMc.categoriepro}" disabled="true" style="font-weight: bold" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Sex  : </p:outputLabel>
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.genre}" disabled="true" style="font-weight: bold"/>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel for="dateNaissance">
+                                                                Date de naissance  : 
+                                                            </p:outputLabel>
+                                                            <p:inputText  disabled="true"  placeholder="#{annuaireMBean.selectedMc.datenaissance}" value="#{annuaireMBean.newMcDateNaiss}" id="dateNaissance" style="font-weight: bold">
+                                                                <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                                            </p:inputText>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Lieu de naissance  : </p:outputLabel>
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.lieudenaissance}" disabled="true" style="font-weight: bold"/>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Etablissement  : </p:outputLabel>
+                                                            <p:inputText placeholder="#{annuaireMBean.selectedMc.ecole}"   value="#{annuaireMBean.selectedMc.ecole}"  disabled="true" style="font-weight: bold"/>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Domicile  : </p:outputLabel>                                                            
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.domicile}" disabled="true" style="font-weight: bold"/>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Milieu résidence  : </p:outputLabel>
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.milieuResidence}" disabled="true" style="font-weight: bold"/>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Langue : </p:outputLabel>
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.langue}" disabled="true" style="font-weight: bold"/>
+                                                        </div>
+                                                        <div class="p-field p-col-10 p-md-3">
+                                                            <p:outputLabel>Opérateur télécom :  </p:outputLabel>
+                                                            <p:inputText placeholder="#{annuaireMBean.selectedMc.operatortelco}"   value="#{annuaireMBean.selectedMc.operatortelco}"  disabled="true" style="font-weight: bold" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Contact 1  : </p:outputLabel>
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.contactun}" disabled="true" style="font-weight: bold"/>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Date de prise de fonction  :  </p:outputLabel>
+                                                            <p:inputText  disabled="true" id="datePriseFonction" value="#{annuaireMBean.newMcDatePriseFonction}" label="date de prise de fonction" placeholder="01/01/1970">
+                                                                <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                                            </p:inputText>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Source finance : </p:outputLabel>
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.bailleur}" disabled="true" style="font-weight: bold"/>
+                                                        </div>
+                                                    </div>                                                   
+                                                </div>
+                                            </p:outputPanel>
+                                            <p:outputPanel>
+                                                <div class="p-grid ui-fluid">
+                                                </div>
+                                            </p:outputPanel>    
+                                        </p:outputPanel>
+                                    </p:outputPanel> 
+                                    <f:facet name="footer">
+                                        <p:commandButton value="Imprimer" icon="pi pi-print"  styleClass="ui-button-raised ui-button-help" />
+                                        <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewUserDialog').hide()" styleClass="ui-button-raised ui-button-warning" />
+                                    </f:facet>
+                                </p:dialog>
+                                <!-- fin affichage détails utilisateur-->
+                                <!-- debut modif mineur infos du maitre-->
+                                <p:dialog header="Modification Informations du Maitre"  showEffect="fade" modal="true" widgetVar="viewModifMcDialog" responsive="true" >
+                                    <p:outputPanel class="ui-fluid" id="manage-modifInfos-mc-content" >
+                                        <p:outputPanel rendered="#{not empty annuaireMBean.selectedMc}">
+                                            <p:outputPanel >
+                                                <div class="card">
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-col-12 p-md-4">
+                                                            <div class="ui-inputgroup">
+                                                                <div class="ui-inputgroup-addon" style="width: 150px">Matricule </div>
+                                                                <p:inputText placeholder="#{annuaireMBean.selectedMc.matricule}" value="#{annuaireMBean.selectedMc.matricule}" disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="p-col-12 p-md-4">
+                                                            <div class="ui-inputgroup">
+                                                                <div class="ui-inputgroup-addon" style="width: 150px">Nom </div>
+                                                                <p:inputText placeholder="#{annuaireMBean.selectedMc.nom}" value="#{annuaireMBean.selectedMc.nom}"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="p-col-12 p-md-4">
+                                                            <div class="ui-inputgroup">
+                                                                <div class="ui-inputgroup-addon" style="width: 150px">Prénoms </div>
+                                                                <p:inputText placeholder="#{annuaireMBean.selectedMc.prenoms}" value="#{annuaireMBean.selectedMc.prenoms}"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <p:divider/>
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Sexe c: <p:outputLabel value="#{annuaireMBean.selectedMc.genre}"  class="p-text-bold"/></p:outputLabel>
+                                                            <p:selectOneMenu id="matri" value="#{annuaireMBean.genreMc}">
+                                                                <f:selectItem itemLabel="Selectionnez un genre " itemValue="" />
+                                                                <f:selectItem itemLabel="M" itemValue="M" />
+                                                                <f:selectItem itemLabel="F" itemValue="F"/>
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Contact N° 1 : <p:outputLabel   class="p-text-bold"/></p:outputLabel>
+                                                            <p:inputMask mask="99 99 99 99" placeholder="#{annuaireMBean.selectedMc.contactun}" validateMask="true" value="#{annuaireMBean.selectedMc.contactun}"/>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Opérateur télécom : <p:outputLabel  class="p-text-bold"/></p:outputLabel>
+                                                            <p:selectOneMenu id="operateurTelecom"  value="#{annuaireMBean.selectedMc.operatortelco}">
+                                                                <f:selectItem itemLabel="Selectionnez un Opérateur" itemValue="" />
+                                                                <f:selectItem itemLabel="AIRTEL" itemValue="AIRTEL" />
+                                                                <f:selectItem itemLabel="MOOV" itemValue="MOOV"/>
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Domicile  : <p:outputLabel value="#{annuaireMBean.selectedMc.domicile}"  class="p-text-bold"/></p:outputLabel>                                                            
+                                                            <p:inputText value="#{annuaireMBean.domicileMc}" placeholder="#{annuaireMBean.selectedMc.domicile}" style="font-weight: bold"/>
+                                                        </div>
+                                                        <!--                                                        <div class="p-field p-col-12 p-md-4">
+                                                                                                                    <p:outputLabel>Classes affecte(é)s  : <p:outputLabel value="#{annuaireMBean.selectedMc.classeaffectee}"  class="p-text-bold"/></p:outputLabel>
+                                                                                                                    <p:selectCheckboxMenu id="classe_affectees" value="#{annuaireMBean.newMcClasses}"  label="modifier la/les classe(s)" style="min-width: 10rem" 
+                                                                                                                                          multiple="true" filter="true" filterMatchMode="startsWith" panelStyle="width: 30rem" scrollHeight="250">
+                                                                                                                        <f:selectItems value="#{annuaireMBean.listeClassesAffectees}" />
+                                                                                                                    </p:selectCheckboxMenu>
+                                                                                                                </div>-->
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Lieu de naissance  : <p:outputLabel value="#{annuaireMBean.selectedMc.lieudenaissance}"  class="p-text-bold"/></p:outputLabel>
+                                                            <p:inputText value="#{annuaireMBean.lieuDeNaissanceMc}" placeholder="#{annuaireMBean.selectedMc.lieudenaissance}" style="font-weight: bold"/>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Contact N° 2  : <p:outputLabel value="#{annuaireMBean.selectedMc.contactdeux}"  class="p-text-bold"/></p:outputLabel>
+                                                            <p:inputMask mask="99 99 99 99" placeholder="#{annuaireMBean.selectedMc.contactdeux}" validateMask="true" value="#{annuaireMBean.contactDeuxMc}"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Milieu de résidence  : <p:outputLabel value="#{annuaireMBean.selectedMc.milieuResidence}"  class="p-text-bold"/></p:outputLabel>
+                                                            <p:selectOneMenu id="milieuResidence" value="#{annuaireMBean.selectedMc.milieuResidence}">
+                                                                <f:selectItem itemLabel="Selectionnez un type" itemValue="" />
+                                                                <f:selectItem itemLabel="Urbain" itemValue="Urbain" />
+                                                                <f:selectItem itemLabel="Rurale" itemValue="Rurale"/>
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Etablissement  : <p:outputLabel value="#{annuaireMBean.selectedMc.ecole}"  class="p-text-bold"/></p:outputLabel>
+                                                            <p:selectOneMenu id="advanced" value="#{annuaireMBean.etsMc}" converter="#{annuaireMBean.etablissementConverter}"  panelStyle="width:180px" var="e" filter="true" filterMatchMode="startsWith">
+
+                                                                <f:selectItems value="#{annuaireMBean.etablissements}" var="ets" itemLabel="#{ets.nom}" itemValue="#{ets}" />
+                                                                <p:column>
+                                                                    <f:facet name="header">
+                                                                        <h:outputText value="Noms"/>
+                                                                    </f:facet>
+                                                                    <h:outputText value="#{e.nom}" title="nom"/>
+                                                                </p:column>
+                                                                <f:facet name="footer">
+                                                                    <h:outputText value="#{annuaireMBean.etablissements.size()} écoles" style="font-weight:bold;" styleClass="p-py-1 p-d-block"/>
+                                                                </f:facet>
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <!--                                                        <div class="p-field p-col-12 p-md-4">
+                                                                                                                    <p:outputLabel>Observation : </p:outputLabel>
+                                                                                                                    <p:selectOneMenu id="obs" label="#{annuaireMBean.selectedMc.valeureetatretraite}" value="#{annuaireMBean.selectedMc.valeureetatretraite}" >
+                                                                                                                        <f:selectItem itemLabel="Abandon" itemValue="Abandon" />
+                                                                                                                        <f:selectItem itemLabel="Absent" itemValue="Absent"/>
+                                                                                                                        <f:selectItem itemLabel="Décedé" itemValue="Décedé"/>
+                                                                                                                        <f:selectItem itemLabel="R.A.S" itemValue="R.A.S"/>
+                                                                                                                    </p:selectOneMenu>
+                                                                                                                </div>-->
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Retraite : <p:outputLabel  value="#{annuaireMBean.selectedMc.valeureetatretraite}" class="p-text-bold"/> </p:outputLabel>
+                                                            <p:selectOneMenu id="retraiter" value="#{annuaireMBean.selectedMc.valeureetatretraite}">
+                                                                <f:selectItem itemLabel="Activez le retraite ?" itemValue="" />
+                                                                <f:selectItem itemLabel="Oui" itemValue="Oui" />
+                                                                <f:selectItem itemLabel="Non" itemValue="Non"/>
+                                                            </p:selectOneMenu>
+                                                        </div>
+
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel for="dateNaiss"> Date de naissance  :</p:outputLabel>
+                                                            <p:inputText  placeholder="#{annuaireMBean.selectedMc.datenaissance}" value="#{annuaireMBean.newMcDateNaiss}" id="dateNaiss">
+                                                                <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                                            </p:inputText>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Langue : <p:outputLabel  value="#{annuaireMBean.selectedMc.langue}"  class="p-text-bold"/></p:outputLabel>
+                                                            <p:selectOneMenu id="langue" value="#{annuaireMBean.selectedMc.langue}">
+                                                                <f:selectItem itemLabel="Choisir la langue" itemValue="" />
+                                                                <f:selectItem itemLabel="Français" itemValue="Francais" />
+                                                                <f:selectItem itemLabel="Arabe" itemValue="Arabe"/>
+                                                                <f:selectItem itemLabel="Bilingue" itemValue="Bilingue"/>
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Catégorie  : <p:outputLabel  value="#{annuaireMBean.selectedMc.categoriepro}"  class="p-text-bold"/></p:outputLabel>                                                            
+<!--                                                                <p:inputText value="#{annuaireMBean.selectedMc.categoriepro}" placeholder="#{annuaireMBean.selectedMc.categoriepro}" />-->
+<!--                                                            <p:selectOneMenu id="categorieMc" label="#{annuaireMBean.selectedMc.categoriepro}" value="#{annuaireMBean.newCateMc}" >
+                                                                <f:selectItem itemLabel="CATEGORIE 1" itemValue="1" />
+                                                                <f:selectItem itemLabel="CATEGORIE 2" itemValue="2"/>
+                                                                <f:selectItem itemLabel="CATEGORIE 3" itemValue="3"/>
+                                                                <f:selectItem itemLabel="BOURSE" itemValue="4"/>
+                                                            </p:selectOneMenu>-->
+                                                            <p:selectOneMenu id="cateMc" value="#{annuaireMBean.newCateMc}" converter="#{annuaireMBean.categoriesConverter}">
+                                                                <f:selectItems value="#{annuaireMBean.listeCategories}" var="c" itemLabel="#{c.libelle}" itemValue="#{c}" itemLabelEscaped="true"  />
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Observation BM : <em>(statut compte)</em> : <p:outputLabel  value="#{annuaireMBean.selectedMc.statutcompte}" class="p-text-bold"/> </p:outputLabel>
+                                                            <p:selectOneMenu id="obs" value="#{annuaireMBean.selectedMc.statutcompte}">
+                                                                <f:selectItem itemLabel="choisir une observation" itemValue="" />
+                                                                <f:selectItem itemLabel="Abandon" itemValue="Abandon" />
+                                                                <f:selectItem itemLabel="Absent" itemValue="Absent"/>
+                                                                <f:selectItem itemLabel="Decédé" itemValue="Decédé"/>
+                                                                <f:selectItem itemLabel="R.A.S" itemValue="R.A.S"/>
+                                                                <f:selectItem itemLabel="En formation" itemValue="En formation"/>
+                                                            </p:selectOneMenu>
+                                                        </div>
+
+                                                    </div>                                                    
+                                                </div>
+                                            </p:outputPanel>
+                                            <p:outputPanel>
+                                                <div class="p-grid ui-fluid">
+                                                </div>
+                                            </p:outputPanel>    
+                                        </p:outputPanel>
+                                    </p:outputPanel> 
+                                    <f:facet name="footer">
+                                        <p:commandButton value="Valider" iconPos="right"  icon="pi pi-check" actionListener="#{annuaireMBean.modifMineurInfos()}" update=":form:manage-modifInfos-mc-content" process="manage-modifInfos-mc-content @this" styleClass="ui-button-raised ui-button-success" />
+                                        <p:commandButton value="Fermer" iconPos="right" icon="pi pi-times" onclick="PF('viewModifMcDialog').hide()"  styleClass="ui-button-raised ui-button-warning"  />
+                                    </f:facet> 
+                                </p:dialog>
+                                <!--fin du pop up de modif -->
+                                <!--pop up modif majeur par coordonnateur-->
+                                <p:dialog header="Modification compte du Maitre"  showEffect="fade" modal="true" widgetVar="viewModifCompteDialog" responsive="true" >
+                                    <p:outputPanel class="ui-fluid" id="manage-modifCompte-mc-content" >
+                                        <p:outputPanel rendered="#{not empty annuaireMBean.selectedMc}">
+                                            <p:outputPanel >
+                                                <div class="card">
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Matricule  : <p:chip label="#{annuaireMBean.selectedMc.matricule}" styleClass="p-mr-2 custom-chip"/></p:outputLabel>
+                                                            <p:inputText placeholder="#{annuaireMBean.selectedMc.matricule}" value="#{annuaireMBean.nouveauMatricule}" />
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Etablissement  : <p:chip label="#{annuaireMBean.selectedMc.ecole}" styleClass="p-mr-2 custom-chip"/></p:outputLabel>
+                                                            <p:selectOneMenu  id="établissement" value="#{annuaireMBean.nouvelEts}" label="Etablissement">
+                                                                <f:selectItems value="#{annuaireMBean.listeNomsEtablissement}"/>
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-4">
+                                                            <p:outputLabel>Catégorie Professionnelle  : <p:chip label="#{annuaireMBean.selectedMc.categoriepro}" styleClass="p-mr-2 custom-chip"/> </p:outputLabel>
+                                                            <p:selectOneMenu id="profil" value="#{annuaireMBean.libelleCate}" label="Catégorie professionelle">
+                                                                <f:selectItems value="#{annuaireMBean.listNomsCategorieMc}"/>
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="ui-fluid p-formgrid p-grid">
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Opérateur  : <p:chip label="#{annuaireMBean.selectedMc.operatortelco}" styleClass="p-mr-2 custom-chip"/></p:outputLabel>                                                            
+                                                            <p:selectOneMenu id="nomOperateur" value="#{annuaireMBean.newOperateurMc}">
+                                                                <f:selectItems value="#{annuaireMBean.listeOperateurs}"/>
+                                                            </p:selectOneMenu>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Numéro Principal  : <p:chip label="#{annuaireMBean.selectedMc.contactun}" styleClass="p-mr-2 custom-chip"/></p:outputLabel>
+                                                            <p:inputMask mask="99 99 99 99" placeholder="#{annuaireMBean.numeroPrincipal}" validateMask="true" value="#{annuaireMBean.numeroPrincipal}" label="numéro de paiement"/>
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Compte Mobile Money  : <p:chip label="#{annuaireMBean.selectedMc.statutwallet}" styleClass="p-mr-2 custom-chip"/> </p:outputLabel><br/>
+                                                            <p:selectBooleanButton value="#{annuaireMBean.selectedMc.statutwallet}"  id="momo" onLabel="Oui" offLabel="Non" onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem" />
+                                                        </div>
+                                                        <div class="p-field p-col-12 p-md-3">
+                                                            <p:outputLabel>Activer/Désactiver compte : <p:chip label="#{annuaireMBean.selectedMc.etatcomptemc}" styleClass="p-mr-2 custom-chip"/> </p:outputLabel><br/>
+                                                            <p:selectBooleanButton value="#{annuaireMBean.selectedMc.etatcomptemc}"  id="compteMc" onLabel="Oui" offLabel="Non" onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </p:outputPanel>
+                                            <p:outputPanel>
+                                                <div class="p-grid ui-fluid">
+                                                </div>
+                                            </p:outputPanel>    
+                                        </p:outputPanel>
+                                    </p:outputPanel> 
+                                    <f:facet name="footer">
+                                        <p:commandButton value="Faire la demande" icon="pi pi-check" styleClass="ui-button-success" actionListener="#{annuaireMBean.demandeModifCompteMc()}"
+                                                         update=":form:manage-modifCompte-mc-content" process="manage-modifCompte-mc-content @this" />
+                                        <p:commandButton value="Fermer" icon="pi pi-times" onclick="PF('viewModifCompteDialog').hide()" styleClass="ui-button-warning" />
+                                    </f:facet> 
+                                </p:dialog>
+                                <!--fin pop up -->
+                            </h:form>
+                        </div>
+                    </p:panel>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

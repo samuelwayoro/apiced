@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>PAGE ERREUR 404</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+    </h:head>
+    <h:body id="accueil">
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <p:divider />
+                    <p:panel header="Désolé la page que vous cherchez n'est malheureusement accessible ! ">
+                        <div class="card" style="text-align: center">
+                            <h1>ERREUR 404</h1>  
+                            <p:link outcome="#{loginMBean.utilisateur.profilIdprofil.dashboard}" rendered="#{loginMBean.utilisateur.profilIdprofil.accesaccueil}" > 
+                                <span style="color: red">retour a la page d'accueil</span>
+                            </p:link> 
+                        </div>
+                    </p:panel>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
