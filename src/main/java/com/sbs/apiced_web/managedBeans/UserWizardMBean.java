@@ -845,7 +845,7 @@ public class UserWizardMBean implements Serializable {
             }
             mc.setValidationcoordonnateur(Boolean.FALSE);
             //System.out.println("valeur de compte mc :" + mc.getEtatcomptemc() + " valeur validation coordo " + mc.getValidationcoordonnateur());
-            mc.setDomicile(domicileUtilisateur.getNomville());
+            mc.setNni(domicileUtilisateur.getNomville());
             mc.setLieudenaissance(lieudenaissance.getNomville());
             mc.setNiveauscolaire(niveauScoMaitre);
             mc.setDatenaissance(nouvelleDateNaissance);
@@ -876,6 +876,8 @@ public class UserWizardMBean implements Serializable {
                 mc.setMotifsuspension(motifSuspension.getValeur());
                 //setting de l'opérateur du maitre 
                 mc.setOperatortelco(operateurMc);
+                mc.setValidationcoordonnateur(Boolean.TRUE);
+                mc.setEtatcomptemc(Boolean.TRUE);
                 //verif de l'unicité du mc
                 //System.out.println("le matricule a verifier est  " + mc.getMatricule());
                 Long maitreCo = mcMgr.verifUniciteMatricule(mc.getMatricule());

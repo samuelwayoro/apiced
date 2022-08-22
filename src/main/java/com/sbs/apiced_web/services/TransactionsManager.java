@@ -31,7 +31,7 @@ public class TransactionsManager {
     //enregister en base 
     public void persist(Transactions t) {
         try {
-            System.out.println("entree dans la methode persist des transactions...");
+            //System.out.println("entree dans la methode persist des transactions...");
             em.persist(t);
         } catch (ConstraintViolationException e) {
             e.getConstraintViolations().forEach(actual -> {

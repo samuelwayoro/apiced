@@ -115,7 +115,7 @@ public class MaitreCoManager {
 
     //la liste des MCS de AIRTEL    
     public List<Maitrecommunautaire> getAirtelMcs() {
-        String val = "AIRTEL";
+        String val = "Airtel";
         Query q = em.createQuery("SELECT m FROM Maitrecommunautaire m WHERE m.operatortelco = :op");
         q.setParameter("op", val);
         return q.getResultList();
@@ -123,7 +123,7 @@ public class MaitreCoManager {
 
     //la liste des MCS de Moov Africa
     public List<Maitrecommunautaire> getMoovAfricaMcs() {
-        String val = "MOOV";
+        String val = "Moov";
         Query q = em.createQuery("SELECT m FROM Maitrecommunautaire m WHERE m.operatortelco = :op");
         q.setParameter("op", val);
         return q.getResultList();
@@ -240,6 +240,7 @@ public class MaitreCoManager {
         try {
             System.out.println("entree dans la methode persist des maitre communautaires");
             em.persist(mc);
+            em.flush();
         } catch (ConstraintViolationException e) {
             e.getConstraintViolations().forEach(actual -> {
                 System.out.println(actual.toString());
@@ -514,19 +515,11 @@ public class MaitreCoManager {
 
     }
 
-    //liste des maitre a payer chez airtel : ceux dont le wallet est actif chez l'operateur
-    public List<Maitrecommunautaire> getAirtelMcAPayer() {
-        String nomOp = "AIRTEL";
-        String valeurStatutWallet = "actif";
-        Query q = em.createQuery("SELECT m FROM Maitrecommunautaire m WHERE m.operatortelco = :nomOperateur AND m.valeurestatutwallet = :vstatut");
-        q.setParameter("nomOperateur", nomOp);
-        q.setParameter("vstatut", valeurStatutWallet);
-        return q.getResultList();
-    }
+
 
     //liste des mcs a payer chez moov africa : ceux dont le wallet est actif chez l'opérateur
-    public List<Maitrecommunautaire> getMoovAfricaApayer() {
-        String nomOp = "MOOV";
+    public List<Maitrecommunautaire> getMcsPayables(String nomOp) {
+        System.out.println("nom de l'opérateur  "+nomOp);
         Boolean statut = Boolean.TRUE;
         Query q = em.createQuery("SELECT m FROM Maitrecommunautaire m WHERE m.operatortelco = :nomOperateur AND m.statutwallet = :statutwallet");
         q.setParameter("nomOperateur", nomOp);

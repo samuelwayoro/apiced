@@ -40,15 +40,12 @@ public class LoginMBean implements Serializable {
     private Utilisateur utilisateur;
     private Boolean utilisateurEstConnecte;
     private boolean connected;
-    @ManagedProperty("#{navigationBean}")
-    private NavigationBean navigationManager;
     @EJB
     private UtilisateurManager utilisateurManager;
     @EJB
     private AuditlogManager audit;
-    @EJB
-    private ParamManager param;
-
+    
+    
     public boolean isConnected() {
         return connected;
     }

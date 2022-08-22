@@ -87,43 +87,43 @@
                                              paginator="true" rows="5" styleClass="p-mt-2" rowKey="#{transaction.idtransaction}" selectionMode="single" selection="#{transaction.idtransaction}">
                                     <p:column styleClass="p-text-center" sortBy="#{transaction.contactmaitre}" filterBy="#{transaction.contactmaitre}" >
                                         <f:facet name="header">
-                                            <h:outputText value="numero_maitre"/>
+                                            <h:outputText value="Contact Maitre"/>
                                         </f:facet>
                                         <h:outputText value="#{transaction.contactmaitre}" />
                                     </p:column>
                                     <p:column styleClass="p-text-center" sortBy="#{transaction.operateurs}" filterBy="#{transaction.operateurs}">
                                         <f:facet name="header">
-                                            <h:outputText value="operateur_telecom" style="width: 150px"/>
+                                            <h:outputText value="Opérateur télécom" style="width: 150px"/>
                                         </f:facet>
                                         <h:outputText value="#{transaction.operateurs}"/>
                                     </p:column>
                                     <p:column styleClass="p-text-center"  sortBy="#{transaction.libellepaie}" filterBy="#{transaction.libellepaie}" >
                                         <f:facet name="header">
-                                            <h:outputText value="libelle_paiement"/>
+                                            <h:outputText value="Libellé paiement"/>
                                         </f:facet>
                                         <h:outputText value="#{transaction.libellepaie}"/>
                                     </p:column>
                                     <p:column  styleClass="p-text-center" sortBy="#{transaction.moisanneepaie}" filterBy="#{transaction.moisanneepaie}">
                                         <f:facet name="header">
-                                            <h:outputText value="mois_paiement"/>
+                                            <h:outputText value="Mois de paiement"/>
                                         </f:facet>
                                         <h:outputText value="#{transaction.moisanneepaie}"/>
                                     </p:column>
                                     <p:column styleClass="p-text-center" sortBy="#{transaction.montantsubside}" filterBy="#{transaction.montantsubside}">
                                         <f:facet name="header">
-                                            <h:outputText value="montant_subside" style="width: 150px"/>
+                                            <h:outputText value="Montant du subside du maitre" style="width: 150px"/>
                                         </f:facet>
                                         <h:outputText value="#{transaction.montantsubside}"/>
                                     </p:column>
                                     <p:column styleClass="p-text-center"  sortBy="#{transaction.nommaitre}" filterBy="#{transaction.nommaitre}">
                                         <f:facet name="header">
-                                            <h:outputText value="nom_maitre" style="width: 150px"/>
+                                            <h:outputText value="Nom du maitre" style="width: 150px"/>
                                         </f:facet>
                                         <h:outputText value="#{transaction.nommaitre}"/>
                                     </p:column>
                                     <p:column styleClass="p-text-center"  sortBy="#{transaction.prenomsmaitre}" filterBy="#{transaction.prenomsmaitre}">
                                         <f:facet name="header">
-                                            <h:outputText value="prenoms_maitre" style="width: 150px"/>
+                                            <h:outputText value="Prénoms maitre" style="width: 150px"/>
                                         </f:facet>
                                         <h:outputText value="#{transaction.prenomsmaitre}"/>
                                     </p:column>

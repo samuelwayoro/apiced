@@ -53,7 +53,6 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.primefaces.PrimeFaces;
 import com.sbs.apiced_web.entities.Person;
 
-
 /**
  *
  * @author samuel
@@ -86,8 +85,6 @@ public class RechercherMBean implements Serializable {
     private List<Etablissement> etablissements;
     private List<Categorie> listeCategories;
     private List<String> listeOperateurs;
-   
-    
 
     @EJB
     private UtilisateurManager utilisateurMgr;
@@ -121,9 +118,9 @@ public class RechercherMBean implements Serializable {
         etablissements = etsMgr.getEtablissements();
         //System.out.println("taille de la liste des etablissements  " + etablissements.size());
         listeCategories = categMgr.allMcCategorie();
-       // mcs = mcMgr.allMaitreCommunautaires();
+        // mcs = mcMgr.allMaitreCommunautaires();
     }
-    
+
 //     public void printPDF() throws JRException, IOException {
 //        System.out.println("la taille de l'annuaire " + listeAnnuaire.size());
 //        System.out.println("le contenu de listeAnnuaire : ");
@@ -148,7 +145,6 @@ public class RechercherMBean implements Serializable {
 //        JasperExportManager.exportReportToPdfStream(print, stream);
 //        FacesContext.getCurrentInstance().responseComplete();
 //    }
-
     public void annuairRapportPDF() throws JRException, IOException {
         System.out.println("lancement de l'impression ...");
 //        List<Person> dataSource = new ArrayList<>();
@@ -156,11 +152,9 @@ public class RechercherMBean implements Serializable {
 //        dataSource.add(new Person("Christiano", "Ronaldo"));
 //        dataSource.add(new Person("Kylian", "M'bappé"));
         System.out.println("la taille de la liste " + mcs.size());
-        
+
 //        mcs.add(new Maitrecommunautaire("toto", "tata"));
 //        mcs.add(new Maitrecommunautaire("titi", "tutu"));
-     
-        
         String fileName = "maitres.pdf";
         String jasperPath = "/resources/maitres_communautaires.jasper";
         PDF(null, jasperPath, mcs, fileName);
@@ -178,9 +172,6 @@ public class RechercherMBean implements Serializable {
         FacesContext.getCurrentInstance().responseComplete();
     }
 
- 
-
-
     public OperateurTelcoManager getOpTelcoMgr() {
         return opTelcoMgr;
     }
@@ -188,8 +179,6 @@ public class RechercherMBean implements Serializable {
     public void setOpTelcoMgr(OperateurTelcoManager opTelcoMgr) {
         this.opTelcoMgr = opTelcoMgr;
     }
-    
-    
 
     public List<Categorie> getListeCategories() {
         return listeCategories;
@@ -507,10 +496,9 @@ public class RechercherMBean implements Serializable {
             System.out.println("rechercher avec noms et prenoms..........");
             System.out.println("nom prenoms saisis :" + nomMc + "   " + prenomsMc);
             mcs = mcManager.rechercherParNomPrenoms(nomMc, prenomsMc);
-            System.out.println("la taille de la liste  " + mcs.size());
+            System.out.println("nombre de maitre trouve  " + mcs.size());
 
             for (Maitrecommunautaire mc : mcs) {
-
                 System.out.println("---->" + mc.getNom());
             }
 
@@ -558,10 +546,10 @@ public class RechercherMBean implements Serializable {
 
                 //categorie
                 if (!selectedMc.getCategoriepro().equals(newCateMc.getLibelle())) {
-                    System.out.println("val de categorie en cours ->"+selectedMc.getCategoriepro()+" val du choix  "+newCateMc.getLibelle());
+                    System.out.println("val de categorie en cours ->" + selectedMc.getCategoriepro() + " val du choix  " + newCateMc.getLibelle());
                     selectedMc.setCategoriepro(newCateMc.getLibelle());
                 } else {
-                                        System.out.println("val de categorie en cours ->"+selectedMc.getCategoriepro()+" val du choix  "+newCateMc.getLibelle());
+                    System.out.println("val de categorie en cours ->" + selectedMc.getCategoriepro() + " val du choix  " + newCateMc.getLibelle());
 
                     selectedMc.setCategoriepro(selectedMc.getCategoriepro());
                 }
@@ -595,18 +583,18 @@ public class RechercherMBean implements Serializable {
                 //domicile 
                 if (domicileMc != null) {
                     System.out.println("le domicile saisi  " + domicileMc);
-                    selectedMc.setDomicile(domicileMc);
+                    selectedMc.setNni(domicileMc);
                 } else {
                     System.out.println("le domicile finale  " + domicileMc);
-                    selectedMc.setDomicile(selectedMc.getDomicile());
+                    selectedMc.setNni(selectedMc.getNni());
                 }
 
                 //ecole
                 if (etsMc.getNom() != selectedMc.getEcole()) {
-                    System.out.println("val de lecol actu  "+selectedMc.getEcole()+"  val de la saisie "+etsMc.getNom());
+                    System.out.println("val de lecol actu  " + selectedMc.getEcole() + "  val de la saisie " + etsMc.getNom());
                     selectedMc.setEcole(etsMc.getNom());
                 } else {
-                                        System.out.println("val de lecol actu  "+selectedMc.getEcole()+"  val de la saisie "+etsMc.getNom());
+                    System.out.println("val de lecol actu  " + selectedMc.getEcole() + "  val de la saisie " + etsMc.getNom());
 
                     selectedMc.setEcole(selectedMc.getEcole());
                 }
@@ -701,14 +689,13 @@ public class RechercherMBean implements Serializable {
                 selectedMc.setGenre(genreMc);
             }
             //categorie
-            if (!selectedMc.getCategoriepro().equals(newCateMc.getLibelle())) {
-                    System.out.println("val de categorie en cours ->"+selectedMc.getCategoriepro()+" val du choix  "+newCateMc.getLibelle());
-                    selectedMc.setCategoriepro(newCateMc.getLibelle());
-                } else {
-                                        System.out.println("val de categorie en cours ->"+selectedMc.getCategoriepro()+" val du choix  "+newCateMc.getLibelle());
-
-                    selectedMc.setCategoriepro(selectedMc.getCategoriepro());
-                }
+            if (!selectedMc.getCategoriepro().equals(selectedMc.getCategoriepro())) {
+                //System.out.println("val de categorie en cours ->"+selectedMc.getCategoriepro()+" val du choix  "+newCateMc.getLibelle());
+                selectedMc.setCategoriepro(newCateMc.getLibelle());
+            } else {
+                //  System.out.println("val de categorie en cours ->"+selectedMc.getCategoriepro()+" val du choix  "+newCateMc.getLibelle());
+                selectedMc.setCategoriepro(selectedMc.getCategoriepro());
+            }
 
             //contact n°1
             if (numeroUnMc != null) {
@@ -735,13 +722,12 @@ public class RechercherMBean implements Serializable {
             //domicile 
             if (domicileMc != null) {
                 System.out.println("domicile non changé " + domicileMc);
-                selectedMc.setDomicile(domicileMc);
+                selectedMc.setNni(domicileMc);
             } else {
-                System.out.println("domicile changé " + selectedMc.getDomicile());
-                selectedMc.setDomicile(selectedMc.getDomicile());
+                System.out.println("domicile changé " + selectedMc.getNni());
+                selectedMc.setNni(selectedMc.getNni());
             }
-           
-            
+
             //ecole
             if (etsMc.getNom() != selectedMc.getEcole()) {
                 selectedMc.setEcole(etsMc.getNom());

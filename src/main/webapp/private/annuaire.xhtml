@@ -22,9 +22,9 @@
                                 <p:menuitem value="Rechercher" outcome="/private/rechercherMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
                                     <f:param name="i" value="1"/>
                                 </p:menuitem>
-<!--                                <p:menuitem value="Maitre(s) en attente " outcome="/private/maitresAValider">
-                                    <f:param name="i" value="2"/>
-                                </p:menuitem>-->
+                                <!--                                <p:menuitem value="Maitre(s) en attente " outcome="/private/maitresAValider">
+                                                                    <f:param name="i" value="2"/>
+                                                                </p:menuitem>-->
                                 <p:menuitem value="Ajouter un nouveau maitre" outcome="/private/nouveauMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesnouveaumc}">
                                     <f:param name="i" value="2"/>
                                 </p:menuitem>
@@ -72,7 +72,7 @@
                                              paginator="true" rows="5" styleClass="p-mt-2" 
                                              rowKey="#{product.id}" selectionMode="single" 
                                              selection="#{annuaireMBean.selectedMc}">
-                                    <p:column  styleClass="p-text-center" sortBy="#{product.id}" filterBy="#{product.id}" >
+                                    <p:column  styleClass="p-text-center" sortBy="#{product.matricule}" filterBy="#{product.matricule}" >
                                         <f:facet name="header">
                                             <h:outputText value="Matricule"/>
                                         </f:facet>
@@ -141,7 +141,7 @@
                                                       style="margin-left: 5px" title="détails maitre" styleClass="rounded-button ui-button-help">
                                             <f:param name="info" value="#{product.contactun}" />
                                         </p:linkButton>
-                                        
+
                                         <!-- btn de zoom-->
                                         <!-- btn de modif mineur-->
                                         <p:commandButton id="modifMin" style="margin-left: 2px"  icon="pi pi-user-edit" update=":form:manage-modifInfos-mc-content"  
@@ -204,7 +204,7 @@
                                                     <div class="ui-fluid p-formgrid p-grid">
                                                         <div class="p-field p-col-12 p-md-3">
                                                             <p:outputLabel>Domicile  : </p:outputLabel>                                                            
-                                                            <p:inputText value="#{annuaireMBean.selectedMc.domicile}" disabled="true" style="font-weight: bold"/>
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.nni}" disabled="true" style="font-weight: bold"/>
                                                         </div>
                                                         <div class="p-field p-col-12 p-md-3">
                                                             <p:outputLabel>Milieu résidence  : </p:outputLabel>
@@ -290,19 +290,13 @@
                                                             <p:inputMask mask="99 99 99 99" placeholder="#{annuaireMBean.selectedMc.contactun}" validateMask="true" value="#{annuaireMBean.selectedMc.contactun}"/>
                                                         </div>
                                                         <div class="p-field p-col-12 p-md-4">
-                                                            <p:outputLabel>Opérateur télécom : <p:outputLabel  class="p-text-bold"/></p:outputLabel>
-                                                            <p:selectOneMenu id="operateurTelecom"  value="#{annuaireMBean.selectedMc.operatortelco}">
-                                                                <f:selectItem itemLabel="Selectionnez un Opérateur" itemValue="" />
-                                                                <f:selectItem itemLabel="AIRTEL" itemValue="AIRTEL" />
-                                                                <f:selectItem itemLabel="MOOV" itemValue="MOOV"/>
-                                                            </p:selectOneMenu>
+                                                            <p:outputLabel>Opérateur télécomx : </p:outputLabel>
+                                                            <p:inputText placeholder="#{annuaireMBean.selectedMc.operatortelco}" value="#{annuaireMBean.selectedMc.operatortelco}"/>
+
                                                         </div>
                                                     </div>
                                                     <div class="ui-fluid p-formgrid p-grid">
-                                                        <div class="p-field p-col-12 p-md-4">
-                                                            <p:outputLabel>Domicile  : <p:outputLabel value="#{annuaireMBean.selectedMc.domicile}"  class="p-text-bold"/></p:outputLabel>                                                            
-                                                            <p:inputText value="#{annuaireMBean.domicileMc}" placeholder="#{annuaireMBean.selectedMc.domicile}" style="font-weight: bold"/>
-                                                        </div>
+
                                                         <!--                                                        <div class="p-field p-col-12 p-md-4">
                                                                                                                     <p:outputLabel>Classes affecte(é)s  : <p:outputLabel value="#{annuaireMBean.selectedMc.classeaffectee}"  class="p-text-bold"/></p:outputLabel>
                                                                                                                     <p:selectCheckboxMenu id="classe_affectees" value="#{annuaireMBean.newMcClasses}"  label="modifier la/les classe(s)" style="min-width: 10rem" 
@@ -315,19 +309,12 @@
                                                             <p:inputText value="#{annuaireMBean.lieuDeNaissanceMc}" placeholder="#{annuaireMBean.selectedMc.lieudenaissance}" style="font-weight: bold"/>
                                                         </div>
                                                         <div class="p-field p-col-12 p-md-4">
-                                                            <p:outputLabel>Contact N° 2  : <p:outputLabel value="#{annuaireMBean.selectedMc.contactdeux}"  class="p-text-bold"/></p:outputLabel>
+                                                            <p:outputLabel>Contact N° 2  : </p:outputLabel>
                                                             <p:inputMask mask="99 99 99 99" placeholder="#{annuaireMBean.selectedMc.contactdeux}" validateMask="true" value="#{annuaireMBean.contactDeuxMc}"/>
                                                         </div>
                                                     </div>
                                                     <div class="ui-fluid p-formgrid p-grid">
-                                                        <div class="p-field p-col-12 p-md-4">
-                                                            <p:outputLabel>Milieu de résidence  : <p:outputLabel value="#{annuaireMBean.selectedMc.milieuResidence}"  class="p-text-bold"/></p:outputLabel>
-                                                            <p:selectOneMenu id="milieuResidence" value="#{annuaireMBean.selectedMc.milieuResidence}">
-                                                                <f:selectItem itemLabel="Selectionnez un type" itemValue="" />
-                                                                <f:selectItem itemLabel="Urbain" itemValue="Urbain" />
-                                                                <f:selectItem itemLabel="Rurale" itemValue="Rurale"/>
-                                                            </p:selectOneMenu>
-                                                        </div>
+
                                                         <div class="p-field p-col-12 p-md-4">
                                                             <p:outputLabel>Etablissement  : <p:outputLabel value="#{annuaireMBean.selectedMc.ecole}"  class="p-text-bold"/></p:outputLabel>
                                                             <p:selectOneMenu id="advanced" value="#{annuaireMBean.etsMc}" converter="#{annuaireMBean.etablissementConverter}"  panelStyle="width:180px" var="e" filter="true" filterMatchMode="startsWith">
@@ -372,12 +359,7 @@
                                                         </div>
                                                         <div class="p-field p-col-12 p-md-4">
                                                             <p:outputLabel>Langue : <p:outputLabel  value="#{annuaireMBean.selectedMc.langue}"  class="p-text-bold"/></p:outputLabel>
-                                                            <p:selectOneMenu id="langue" value="#{annuaireMBean.selectedMc.langue}">
-                                                                <f:selectItem itemLabel="Choisir la langue" itemValue="" />
-                                                                <f:selectItem itemLabel="Français" itemValue="Francais" />
-                                                                <f:selectItem itemLabel="Arabe" itemValue="Arabe"/>
-                                                                <f:selectItem itemLabel="Bilingue" itemValue="Bilingue"/>
-                                                            </p:selectOneMenu>
+                                                            <p:inputText value="#{annuaireMBean.selectedMc.langue}" placeholder="#{annuaireMBean.selectedMc.langue}" style="font-weight: bold" />
                                                         </div>
                                                     </div>
                                                     <div class="ui-fluid p-formgrid p-grid">
@@ -448,7 +430,7 @@
 
                                                     <div class="ui-fluid p-formgrid p-grid">
                                                         <div class="p-field p-col-12 p-md-3">
-                                                            <p:outputLabel>Opérateur  : <p:chip label="#{annuaireMBean.selectedMc.operatortelco}" styleClass="p-mr-2 custom-chip"/></p:outputLabel>                                                            
+                                                            <p:outputLabel>Opérateur  : <p:chip label="#{annuaireMBean.selectedMc.contactun}" styleClass="p-mr-2 custom-chip"/></p:outputLabel>                                                            
                                                             <p:selectOneMenu id="nomOperateur" value="#{annuaireMBean.newOperateurMc}">
                                                                 <f:selectItems value="#{annuaireMBean.listeOperateurs}"/>
                                                             </p:selectOneMenu>

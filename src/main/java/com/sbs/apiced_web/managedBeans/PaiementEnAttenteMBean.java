@@ -13,7 +13,6 @@ import com.sbs.apiced_web.entities.Paiement;
 import com.sbs.apiced_web.entities.Parametres;
 import com.sbs.apiced_web.entities.Transactions;
 import com.sbs.apiced_web.entities.Typenotifs;
-import com.sbs.apiced_web.entities.Usersnotifs;
 import com.sbs.apiced_web.entities.Utilisateur;
 import com.sbs.apiced_web.services.AuditlogManager;
 import com.sbs.apiced_web.services.EtatPaiementManager;
@@ -41,10 +40,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.constraints.Future;
 import org.primefaces.PrimeFaces;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.annotation.ManagedProperty;
 
 /**
@@ -56,6 +52,7 @@ import javax.faces.annotation.ManagedProperty;
 public class PaiementEnAttenteMBean implements Serializable {
 
     private Paiement selectedPaiement;
+    private Etatpaiement etatpaiement; 
     private Long nbrePaiementEnAttente;
     private List<Transactions> allTransactions;
     private Utilisateur utilisateur = new Utilisateur();
@@ -68,8 +65,10 @@ public class PaiementEnAttenteMBean implements Serializable {
     private List<Transactions> listeTransactionByOp;
     private String newDetailsPaiement;
     private List<Paiement> listeDesMoisDejaPayes;
+    private Parametres oneUtilParam;
     private BigInteger montantRestantSubsides;
     private Typenotifs typeNotification;
+    private FileWriter file;
     private Notifications notif;
     private String libelleNotif;
     private String detailNotif;
@@ -127,6 +126,32 @@ public class PaiementEnAttenteMBean implements Serializable {
      * Creates a new instance of PaiementEnAttenteMBean
      */
     public PaiementEnAttenteMBean() {
+    }
+
+    public Etatpaiement getEtatpaiement() {
+        return etatpaiement;
+    }
+
+    public void setEtatpaiement(Etatpaiement etatpaiement) {
+        this.etatpaiement = etatpaiement;
+    }
+
+    public FileWriter getFile() {
+        return file;
+    }
+
+    public void setFile(FileWriter file) {
+        this.file = file;
+    }
+
+    
+    
+    public Parametres getOneUtilParam() {
+        return oneUtilParam;
+    }
+
+    public void setOneUtilParam(Parametres oneUtilParam) {
+        this.oneUtilParam = oneUtilParam;
     }
 
     public monProfilMBean getMonProfilMBean() {
@@ -445,6 +470,7 @@ public class PaiementEnAttenteMBean implements Serializable {
     public void init() {
 
         notif = new Notifications();
+        file = null;
         //liste des demandes de  paiement en attente de validation par le coordo
         listePaiementEnAttente = paieMgr.listePaiementEnAttente();
         //liste des mois deja payés pour controle lors de la modif
@@ -495,8 +521,8 @@ public class PaiementEnAttenteMBean implements Serializable {
         PrimeFaces.current().ajax().update(":form:messages", ":form:paiementsEnAttente");
 
     }
-    
-    public void validerPaiementSubsides(){
+
+    public void validerPaiementSubsides() {
         if (selectedPaiement.getOperateurmobile().equalsIgnoreCase("MOOV")) {
             System.out.println("c moov africa");
             msgSuccesValidePaiement();
@@ -505,7 +531,7 @@ public class PaiementEnAttenteMBean implements Serializable {
             libelleNotif = "fichier de Paiement de subside  :" + selectedPaiement.getLibelle() + " genere par le coordonnateur  : " + userCo.getLogin();
             detailNotif = "validation et generation du fichier de  paiement des subsides  : " + selectedPaiement.getLibelle() + " du mois de : " + selectedPaiement.getMois();
             saveNotifMoov(4, detailNotif, typeNotification, userCo, selectedPaiement.getIdpaiement().toString());
-        }else{
+        } else {
             System.out.println("c airtel ");
             msgSuccesValidePaiement();
             BigDecimal typn = BigDecimal.valueOf(4);
@@ -518,187 +544,12 @@ public class PaiementEnAttenteMBean implements Serializable {
 
     //validation d'un paiement avant envoi a l'opérateur
     public void validerPaie() {
-        //generation de fichier csv
-        FileWriter file = null;
-        System.out.println("paiement en validation  ------------------->: " + selectedPaiement.getLibelle() + "  nom operateur --->" + selectedPaiement.getOperateurmobile());
-        selectedPaiement.setDatevalidationcoordo(DateOfDay());
-        selectedPaiement.setEtatenvoiop(Boolean.FALSE);//pas encore envoyé a l'opérateur
-        selectedPaiement.setDatemodification(DateOfDay());
-        selectedPaiement.setValideur(userCo);
-        selectedPaiement.setValidationcoordonnateur(Boolean.TRUE);
-        //recup de l'etat paiement en attente de validatation pour maj du paiement 
-        Etatpaiement etatpaiement = etatPaieMgr.etatPaiementbyId(BigDecimal.valueOf(4));
-        selectedPaiement.setEtatpaiement(etatpaiement);
-        //GENERATION DU FICHIER CSV DE PAIEMENT EN FONCTION DE L'OPERATEUR 
-        if (selectedPaiement.getOperateurmobile().equalsIgnoreCase("MOOV")) {
-            //recup de ttes les transactions du paiement selectionne
-            //System.out.println("generation du fichier csv de paiement au format de Moov ");
-            transactionsAenvoyer = transacMgr.selectedPaieTransactions(selectedPaiement.getIdpaiement());
-            for (Transactions tmoov : allTransactions) {
-                tmoov.setEtattransaction("attente denvoi a operateur");
-                transacMgr.updatePaie(tmoov);
-            }
-            //System.out.println("le nom de l'operateur : " + selectedPaiement.getOperateurmobile());
-            try {
-                //on pointe sur le fichier a generer
-                file = new FileWriter("D:/paiements_apiced/PAIEMENT_ALLER_MOOV/" + "PAIEMENT_PARSET" + "_" + selectedPaiement.getOperateurmobile() + "_" + selectedPaiement.getMois() + "_" + DateOfDayPaieFile() + ".csv");
-                file.append(HEADERMOOV);
-                file.append(SEPARATOR);
-                //continuer ici ...
-                for (Transactions tr : transactionsAenvoyer) {
-                    file.append(tr.getContactmaitre());
-                    file.append(DELIMITER);
-                    file.append(tr.getMontantsubside());
-                    file.append(DELIMITER);
-                    file.append("0");
-                    file.append(DELIMITER);
-                    file.append(tr.getNommaitre());
-                    file.append(DELIMITER);
-                    file.append(tr.getPrenomsmaitre());
-                    file.append(SEPARATOR);
-                }
-                file.close();
-            } catch (IOException ex) {
-                Logger.getLogger(transactionsPaiementsMBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            //stokage dans la bd : table parametres
-            Parametres p;
-            p = paramMgr.paramByLibelle("DERNIER_FICHIER_PAIE_MOOV");
-            System.out.println("nom du dernier fichier de paiement recupere =>" + p.getValeur());
-            //maj du nom de la valeur du parametres
-            p.setValeur("PAIEMENT_PARSET" + "_" + selectedPaiement.getOperateurmobile() + "_" + selectedPaiement.getMois() + "_" + DateOfDayPaieFile() + ".csv");
-            paramMgr.updateParam(p);
-            //msg de succees
-            msgSuccesValidePaiement();
-            //auditlog
-            saveLog("validation du paiement de subside et generation du fichier de paiement  :" + selectedPaiement.getLibelle(), DateOfDay());
-            BigDecimal typn = BigDecimal.valueOf(4);
-            typeNotification = typeNotifMgr.creaMcTypeNotifById(typn);
-            libelleNotif = "fichier de Paiement de subside  :" + selectedPaiement.getLibelle() + " genere par le coordonnateur  : " + userCo.getLogin();
-            detailNotif = "validation et generation du fichier de  paiement des subsides  : " + selectedPaiement.getLibelle() + " du mois de : " + selectedPaiement.getMois();
-            saveNotifMoov(4, detailNotif, typeNotification, userCo, selectedPaiement.getIdpaiement().toString());
-            //persistance de toutes les notifications pour tous les utilisateurs ...
-            listeUsers = utilisateurMgr.getAllActivedUsers();
-            //je recupère la dernière notif créée pour le setting a venir 
-            Integer lastNotifId = notifMgr.lastNotif();
-            //creation des btns 
-            for (Utilisateur u : listeUsers) {
-                Usersnotifs userNotif = new Usersnotifs();
-                userNotif.setDateinsert(DateOfDay());
-                userNotif.setEtat(BigInteger.ZERO);
-                userNotif.setIdutilisateur(BigInteger.valueOf(u.getIdutilisateur()));
-                userNotif.setTitre(libelleNotif);
-                userNotif.setInformation(detailNotif);
-                userNotif.setCreateur(userCo.getLogin());
-                userNotif.setTypeusernotif("VALIDATION_PAIE_ET_GENERATION_FICHIER_PAIE");
-                //construction des btn en fonction des profils
-                if (u.getProfilIdprofil().getLibelle().equalsIgnoreCase("emetteur")) {
-                    userNotif.setBtnvalidemc("false");
-                    userNotif.setBtnvalidepaie("false");
-                    userNotif.setBtndetail("true");
-                } else if (u.getProfilIdprofil().getLibelle().equalsIgnoreCase("coordonnateur")) {
-                    userNotif.setBtnvalidemc("false");
-                    userNotif.setBtnvalidepaie("false");
-                    userNotif.setBtndetail("true");
-                } else {
-                    userNotif.setBtnvalidemc("false");
-                    userNotif.setBtnvalidepaie("false");
-                    userNotif.setBtndetail("true");
-                }
-                //setter l'id du notif
-                userNotif.setIdnotif(BigInteger.valueOf(lastNotifId));
-                //on persist la notifUser pr finir
-                userNotifMgr.persist(userNotif);
-            }
-            listePaiementEnAttente.remove(selectedPaiement);//on enleve ce paiement dns la liste
-            paieMgr.updatePaie(selectedPaiement);
-
-        } else {
-            System.out.println("generation du fichier csv de paiement au format de AIRTEL ");
-            transactionsAenvoyer = transacMgr.selectedPaieTransactions(selectedPaiement.getIdpaiement());
-            for (Transactions tairtel : allTransactions) {
-                tairtel.setEtattransaction("attente denvoi a operateur");
-                transacMgr.updatePaie(tairtel);
-            }
-            try {
-                System.out.println("le nom de l'operateur : " + selectedPaiement.getOperateurmobile());
-                //System.out.println("endroit d'archivage a prevoir pr le fichier : " + ("D:/paiements_apiced/PAIEMENT_ALLER_MOOV/" + DateOfDayPaieFile() + "/" + "PAIEMENT_PARSET" + "_" + selectedPaiement.getOperateurmobile() + "_" + DateOfDayPaieFile() + ".csv"));
-                file = new FileWriter("D:/paiements_apiced/PAIEMENT_ALLER_AIRTEL/" + "PAIEMENT_PARSET" + "_" + selectedPaiement.getOperateurmobile() + "_" + selectedPaiement.getMois() + "_" + DateOfDayPaieFile() + ".csv");
-                file.append(HEADERAIRTEL);
-                file.append(SEPARATOR);
-                //continuer ici ...
-                for (Transactions tr : transactionsAenvoyer) {
-                    file.append("101");
-                    file.append(DELIMITER);
-                    file.append(tr.getContactmaitre());
-                    file.append(DELIMITER);
-                    file.append(tr.getMontantsubside());
-                    file.append(DELIMITER);
-                    file.append("TEST");
-                    file.append(SEPARATOR);
-                }
-                file.close();
-            } catch (IOException ex) {
-                Logger.getLogger(transactionsPaiementsMBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            //stokage dans la bd : table parametres
-            Parametres p;
-            p = paramMgr.paramByLibelle("DERNIER_FICHIER_PAIE_AIRTEL");
-            System.out.println("nom du dernier fichier de paiement airtel recupere =>" + p.getValeur());
-            //maj du fichier
-            p.setValeur("PAIEMENT_PARSET" + "_" + selectedPaiement.getOperateurmobile() + "_" + selectedPaiement.getMois() + "_" + DateOfDayPaieFile() + ".csv");
-            paramMgr.updateParam(p);
-            msgSuccesValidePaiement();
-            //  listePaiementEnAttente.remove(selectedPaiement);//on enleve ce paiement dns la liste
-            paieMgr.updatePaie(selectedPaiement);
-            //auditlog
-            saveLog("validation du paiement de subside et generation d'un fichier de paiement airtel  :" + selectedPaiement.getLibelle(), DateOfDay());
-            BigDecimal typn = BigDecimal.valueOf(4);
-            typeNotification = typeNotifMgr.creaMcTypeNotifById(typn);
-            libelleNotif = "fichier de Paiement de subside  : " + selectedPaiement.getLibelle() + " genere par le coordonnateur  : " + userCo.getLogin();
-            detailNotif = "validation et generation du fichier de  paiement des subsides  : " + selectedPaiement.getLibelle() + " du mois de : " + selectedPaiement.getMois();
-            saveNotifAirtel(4, detailNotif, typeNotification, userCo, selectedPaiement.getIdpaiement().toString());
-            //persistance de toutes les notifications pour tous les utilisateurs ...
-            listeUsers = utilisateurMgr.getAllActivedUsers();
-            //je recupère la dernière notif créée pour le setting a venir 
-            Integer lastNotifId = notifMgr.lastNotif();
-            //creation des btns 
-            for (Utilisateur u : listeUsers) {
-                Usersnotifs userNotif = new Usersnotifs();
-                userNotif.setDateinsert(DateOfDay());
-                userNotif.setEtat(BigInteger.ZERO);
-                userNotif.setIdutilisateur(BigInteger.valueOf(u.getIdutilisateur()));
-                userNotif.setTitre(libelleNotif);
-                userNotif.setInformation(detailNotif);
-                userNotif.setCreateur(userCo.getLogin());
-                userNotif.setTypeusernotif("VALIDATION_PAIE_ET_GENERATION_FICHIER_PAIE");
-                //construction des btn en fonction des profils
-                if (u.getProfilIdprofil().getLibelle().equalsIgnoreCase("emetteur")) {
-                    userNotif.setBtnvalidemc("false");
-                    userNotif.setBtnvalidepaie("false");
-                    userNotif.setBtndetail("true");
-                } else if (u.getProfilIdprofil().getLibelle().equalsIgnoreCase("coordonnateur")) {
-                    userNotif.setBtnvalidemc("false");
-                    userNotif.setBtnvalidepaie("false");
-                    userNotif.setBtndetail("true");
-                } else {
-                    userNotif.setBtnvalidemc("false");
-                    userNotif.setBtnvalidepaie("false");
-                    userNotif.setBtndetail("true");
-                }
-                //setter l'id du notif
-                userNotif.setIdnotif(BigInteger.valueOf(lastNotifId));
-                //on persist la notifUser pr finir
-                userNotifMgr.persist(userNotif);
-            }
-            listePaiementEnAttente.remove(selectedPaiement);//on enleve ce paiement dns la liste
-        }
-        selectedPaiement = null;
-        notif = null;
-        //maj du tableau des mc et raffraichissement de la vue 
-        //   PrimeFaces.current().executeScript("PF('validerPaiement').hide()");
-        PrimeFaces.current().ajax().update(":form:messages", ":form:paiementsEnAttente", ":form:menu");
+//        System.out.println("debut validation d'une demande de paiement ");
+//        System.out.println("paiement en validation  ------------------->: " + selectedPaiement.getLibelle() + "  nom operateur --->" + selectedPaiement.getOperateurmobile());
+//        selectedPaiement.setForValidation(DateOfDay(),Boolean.FALSE,userCo,Boolean.TRUE);
+//        etatpaiement = etatPaieMgr.etatPaiementbyId(BigDecimal.valueOf(4));
+//        selectedPaiement.setEtatpaiement(etatpaiement);
+        
     }
 
     //maj des infos de paiement de subsides selectionné
@@ -722,8 +573,8 @@ public class PaiementEnAttenteMBean implements Serializable {
         //som des montant de subsides des mc payable 
         BigInteger som = BigInteger.ZERO;
         for (Maitrecommunautaire lis : listeMaitreAirtelpayable) {
-           // som = som.add(lis.getIdcategoriepro().getMontantsubside());
-            som = BigInteger.ZERO ;
+            // som = som.add(lis.getIdcategoriepro().getMontantsubside());
+            som = BigInteger.ZERO;
         }
         montantTotalSubsidesMcPayableAirtel = som;
         //System.out.println("ne pas etre en dessous de :" + montantTotalSubsidesMcPayableAirtel);
@@ -846,7 +697,6 @@ public class PaiementEnAttenteMBean implements Serializable {
 //        log.setDateaction(DateOfDay());
 //        auditMgr.persist(log);
 //    }
-
     //rejeter le paiement 
     public void rejeterLePaiement() {
         System.out.println("rejeter le paiement...");
@@ -866,6 +716,10 @@ public class PaiementEnAttenteMBean implements Serializable {
 
     public void msgSuccesModif() {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "les informations du paiement ont été mis à jour", "succès"));
+    }
+
+    public void msgErrorPaiementFileCreation() {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Erreur", "Le repertoire de création du fichier doit etre crée : " + libelleNotif));
     }
 
     public void msgSuccesPaiementValide() {
@@ -909,19 +763,19 @@ public class PaiementEnAttenteMBean implements Serializable {
 
     //save de notifs 
     public void saveNotifMoov(int typeNotif, String details, Typenotifs typeNotification, Utilisateur auteur, String idInformation) {
-        
+
         try {
             BigDecimal typn = BigDecimal.valueOf(typeNotif);
-        typeNotification = typeNotifMgr.creaMcTypeNotifById(typn);
+            typeNotification = typeNotifMgr.creaMcTypeNotifById(typn);
             notif.setLibelle("fichier de Paiement de subside MOOV :" + selectedPaiement.getLibelle() + " genere par le coordonnateur  : " + userCo.getLogin());
             notif.setDetails(details);
-        notif.setDatecreation(DateOfDay());
-        notif.setDateresolution(DateOfDay());
-        notif.setTypenotif(typeNotification);
-        notif.setCreateur(userCo);
-        notif.setIdinfo(idInformation);
-        //save de la notif
-        notifMgr.persist(notif);
+            notif.setDatecreation(DateOfDay());
+            notif.setDateresolution(DateOfDay());
+            notif.setTypenotif(typeNotification);
+            notif.setCreateur(userCo);
+            notif.setIdinfo(idInformation);
+            //save de la notif
+            notifMgr.persist(notif);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -931,22 +785,22 @@ public class PaiementEnAttenteMBean implements Serializable {
 
     public void saveNotifAirtel(int typeNotif, String details, Typenotifs typeNotification, Utilisateur auteur, String idInformation) {
         try {
-            
+
             BigDecimal typn = BigDecimal.valueOf(typeNotif);
-        typeNotification = typeNotifMgr.creaMcTypeNotifById(typn);
-        notif.setLibelle("fichier de Paiement de subside AIRTEL :" + selectedPaiement.getLibelle() + " genere par le coordonnateur  : " + userCo.getLogin());
-        notif.setDetails(details);
-        notif.setDatecreation(DateOfDay());
-        notif.setDateresolution(DateOfDay());
-        notif.setTypenotif(typeNotification);
-        notif.setCreateur(userCo);
-        notif.setIdinfo(idInformation);
-        //save de la notif
-        notifMgr.persist(notif);
+            typeNotification = typeNotifMgr.creaMcTypeNotifById(typn);
+            notif.setLibelle("fichier de Paiement de subside AIRTEL :" + selectedPaiement.getLibelle() + " genere par le coordonnateur  : " + userCo.getLogin());
+            notif.setDetails(details);
+            notif.setDatecreation(DateOfDay());
+            notif.setDateresolution(DateOfDay());
+            notif.setTypenotif(typeNotification);
+            notif.setCreateur(userCo);
+            notif.setIdinfo(idInformation);
+            //save de la notif
+            notifMgr.persist(notif);
         } catch (Exception e) {
-            System.out.println("MSG DERREUR : "+e.getMessage());
+            System.out.println("MSG DERREUR : " + e.getMessage());
         }
-        
+
         notif = null;
     }
 
@@ -959,5 +813,9 @@ public class PaiementEnAttenteMBean implements Serializable {
 
     public void msgSuccesValidePaiement() {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Le paiement à été validé", "En attente d'envoi a l'opérateur"));
+    }
+    
+    public void msgAlerteConfigResau() {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Attention !!", "veuillez verifier la connexion au serveur sftp Moov pour envoi du fichier de paiement "));
     }
 }

@@ -468,7 +468,7 @@ public class MaitreaCorriger implements Serializable {
         }
         //domicile 
         if (domicileUtilisateur != null) {
-            selectedMc.setDomicile(domicileUtilisateur.getNomville());
+            selectedMc.setNni(domicileUtilisateur.getNomville());
         }
         //niveau scolaire 
         if (newMcNiveauSco != null) {

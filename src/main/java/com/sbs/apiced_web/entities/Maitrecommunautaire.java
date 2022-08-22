@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Maitrecommunautaire.findByDatemodifcompte", query = "SELECT m FROM Maitrecommunautaire m WHERE m.datemodifcompte = :datemodifcompte"),
     @NamedQuery(name = "Maitrecommunautaire.findByDatenaissance", query = "SELECT m FROM Maitrecommunautaire m WHERE m.datenaissance = :datenaissance"),
     @NamedQuery(name = "Maitrecommunautaire.findByDateprisefonction", query = "SELECT m FROM Maitrecommunautaire m WHERE m.dateprisefonction = :dateprisefonction"),
-    @NamedQuery(name = "Maitrecommunautaire.findByDomicile", query = "SELECT m FROM Maitrecommunautaire m WHERE m.domicile = :domicile"),
+    @NamedQuery(name = "Maitrecommunautaire.findByNni", query = "SELECT m FROM Maitrecommunautaire m WHERE m.nni = :nni"),
     @NamedQuery(name = "Maitrecommunautaire.findByLieudenaissance", query = "SELECT m FROM Maitrecommunautaire m WHERE m.lieudenaissance = :lieudenaissance"),
     @NamedQuery(name = "Maitrecommunautaire.findByMatricule", query = "SELECT m FROM Maitrecommunautaire m WHERE m.matricule = :matricule"),
     @NamedQuery(name = "Maitrecommunautaire.findByNiveauscolaire", query = "SELECT m FROM Maitrecommunautaire m WHERE m.niveauscolaire = :niveauscolaire"),
@@ -104,8 +104,8 @@ public class Maitrecommunautaire implements Serializable {
     @Column(name = "DATEPRISEFONCTION")
     private String dateprisefonction;
     @Size(max = 255)
-    @Column(name = "DOMICILE")
-    private String domicile;
+    @Column(name = "NNI")
+    private String nni;
     @Size(max = 255)
     @Column(name = "LIEUDENAISSANCE")
     private String lieudenaissance;
@@ -328,13 +328,15 @@ public class Maitrecommunautaire implements Serializable {
         this.dateprisefonction = dateprisefonction;
     }
 
-    public String getDomicile() {
-        return domicile;
+    public String getNni() {
+        return nni;
     }
 
-    public void setDomicile(String domicile) {
-        this.domicile = domicile;
+    public void setNni(String nni) {
+        this.nni = nni;
     }
+
+
 
     public String getLieudenaissance() {
         return lieudenaissance;

@@ -91,7 +91,7 @@ public class FileUploadView implements Serializable {
     private String genreMc;
     private String nomMc;
     private String prenomsMc;
-    private String domicileMc;
+    private String nniMc;
     private String lieuDeNaissanceMc;
     private String bailleurMc;
     private String ecoleMc;
@@ -605,11 +605,11 @@ public class FileUploadView implements Serializable {
     }
 
     public String getDomicileMc() {
-        return domicileMc;
+        return nniMc;
     }
 
-    public void setDomicileMc(String domicileMc) {
-        this.domicileMc = domicileMc;
+    public void setDomicileMc(String nniMc) {
+        this.nniMc = nniMc;
     }
 
     public String getLieuDeNaissanceMc() {
@@ -910,8 +910,8 @@ public class FileUploadView implements Serializable {
         }
 
         //domicile 
-        if (domicileMc != null) {
-            selectedMc.setDomicile(domicileMc);
+        if (nniMc != null) {
+            selectedMc.setNni(nniMc);
         } else {
             msgErreurDomicile();
         }
@@ -967,19 +967,19 @@ public class FileUploadView implements Serializable {
         System.out.println("statut du compte selectionne " + selectedMc.getStatutcompte());
 
         //statut wallet et etat compte reste inchangé 
-        selectedMc.setEtatcomptemc(Boolean.FALSE);
-        selectedMc.setStatutwallet(Boolean.FALSE);
+        selectedMc.setEtatcomptemc(Boolean.TRUE);
+        selectedMc.setStatutwallet(Boolean.TRUE);
 
         //date de creation du maitre dans la plateforme : date d'ajout 
         selectedMc.setDatecreationcompte(DateOfDay());
         //etat validation du coordonnateur 
-        selectedMc.setValidationcoordonnateur(Boolean.FALSE);
+        selectedMc.setValidationcoordonnateur(Boolean.TRUE);
 
         //generation du matricule
         generationMatricule(selectedMc);
 
         System.out.println("informations retenues  nom->" + selectedMc.getNom() + " \n genre->" + selectedMc.getGenre() + "  numero->" + selectedMc.getContactun()
-                + "  operateur telecom " + selectedMc.getOperatortelco() + " domicile  " + selectedMc.getDomicile() + " lieu de naissance " + selectedMc.getLieudenaissance() + "  bailleur " + selectedMc.getBailleur()
+                + "  operateur telecom " + selectedMc.getOperatortelco() + " domicile  " + selectedMc.getNni() + " lieu de naissance " + selectedMc.getLieudenaissance() + "  bailleur " + selectedMc.getBailleur()
                 + "  milieu de residence " + selectedMc.getMilieuResidence() + " etablissement " + selectedMc.getEcole() + "  date de naissance " + selectedMc.getDatenaissance() + " langue " + selectedMc.getLangue()
                 + " categorie pro " + selectedMc.getCategoriepro() + " observation " + selectedMc.getStatutcompte());
 
@@ -1199,7 +1199,7 @@ public class FileUploadView implements Serializable {
         newMcDateNaiss = null;
         nouvelleDateNaissance = null;
         lieudenaissance = null;
-        domicileMc = null;
+        nniMc = null;
         domicileUtilisateur = null;
         newMcNiveauSco = null;
         newMcDernierDiplome = null;
