@@ -102,6 +102,7 @@
                                 </p:menuitem>
                             </p:tabMenu>
                         </h:form>
+
                     </div>
                     <!--fil d'ariane -->
                     <div class="card">
@@ -120,24 +121,25 @@
                             <p:panel header="Formulaire de paiement">
                                 <h:form>
                                     <p:growl id="growl" sticky="true" showDetail="true"/>
-                                    <h:panelGrid columns="2" columnClasses="label, value">
+                                    <h:panelGrid columns="2" columnClasses="label, value" id="formPanelGrid">
                                         <h:outputText value="Libellé "/>
                                         <p:inputText   id="libelle" value="#{emissionPaieMensuelMoovAfricaMBean.libellePaie}"  label="libelle" required="true"/>
                                         <h:outputText value="Montant Total de Paiement" />                                        
-                                        <p:inputMask id="totalMontal"  value="#{emissionPaieMensuelMoovAfricaMBean.montantPaie}" label="Montant Total" mask="9[9999999]"
-                                                     validateMask="false">
-                                            <f:validateLength minimum="2" maximum="10"/>
+                                        <p:inputMask id="totalMontal"  value="#{emissionPaieMensuelMoovAfricaMBean.montantPaie}" label="Montant Total" mask="9[9999999999]"
+                                                     validateMask="false" required="true" requiredMessage="veuillez entrer le montant de paiement ">
+                                            <f:validateLength minimum="2" maximum="12"/>
                                         </p:inputMask>
                                         <h:outputText  value="Détails" />
-                                        <p:inputTextarea id="details" rows="4" cols="22" value="#{emissionPaieMensuelMoovAfricaMBean.details}" label="détails" required="true"/>
+                                        <p:inputTextarea id="details" rows="4" cols="22" value="#{emissionPaieMensuelMoovAfricaMBean.details}" 
+                                                         label="détails" required="true"  requiredMessage="veuillez mentionner une information de détail svp" />
                                         <h:outputText value="Paiement du mois de : " />
                                         <p:datePicker  label="mois de paiement" id="moisDePaiement" view="month" value="#{emissionPaieMensuelMoovAfricaMBean.moisDePaie}" pattern="MM/yyyy" 
-                                                       yearNavigator="true" yearRange="2000:2030"  required="true" />
+                                                       yearNavigator="true" yearRange="2000:2030"  required="true" requiredMessage="veuillez entrer la date d'execution de paiement suggeree à l'opérateur télécom" />
                                         <h:outputText value="Date de paiement (suggeré a l'opérateur) " />
                                         <p:datePicker id="navigator" value="#{emissionPaieMensuelMoovAfricaMBean.dateDePaiement}"
                                                       monthNavigator="true"
                                                       yearNavigator="true"
-                                                      showWeek="true"/>
+                                                      showWeek="true" required="true" requiredMessage="entrer la date de paiement suggerée"/>
                                         <p:dataTable id="listeMaitres" rendered="false" >
                                             <f:facet name="header">
                                                 <div class="products-table-header" id="globalFilter">
@@ -150,8 +152,8 @@
                                             </f:facet>
                                         </p:dataTable>
                                         <h:outputText value=""/>
-                                        <p:commandButton  value="Soumettre" styleClass="ui-button-raised ui-button-success"  update="growl"  
-                                                          actionListener="#{emissionPaieMensuelMoovAfricaMBean.newPaiementMensuelAirtel}"  disabled="true" />
+                                        <p:commandButton  value="Soumettre" styleClass="ui-button-raised ui-button-success"  
+                                                          update="growl" actionListener="#{emissionPaieMensuelMoovAfricaMBean.newPaiementMensuelMoov}" />
                                     </h:panelGrid>                                                                
                                 </h:form>
                             </p:panel>
@@ -174,8 +176,8 @@
                                                             <p:outputLabel>Emetteur</p:outputLabel>
                                                                 #{emissionPaieMensuelMoovAfricaMBean.userCo.login}
                                                         </span>
-                                                        <span style="font-weight: bold;margin-left: 200px">Montant total : #{emissionPaieMensuelMoovAfricaMBean.montantTotalSubsidesMoov}</span>
-                                                        <span style="font-weight: bold;margin-left: 200px">Restant : #{emissionPaieMensuelMoovAfricaMBean.montantRestantSubsides}</span>
+                                                        <span style="font-weight: bold;margin-left: 200px">Montant total : #{emissionPaieMensuelMoovAfricaMBean.montantTotalSubsidesMoov} F CFA</span>
+                                                        <span style="font-weight: bold;margin-left: 200px">Restant : #{emissionPaieMensuelMoovAfricaMBean.montantRestantSubsides} F CFA</span>
                                                     </div>
                                                 </f:facet>
                                                 <p:column headerText="Matricule">
@@ -187,14 +189,6 @@
                                                 <p:column headerText="Prénoms">
                                                     <h:outputText value="#{product.prenoms}" />
                                                 </p:column>
-<!--                                                <p:column headerText="Montant subside">
-                                                    <h:outputText value="#{product.idcategoriepro.montantsubside}" style="font-weight: 700">
-                                                        <f:convertNumber  type="number"/>
-                                                    </h:outputText>
-                                                </p:column>
-                                                <p:column headerText="Catégorie">
-                                                    <h:outputText value="#{product.idcategoriepro.libelle}"/>
-                                                </p:column>-->
                                                 <p:column headerText="Numéro de paiement">
                                                     <h:outputText value="#{product.contactun}"  />
                                                 </p:column>

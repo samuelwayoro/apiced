@@ -145,8 +145,8 @@ public class ChartJsView implements Serializable {
 
         PieChartDataSet dataSet = new PieChartDataSet();
         List<Number> values = new ArrayList<>();
-        values.add(opTelcoManager.nbreAbonnesByIdOp("AIRTEL"));//airtel
-        values.add(opTelcoManager.nbreAbonnesByIdOp("MOOV"));//moov
+        values.add(opTelcoManager.nbreAbonnesByIdOp("Airtel"));//airtel
+        values.add(opTelcoManager.nbreAbonnesByIdOp("Moov"));//moov
         dataSet.setData(values);
 
         List<String> bgColors = new ArrayList<>();
@@ -984,9 +984,9 @@ public class ChartJsView implements Serializable {
 
         DonutChartDataSet dataSet = new DonutChartDataSet();
         List<Number> values = new ArrayList<>();
-        values.add(mcMgr.loadMcByCategoripro("CAT1"));
-        values.add(mcMgr.loadMcByCategoripro("CAT2"));
-        values.add(mcMgr.loadMcByCategoripro("CAT3"));
+        values.add(mcMgr.loadMcByCategoripro("CATEGORIE 1"));
+        values.add(mcMgr.loadMcByCategoripro("CATEGORIE 2"));
+        values.add(mcMgr.loadMcByCategoripro("CATEGORIE 3"));
         values.add(mcMgr.loadMcByCategoripro("BOURSE"));
         dataSet.setData(values);
 

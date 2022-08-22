@@ -10,7 +10,6 @@ import com.sbs.apiced_web.entities.Categorie;
 import com.sbs.apiced_web.entities.Etablissement;
 import com.sbs.apiced_web.entities.Maitrecommunautaire;
 import com.sbs.apiced_web.entities.Notifications;
-import com.sbs.apiced_web.entities.Person;
 import com.sbs.apiced_web.entities.Typenotifs;
 import com.sbs.apiced_web.entities.Usersnotifs;
 import com.sbs.apiced_web.entities.Utilisateur;
@@ -103,7 +102,7 @@ public class AnnuaireMBean implements Serializable {
     private Villes lieudenaissance;
     private Villes domicileUtilisateur;
     private String lieuDeNaissanceMc;
-    private String domicileMc;
+    private String nniMc;
     private LocalDate dateprisedefonction;
     private String nouveauMatricule;
     private String nouvelEts;
@@ -232,12 +231,12 @@ public class AnnuaireMBean implements Serializable {
         this.lieuDeNaissanceMc = lieuDeNaissanceMc;
     }
 
-    public String getDomicileMc() {
-        return domicileMc;
+    public String getNniMc() {
+        return nniMc;
     }
 
-    public void setDomicileMc(String domicileMc) {
-        this.domicileMc = domicileMc;
+    public void setNniMc(String nniMc) {
+        this.nniMc = nniMc;
     }
 
     public String getContactDeuxMc() {
@@ -930,10 +929,10 @@ public class AnnuaireMBean implements Serializable {
                 }
 
                 //domicile 
-                if (domicileMc != null) {
-                    selectedMc.setDomicile(domicileMc);
+                if (nniMc != null) {
+                    selectedMc.setNni(nniMc);
                 } else {
-                    selectedMc.setDomicile(selectedMc.getDomicile());
+                    selectedMc.setNni(selectedMc.getNni());
                 }
 
                 //ecole
@@ -1073,10 +1072,10 @@ public class AnnuaireMBean implements Serializable {
             }
 
             //domicile 
-            if (domicileMc != null) {
-                selectedMc.setDomicile(domicileMc);
+            if (nniMc != null) {
+                selectedMc.setNni(nniMc);
             } else {
-                selectedMc.setDomicile(selectedMc.getDomicile());
+                selectedMc.setNni(selectedMc.getNni());
             }
 
             //ecole
@@ -1736,7 +1735,7 @@ public class AnnuaireMBean implements Serializable {
         newMcDateNaiss = null;
         nouvelleDateNaissance = null;
         lieudenaissance = null;
-        domicileMc = null;
+        nniMc = null;
         domicileUtilisateur = null;
         newMcNiveauSco = null;
         newMcDernierDiplome = null;
@@ -1746,15 +1745,5 @@ public class AnnuaireMBean implements Serializable {
         motifModif = null;
     }
 
-    //vider les champs apès la demande de modif majeur 
-    private void clearChampsAfterMajMajeur() {
-        nouveauMatricule = null;
-        nouvelEts = null;
-        libelleCate = null;
-        newOperateurMc = null;
-        numeroPrincipal = null;
-        selectedMc = null;
-
-    }
 
 }

@@ -24,6 +24,7 @@ import com.sbs.apiced_web.services.TransactionsManager;
 import com.sbs.apiced_web.services.TypeNotifManager;
 import com.sbs.apiced_web.services.UsersNotifManager;
 import com.sbs.apiced_web.services.UtilisateurManager;
+import com.sbs.apiced_web.utility.Utility;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -54,11 +55,13 @@ import org.primefaces.util.LangUtils;
  */
 @Named(value = "emissionPaieMensuelMoovAfricaMBean")
 @ViewScoped
-public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
-    
+public class EmissionPaieMensuelMoovAfricaMBean implements Serializable {
+
     private Paiement p;
     private String libellePaie;
     private BigInteger montantPaie;
+    private Boolean verifMoisDejaPaye = false;
+    private Boolean verifJourDePaiementSuggerre;
     private String Details;
     private Boolean selectionMc = Boolean.TRUE;
     private boolean skip;
@@ -77,17 +80,22 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
     private boolean impressionRapport = true;
     private BigInteger montantTotalSubsidesMoov;
     private BigInteger montantRestantSubsides;
+    private Boolean afficheMontantRestant;
     private List<Maitrecommunautaire> listeMaitreTigo;
     private Notifications notif = new Notifications();
     private Typenotifs typeNotification;
     private Utilisateur userCo;
     private Paiement lePaiement;
     private List<Utilisateur> listeUsers;
-    
+    private Utility util = new Utility();
+    private String libelleLog;
+    private final Auditlog log = new Auditlog();
+    private Paiement selectedPaiement;
+
     @Future
     private LocalDate MoisDePaie;
     private LocalDate DateDePaiement;
-    
+
     @EJB
     private AuditlogManager audit;
     @EJB
@@ -110,7 +118,33 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
     private UtilisateurManager utilisateurMgr;
     @EJB
     private UsersNotifManager userNotifMgr;
-    
+    @EJB
+    private AuditlogManager auditMgr;
+
+    public Paiement getSelectedPaiement() {
+        return selectedPaiement;
+    }
+
+    public void setSelectedPaiement(Paiement selectedPaiement) {
+        this.selectedPaiement = selectedPaiement;
+    }
+
+    public AuditlogManager getAuditMgr() {
+        return auditMgr;
+    }
+
+    public void setAuditMgr(AuditlogManager auditMgr) {
+        this.auditMgr = auditMgr;
+    }
+
+    public String getLibelleLog() {
+        return libelleLog;
+    }
+
+    public void setLibelleLog(String libelleLog) {
+        this.libelleLog = libelleLog;
+    }
+
     public List<Utilisateur> getListeUsers() {
         return listeUsers;
     }
@@ -124,8 +158,8 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
      */
     public EmissionPaieMensuelMoovAfricaMBean() {
     }
-    
-     @PostConstruct
+
+    @PostConstruct
     public void init() {
         //recuperation de la facecontext pour travailler avec le context courant de la requette
         FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -136,18 +170,21 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
         //ts les maitres abonnés chez moov Africa
         listeMaitreMoovAfrica = mcManager.getMoovAfricaMcs();
 
-        //liste des maitres abonnés chez airtel payable pour le mois : mc dont le wallet et le compte sont activés dns la plateforme
-        listeMaitreMoovAfricaApayer = mcManager.getMoovAfricaApayer();
+        //liste des maitres abonnés chez moov payable pour le mois : mc dont le wallet et le compte sont activés dns la plateforme
+        String nomOp = "Moov";
+        listeMaitreMoovAfricaApayer = mcManager.getMcsPayables(nomOp);
 
         System.out.println("la taille de la liste des maitre a payer " + listeMaitreMoovAfricaApayer.size());
         BigInteger som = BigInteger.ZERO;
+        BigInteger mnt;
         for (Maitrecommunautaire lis : listeMaitreMoovAfricaApayer) {
-            //System.out.println("le montant des subsides  de ce maitre -------->: " + lis.getIdcategoriepro().getMontantsubside());
+            //System.out.println("le montant des subsides  de ce maitre -------->: " + lis.getMensuel());
+            mnt = new BigInteger(lis.getMensuel());
             try {
-                   //som = som.add(lis.getIdcategoriepro().getMontantsubside());
-                   som = BigInteger.ZERO;
+                som = som.add(mnt);
+                //som = BigInteger.ZERO;
             } catch (Exception e) {
-                System.out.println("--->"+e.getMessage());
+                System.out.println("--->" + e.getMessage());
             }
         }
         System.out.println("fin de la somme  , la somme totale a payer  est de : " + som);
@@ -162,8 +199,31 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
         List<Maitrecommunautaire> listeMaitreCoDeAirtel = mcManager.getAirtelMcs();
         data.put("AIRTEL", listeMaitreCoDeAirtel);
     }
-    
-    
+
+    public Boolean getVerifMoisDejaPaye() {
+        return verifMoisDejaPaye;
+    }
+
+    public void setVerifMoisDejaPaye(Boolean verifMoisDejaPaye) {
+        this.verifMoisDejaPaye = verifMoisDejaPaye;
+    }
+
+    public Boolean getVerifJourDePaiementSuggerre() {
+        return verifJourDePaiementSuggerre;
+    }
+
+    public void setVerifJourDePaiementSuggerre(Boolean verifJourDePaiementSuggerre) {
+        this.verifJourDePaiementSuggerre = verifJourDePaiementSuggerre;
+    }
+
+    public Boolean getAfficheMontantRestant() {
+        return afficheMontantRestant;
+    }
+
+    public void setAfficheMontantRestant(Boolean afficheMontantRestant) {
+        this.afficheMontantRestant = afficheMontantRestant;
+    }
+
     public BigInteger getMontantPaie() {
         return montantPaie;
     }
@@ -196,7 +256,6 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
         this.montantTotalSubsidesMoov = montantTotalSubsidesMoov;
     }
 
- 
     public Paiement getLePaiement() {
         return lePaiement;
     }
@@ -421,8 +480,6 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
         return listeMaitreTigo;
     }
 
-
-
     public Notifications getNotif() {
         return notif;
     }
@@ -447,133 +504,105 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
         this.transacMgr = transacMgr;
     }
 
-    //creation d'un nouveau paiement mensuel 
-    public void newPaiementMensuelAirtel() {
-        Boolean verifMoisDejaPaye = false;
-        Paiement paie = new Paiement();
-        Boolean verifJourDePaiementSuggerre;
-        //si le montant entré est égal ou supérieur au montant total on continue avec les autres verifs importantes
-        if ((montantPaie.compareTo(montantTotalSubsidesMoov) == 0) || (montantPaie.compareTo(montantTotalSubsidesMoov) == 1)) {
-            //on continue les autres verifs
-            System.out.println("mois recuperé dns le formulaire   " + this.MoisDePaie.format(DateTimeFormatter.ISO_DATE).substring(0, 7)   );
-            // parcours de la liste de tous les mois payés recupéré de la bd
+    public Utility getUtil() {
+        return util;
+    }
 
-            for (Paiement listeDesMoisDejaPaye : listeDesMoisDejaPayes) {
-                //System.out.println(" : ->" + listeDesMoisDejaPaye.getMois());
-                if (listeDesMoisDejaPaye.getMois().equalsIgnoreCase(this.MoisDePaie.format(DateTimeFormatter.ISO_DATE).substring(0, 7)) && listeDesMoisDejaPaye.getOperateurmobile().equalsIgnoreCase("MOOV")  ) {
-                    //presence du mois de paiement déjà en base de données 
-                    System.out.println("attention ce mois à déjà été payé pour ce opérateur  : ->" + listeDesMoisDejaPaye.getMois());
-                    verifMoisDejaPaye = true;
+    public void setUtil(Utility util) {
+        this.util = util;
+    }
+
+    public UtilisateurManager getUtilisateurMgr() {
+        return utilisateurMgr;
+    }
+
+    public void setUtilisateurMgr(UtilisateurManager utilisateurMgr) {
+        this.utilisateurMgr = utilisateurMgr;
+    }
+
+    public UsersNotifManager getUserNotifMgr() {
+        return userNotifMgr;
+    }
+
+    public void setUserNotifMgr(UsersNotifManager userNotifMgr) {
+        this.userNotifMgr = userNotifMgr;
+    }
+
+    //creation d'un nouveau paiement mensuel 
+    public void newPaiementMensuelMoov() {
+        System.out.println("creation d'un nouveau paiement de mcs abonnes moov");
+
+        if ((montantPaie.compareTo(montantTotalSubsidesMoov) == 0) || (montantPaie.compareTo(montantTotalSubsidesMoov) == 1)) {
+            System.out.println("le montant saisi est correct");
+            System.out.println("**************verif si le mois a ete deja paye************");
+            System.out.println("nbre des mois deja payes  " + listeDesMoisDejaPayes.size());
+            //il y a un montant restant afficher un msg en jaune pour alerte
+            try {
+                montantRestantSubsides = montantPaie.subtract(montantTotalSubsidesMoov);
+            } catch (Exception e) {
+            }
+
+            if (montantRestantSubsides.intValue() > 0) {
+                System.out.println("le montant restant de paiement est  " + montantRestantSubsides);
+                afficheMontantRestant = Boolean.TRUE;
+            }
+
+            //si le paiement existe deja parmis les mois payé : rejeter 
+            Paiement paie = new Paiement(DateDePaiement.format(DateTimeFormatter.ISO_DATE),
+                    Details,
+                    montantPaie,
+                    montantRestantSubsides.toString(),
+                    this.MoisDePaie.format(DateTimeFormatter.ISO_DATE).substring(0, 7),
+                    libellePaie,
+                    Boolean.FALSE, DateOfDay(),
+                    "MOOV",
+                    Boolean.FALSE,
+                    etatPaiementMgr.etatPaiementbyId(BigDecimal.ONE),
+                    userCo);
+
+            //controle sur le paiement deja effectue d'un mois 
+            for (Paiement unMois : listeDesMoisDejaPayes) {
+               // System.out.println(" : ->" + unMois.getMois() + " montant " + unMois.getMontanttotal());
+
+                if (unMois.getMois().equalsIgnoreCase(paie.getMois()) && unMois.getOperateurmobile().equalsIgnoreCase("MOOV")) {
+                    System.out.println("attention ce mois à déjà été payé pour ce opérateur  :");
+                    verifMoisDejaPaye = Boolean.TRUE;
                     break;
+
                 } else {
-                    verifMoisDejaPaye = false;
+                    System.out.println("le paiement peut etre effectué");
+                    verifMoisDejaPaye = Boolean.FALSE;
+                    //     pm.persist(paie);
                 }
             }
+
             //control : la date de paiement suggeré ne doit pas etre inférieure a la date du jour de saisie 
             //affichge de msg d'erreur si la date de paiement est inf a la date de today 
             boolean rep = DateDePaiement.isBefore(LocalDate.now());
-            //System.out.println("reponse = " + rep);
+            System.out.println("date de paiement suggeree est inférieur a la date d'aujourdhui : " + rep);
             if (rep) {
-                System.out.println("erreur on ne peux payer car la date est inférieur a celle de today , pour preuve : " + DateDePaiement + " today : " + LocalDate.now());
-                verifJourDePaiementSuggerre = true;
+                System.out.println("erreur on ne peux payer car la date est inférieur a celle de la date de saisie du paiement  " + DateDePaiement + " date d'audjourd'hui : " + LocalDate.now());
+                verifJourDePaiementSuggerre = Boolean.TRUE;
             } else {
-                System.out.println("on peux payer ");
-                verifJourDePaiementSuggerre = false;
+                System.out.println("la date suggeree a l'opérateur telco pour le paiement est bonne ");
+                verifJourDePaiementSuggerre = Boolean.FALSE;
             }
 
-            if (verifMoisDejaPaye) { //un msg d'erreur et l'arrêt du process si le mot a payé existe deja en base 
+            if (verifMoisDejaPaye) { //un msg d'erreur et l'arrêt du process si le mois a payé existe deja en base 
                 msgErrorCreaPaiement();
             } else if (verifJourDePaiementSuggerre) {
                 msgErrorDateDemandePaiement();
             } else { //sinn on paie a present 
-                //il y a un montant restant afficher un msg en jaune pour alerte
-                try {
-                    montantRestantSubsides = montantPaie.subtract(montantTotalSubsidesMoov);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-                if (montantRestantSubsides.intValue() > 0) {
+
+                if (afficheMontantRestant) {
                     msgAlerteMonnaie();
                 }
-
-                paie.setMontanttotal(montantPaie);
-                paie.setLibelle(libellePaie);
-                paie.setDetails(Details);
-                //date de saisie du paiement 
-                paie.setDatesaisiepaiement(DateOfDay());
-                paie.setDatepaiement(DateDePaiement.format(DateTimeFormatter.ISO_DATE));//date de paiement suggeré a l'opérateur 
-                paie.setOperateurmobile("MOOV");
-                paie.setEmeteur(userCo);
-                paie.setEtatpaiement(etatPaiementMgr.etatPaiementbyId(BigDecimal.ONE));
-                paie.setMois(this.MoisDePaie.format(DateTimeFormatter.ISO_DATE).substring(0, 7));
-                paie.setValidationcoordonnateur(Boolean.FALSE);
-                paie.setMontantrestant(montantRestantSubsides.toString());
-                paie.setEtatenvoiop(Boolean.FALSE);
-                pm.persist(paie);
-                
-                //trace log
-                Auditlog log = new Auditlog();
-                log.setAuteurIdutilisateur(userCo);
-                log.setLogin(userCo.getLogin());
-                log.setAction("emission du paiement des subsides  : " + paie.getLibelle() + " par l'utilisateur : " + userCo.getLogin() + " d'un montant de  :" + paie.getMontanttotal() + " à l'opérateur : MOOV");
-                log.setDateaction(DateOfDay());
-                audit.persist(log);
-                //soummision au coordonnateur 
-                //save de la notif
-                BigDecimal typn = BigDecimal.valueOf(4);
-                typeNotification = typeNotifMgr.creaMcTypeNotifById(typn);
-
-                String libelleNotif = "Soumission de paiement de subsides mensuel MOOV  par l'utilisateur : " + userCo.getLogin()+" pour validation";
-                String details = "soumission de paiement de subsides du mois de " + paie.getMois() + "d'un montant de  " + paie.getMontanttotal();
-                notif.setDateresolution(DateOfDay());
-                notif.setLibelle(libelleNotif);
-                notif.setDetails(details);
-                notif.setDatecreation(DateOfDay());
-                notif.setEtat(BigInteger.ZERO);
-                notif.setTypenotif(typeNotification);
-                notif.setCreateur(userCo);
-                notif.setIdinfo(paie.getIdpaiement().toString());
-                //save de la notif
-                notifMgr.persist(notif);
-
-                //persistance de toutes les notifications pour tous les utilisateurs ...
-                listeUsers = utilisateurMgr.getAllActivedUsers();
-                //je recupère la dernière notif créée pour le setting a venir 
-                Integer lastNotifId = notifMgr.lastNotif();
-                //creation des btns 
-                for (Utilisateur u : listeUsers) {
-                    Usersnotifs userNotif = new Usersnotifs();
-                    userNotif.setDateinsert(DateOfDay());
-                    userNotif.setEtat(BigInteger.ZERO);
-                    userNotif.setIdutilisateur(BigInteger.valueOf(u.getIdutilisateur()));
-                    userNotif.setTitre(libelleNotif);
-                    userNotif.setInformation(details);
-                    userNotif.setCreateur(userCo.getLogin());
-                    userNotif.setTypeusernotif("VALIDATION_PAIE_SUBSIDES");
-                    //construction des btn en fonction des profils
-                    if (u.getProfilIdprofil().getLibelle().equalsIgnoreCase("emetteur")) {
-                        userNotif.setBtnvalidemc("false");
-                        userNotif.setBtnvalidepaie("false");
-                        userNotif.setBtndetail("true");
-                    } else if (u.getProfilIdprofil().getLibelle().equalsIgnoreCase("coordonnateur")) {
-                        userNotif.setBtnvalidemc("false");
-                        userNotif.setBtnvalidepaie("true");
-                        userNotif.setBtndetail("false");
-                    } else {
-                        userNotif.setBtnvalidemc("false");
-                        userNotif.setBtnvalidepaie("false");
-                        userNotif.setBtndetail("true");
-                    }
-                    //setter l'id du notif
-                    userNotif.setIdnotif(BigInteger.valueOf(lastNotifId));
-                    //on persist la notifUser pr finir
-                    userNotifMgr.persist(userNotif);
-                }
-                //creation d'une liste de transaction pour persistance ...
+                paiementMgr.persist(paie);
+                //creation d'une liste de transactions pour persistance ...
                 //recuperation d'un ligne de mc a payer 
                 System.out.println("debut de recup des mc payable");
-                List<Maitrecommunautaire> LesMc = mcManager.recupMcPayable("MOOV");
-                System.out.println("on a recuperer :  " + LesMc.size());
+                List<Maitrecommunautaire> LesMc = mcManager.recupMcPayable("Moov");
+                System.out.println("on a recuperer :  " + LesMc.size() + " maitres abonnés moov payables ");
                 LesMc.forEach(maitre -> {
                     //System.out.println("infos mc ->" + maitre.getNom() + " " + maitre.getPrenoms() + " " + maitre.getContactun() + " " + maitre.getOperatortelco());
                     //convertir en transaction ...
@@ -585,14 +614,13 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
                         t.setStatutwallet(BigInteger.ZERO);
                     }
                     t.setTypecompte("compte APICED");
-                    //t.setMontantsubside(maitre.getIdcategoriepro().getMontantsubside().toString());
+                    t.setMontantsubside(maitre.getMensuel());
                     t.setContactmaitre(maitre.getContactun());
                     t.setLibellepaie(paie.getLibelle());
                     t.setDatepaiement(paie.getDatepaiement());
                     t.setMoisanneepaie(paie.getMois());
                     t.setOperateurs(maitre.getOperatortelco());
-                    System.out.println("le contenu de paie " + paie.getIdpaiement());
-                    //t.setPaiementid(BigInteger.valueOf(paie.getIdpaiement()));
+                    //System.out.println("le contenu de paie " + paie.getIdpaiement());
                     t.setPaiementid(paie.getIdpaiement());
                     t.setNommaitre(maitre.getNom());
                     t.setPrenomsmaitre(maitre.getPrenoms());
@@ -601,10 +629,26 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
                     transacMgr.persist(t);
                     //System.out.println("enregistrement ok de la transaction...");
                 });
+
+                libelleLog = "emission du paiement des subsides  : " + paie.getLibelle() + " par l'utilisateur : " + userCo.getLogin() + " d'un montant de  :" + paie.getMontanttotal() + " à l'opérateur : MOOV";
+
+                saveLog(libelleLog, userCo);
+
+                typeNotification = typeNotifMgr.creaMcTypeNotifById(BigDecimal.valueOf(4));
+
+                String libelleNotif = "création de paiement de subsides mensuel MOOV  par l'utilisateur : " + userCo.getLogin() + " pour validation";
+                String details = "création de paiement de subsides du mois de " + paie.getMois() + "d'un montant de  " + paie.getMontanttotal();
+
+                listeUsers = utilisateurMgr.getAllActivedUsers();
+                //save de la notif de paiement 
+                savePaieNotif(libelleNotif, details, 4, paie, listeUsers);
+
                 msgSuccessNewPaie();
                 PrimeFaces.current().ajax().update(":form:menu");
             }
+
         } else {
+            System.out.println("le montant saisi est inférieur au montant total des subsides a payer ");
             msgErrorMauvaisMontant();
         }
     }
@@ -645,20 +689,6 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
         return date.substring(3, 10);
     }
 
-    public void saveLog(String msg, String date) {
-        //trace dans la table auditlOg
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
-        Utilisateur userConnected = (Utilisateur) session.getAttribute("utilisateurConnecte");
-        String userLogin = userConnected.getLogin();
-        Auditlog log = new Auditlog();
-        log.setAuteurIdutilisateur(userConnected);
-        log.setLogin(userLogin);
-        log.setAction(msg);
-        log.setDateaction(date);
-        audit.persist(log);
-    }
-
     //vidage de tous les champs 
     public void clearChamps() {
         this.DateDePaiement = null;
@@ -671,7 +701,7 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
     }
 
     public void msgSuccessNewPaie() {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "demande de paiement enregistrée - Prière Imprimer le rapport de demande", "En attente de validation par le coordonnateur , pour paiement final"));
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Demande de paiement enregistrée", "En attente de validation par le coordonnateur ,Prière Imprimer le rapport de demande à l'écran paiement à valider"));
     }
 
     public void msgAlerteMonnaie() {
@@ -708,6 +738,73 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
         }
     }
 
+    //sauvegarde d'un log 
+    public void saveLog(String msg, Utilisateur userConnecte) {
+        System.out.println("msg du log " + msg);
+        System.out.println("la date " + DateOfDay());
+        System.out.println("utilisateur connecte  " + userConnecte.getLogin());
+
+        log.setAuteurIdutilisateur(userConnecte);
+        log.setLogin(userConnecte.getLogin());
+        log.setAction(msg + " par l'utilisateur " + userConnecte.getLogin());
+        log.setDateaction(DateOfDay());
+        auditMgr.persist(log);
+    }
+
+    //sauvegarde d'une notification
+    public void savePaieNotif(String libelleNotif, String details, Integer idType, Paiement p, List<Utilisateur> userList) {
+        System.out.println("libelle  " + libelleNotif);
+        System.out.println("details  " + details);
+        System.out.println("idtype  " + idType);
+        System.out.println("paiement  " + p.getLibelle());
+        System.out.println("nbre de user pour notifs  " + userList.size());
+
+        BigDecimal typn = BigDecimal.valueOf(idType);
+        typeNotification = typeNotifMgr.creaMcTypeNotifById(typn);
+        notif.setDateresolution(DateOfDay());
+        notif.setLibelle(libelleNotif);
+        notif.setDetails(details);
+        notif.setDatecreation(DateOfDay());
+        notif.setEtat(BigInteger.ZERO);
+        notif.setTypenotif(typeNotification);
+        notif.setCreateur(userCo);
+        notif.setIdinfo(p.getIdpaiement().toString());
+        notifMgr.persist(notif);
+
+        listeUsers = utilisateurMgr.getAllActivedUsers();
+        //je recupère la dernière notif créée pour le setting a venir 
+        Integer lastNotifId = notifMgr.lastNotif();
+        //creation des btns 
+        for (Utilisateur u : listeUsers) {
+            Usersnotifs userNotif = new Usersnotifs();
+            userNotif.setDateinsert(DateOfDay());
+            userNotif.setEtat(BigInteger.ZERO);
+            userNotif.setIdutilisateur(BigInteger.valueOf(u.getIdutilisateur()));
+            userNotif.setTitre(libelleNotif);
+            userNotif.setInformation(details);
+            userNotif.setCreateur(userCo.getLogin());
+            userNotif.setTypeusernotif("VALIDATION_PAIE_SUBSIDES");
+            //construction des btn en fonction des profils
+            if (u.getProfilIdprofil().getLibelle().equalsIgnoreCase("emetteur")) {
+                userNotif.setBtnvalidemc("false");
+                userNotif.setBtnvalidepaie("false");
+                userNotif.setBtndetail("true");
+            } else if (u.getProfilIdprofil().getLibelle().equalsIgnoreCase("coordonnateur")) {
+                userNotif.setBtnvalidemc("false");
+                userNotif.setBtnvalidepaie("true");
+                userNotif.setBtndetail("false");
+            } else {
+                userNotif.setBtnvalidemc("false");
+                userNotif.setBtnvalidepaie("false");
+                userNotif.setBtndetail("true");
+            }
+            //setter l'id du notif
+            userNotif.setIdnotif(BigInteger.valueOf(lastNotifId));
+            //on persist la notifUser pr finir
+            userNotifMgr.persist(userNotif);
+        }
+    }
+
     public void onTabChange(TabChangeEvent event) {
         FacesMessage msg = new FacesMessage("Tab Changed", "Active Tab: " + event.getTab().getTitle());
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -727,5 +824,5 @@ public class EmissionPaieMensuelMoovAfricaMBean  implements Serializable {
             System.out.println("la valeur est resté : " + step.toString());
         }
     }
-    
+
 }

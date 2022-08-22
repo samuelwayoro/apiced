@@ -31,9 +31,9 @@
                                 <p:menuitem value="Rechercher" outcome="/private/rechercherMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesgestioncarrieremc}" >
                                     <f:param name="i" value="1"/>
                                 </p:menuitem>
-<!--                                <p:menuitem value="Maitre(s) en attente " outcome="/private/maitresAValider">
-                                    <f:param name="i" value="2"/>
-                                </p:menuitem>-->
+                                <!--                                <p:menuitem value="Maitre(s) en attente " outcome="/private/maitresAValider">
+                                                                    <f:param name="i" value="2"/>
+                                                                </p:menuitem>-->
                                 <p:menuitem value="Ajouter un nouveau maitre" outcome="/private/nouveauMaitre" rendered="#{loginMBean.utilisateur.profilIdprofil.accesnouveaumc}">
                                     <f:param name="i" value="2"/>
                                 </p:menuitem>
@@ -63,7 +63,7 @@
                                 <div class="p-col">
                                     <div class="p-grid">
                                         <div class="p-col-6">
-                                            <p:panel header="Rechercher un maitre ">
+                                            <p:panel header="Rechercher un maitre à partir de son nom ou son prénoms">
                                                 <div class="card">
                                                     <h:form id="searcheFormOne">
                                                         <div class="p-formgroup-inline">
@@ -88,7 +88,7 @@
                                             </p:panel>
                                         </div>
                                         <div class="p-col-6">
-                                            <p:panel header="Rechercher un maitre" class="">
+                                            <p:panel header="Rechercher un maitre à partir de son matricule" class="">
                                                 <div class="card">
                                                     <h:form id="searcheFormTwo">
                                                         <div class="p-formgroup-inline">
@@ -209,10 +209,6 @@
 
                                                         <div class="ui-fluid p-formgrid p-grid">
                                                             <div class="p-field p-col-12 p-md-3">
-                                                                <p:outputLabel>Domicile  : </p:outputLabel>                                                            
-                                                                <p:inputText value="#{rechercherMBean.selectedMc.domicile}" disabled="true" style="font-weight: bold"/>
-                                                            </div>
-                                                            <div class="p-field p-col-12 p-md-3">
                                                                 <p:outputLabel>Milieu résidence  : </p:outputLabel>
                                                                 <p:inputText value="#{rechercherMBean.selectedMc.milieuResidence}" disabled="true" style="font-weight: bold"/>
                                                             </div>
@@ -296,18 +292,13 @@
                                                             </div>
                                                             <div class="p-field p-col-12 p-md-4">
                                                                 <p:outputLabel>Opérateur télécom : <p:outputLabel  class="p-text-bold"/></p:outputLabel>
-                                                                <p:selectOneMenu id="operateurTelecom"  value="#{rechercherMBean.selectedMc.operatortelco}">
-                                                                    <f:selectItem itemLabel="Selectionnez un Opérateur" itemValue="" />
-                                                                    <f:selectItem itemLabel="AIRTEL" itemValue="AIRTEL" />
-                                                                    <f:selectItem itemLabel="MOOV" itemValue="MOOV"/>
-                                                                </p:selectOneMenu>
+
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.operatortelco}" placeholder="#{rechercherMBean.selectedMc.operatortelco}"/>
+
                                                             </div>
                                                         </div>
                                                         <div class="ui-fluid p-formgrid p-grid">
-                                                            <div class="p-field p-col-12 p-md-4">
-                                                                <p:outputLabel>Domicile  : <p:outputLabel value="#{rechercherMBean.selectedMc.domicile}"  class="p-text-bold"/></p:outputLabel>                                                            
-                                                                <p:inputText value="#{rechercherMBean.selectedMc.domicile}" placeholder="#{rechercherMBean.selectedMc.domicile}" style="font-weight: bold"/>
-                                                            </div>
+
                                                             <div class="p-field p-col-12 p-md-4">
                                                                 <p:outputLabel>Lieu de naissance  : <p:outputLabel value="#{rechercherMBean.selectedMc.lieudenaissance}"  class="p-text-bold"/></p:outputLabel>
                                                                 <p:inputText value="#{rechercherMBean.selectedMc.lieudenaissance}" placeholder="#{rechercherMBean.selectedMc.lieudenaissance}" style="font-weight: bold"/>
@@ -371,9 +362,7 @@
                                                         <div class="ui-fluid p-formgrid p-grid">
                                                             <div class="p-field p-col-12 p-md-4">
                                                                 <p:outputLabel>Catégorie  : <p:outputLabel  value="#{rechercherMBean.selectedMc.categoriepro}"  class="p-text-bold"/></p:outputLabel>  
-                                                                <p:selectOneMenu id="cateMc" value="#{rechercherMBean.newCateMc}" converter="#{rechercherMBean.categoriesConverter}">
-                                                                    <f:selectItems value="#{rechercherMBean.listeCategories}" var="c" itemLabel="#{c.libelle}" itemValue="#{c}" itemLabelEscaped="true"  />
-                                                                </p:selectOneMenu>
+                                                                <p:inputText value="#{rechercherMBean.selectedMc.categoriepro}" placeholder="#{rechercherMBean.selectedMc.categoriepro}"/>
                                                             </div>
                                                             <div class="p-field p-col-12 p-md-4">
                                                                 <p:outputLabel>Observation BM : <em>(statut compte)</em> : <p:outputLabel  value="#{rechercherMBean.selectedMc.statutcompte}" class="p-text-bold"/> </p:outputLabel>

@@ -116,6 +116,23 @@ public class Paiement implements Serializable {
     public Paiement() {
     }
 
+    public Paiement(String datepaiement, String details, BigInteger montanttotal,String montantRestant, String mois, String libelle, Boolean validationcoordonnateur, String datesaisiepaiement, String operateurmobile, Boolean etatenvoiop, Etatpaiement etatpaiement, Utilisateur emeteur) {
+        this.datepaiement = datepaiement;
+        this.details = details;
+        this.montanttotal = montanttotal;
+        this.montantrestant = montantRestant;
+        this.mois = mois;
+        this.libelle = libelle;
+        this.validationcoordonnateur = validationcoordonnateur;
+        this.datesaisiepaiement = datesaisiepaiement;
+        this.operateurmobile = operateurmobile;
+        this.etatenvoiop = etatenvoiop;
+        this.etatpaiement = etatpaiement;
+        this.emeteur = emeteur;
+    }
+    
+    
+
     public String getEnvoyeuraop() {
         return envoyeuraop;
     }
@@ -309,6 +326,14 @@ public class Paiement implements Serializable {
     @Override
     public String toString() {
         return "com.sbs.apiced_web.entities.Paiement[ idpaiement=" + idpaiement + " ]";
+    }
+
+    public void setForValidation(String dateOfDay, Boolean etatEnvoiOperateur, Utilisateur valideur, Boolean validationParCoordo) {
+        this.datevalidationcoordo = dateOfDay;
+        this.setEtatenvoiop(etatEnvoiOperateur);
+        this.valideur = valideur;
+        this.validationcoordonnateur = validationParCoordo;
+        System.out.println("infos importantes pour la validation ok");
     }
     
 }

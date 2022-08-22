@@ -172,8 +172,10 @@ public class NotifsManager {
 
     public Long totalPaiement() {
         Boolean et = Boolean.TRUE;
-        Query q = em.createQuery("SELECT COUNT(p) FROM Paiement p where p.validationcoordonnateur = :etatValide");
+        String theDate = DateOfDay();
+        Query q = em.createQuery("SELECT COUNT(p) FROM Paiement p where p.validationcoordonnateur = :etatValide and p.datevalidationcoordo = :dateV  ");
         q.setParameter("etatValide", et);
+        q.setParameter("dateV", theDate);
         return (Long) q.getSingleResult();
     }
 

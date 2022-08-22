@@ -172,9 +172,8 @@
                                                         <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('deletePaiementDialog').hide()"/>
                                                     </p:confirmDialog>
                                                     <!--pup up validation de paiement -->
-                                                    <p:confirmDialog widgetVar="validerPaiement" showEffect="fade" width="300" message="Valider ce paiement ?" header="Confirm" severity="warn">
-                                                        <p:commandButton value="Oui" icon="pi pi-check"   actionListener="#{paiementEnAttenteMBean.validerPaie()}" process="@this" oncomplete="PF('validerPaiement').hide()" />
-                                                        <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('validerPaiement').hide()"/>
+                                                    <p:confirmDialog widgetVar="validerPaiement" showEffect="fade" width="300" message="Veuillez verifier la connexion au serveur sftp de l'opérateur télécom !" header="Attention" severity="warn">
+                                                       
                                                     </p:confirmDialog>
                                                     <p:dialog header="Rapport Paiement" showEffect="fade" modal="true" widgetVar="viewPaiementDialog" responsive="true" id="rapportPaie" >
                                                         <p:outputPanel id="manage-view-paiement" class="ui-fluid" >
