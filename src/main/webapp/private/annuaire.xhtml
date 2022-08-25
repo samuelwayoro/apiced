@@ -144,9 +144,9 @@
 
                                         <!-- btn de zoom-->
                                         <!-- btn de modif mineur-->
-                                        <p:commandButton id="modifMin" style="margin-left: 2px"  icon="pi pi-user-edit" update=":form:manage-modifInfos-mc-content"  
+                                        <p:commandButton id="modifMin" style="margin-left: 2px"  icon="pi pi-user-edit" update=":form:manage-modifInfos-mc-content" rendered="false"
                                                          oncomplete="PF('viewModifMcDialog').show()" 
-                                                         styleClass="rounded-button ui-button-warning" process="@this" rendered="#{loginMBean.utilisateur.profilIdprofil.accesmodifmc}" >
+                                                         styleClass="rounded-button ui-button-warning" process="@this"  >
                                             <f:setPropertyActionListener value="#{product}"  target="#{annuaireMBean.selectedMc}"/>
                                             <p:resetInput   target=":form:manage-modifInfos-mc-content"/>
                                         </p:commandButton>

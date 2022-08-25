@@ -103,6 +103,10 @@ public class Paiement implements Serializable {
     private Boolean etatenvoiop;
     @Column(name = "ENVOYEURAOP")
     private String envoyeuraop;
+    @Column(name = "CATEGORIEPAIEMENT")
+    private String categoriePaiement;
+    
+    
     @JoinColumn(name = "ETATPAIEMENT", referencedColumnName = "IDETAT")
     @ManyToOne
     private Etatpaiement etatpaiement;
@@ -116,7 +120,7 @@ public class Paiement implements Serializable {
     public Paiement() {
     }
 
-    public Paiement(String datepaiement, String details, BigInteger montanttotal,String montantRestant, String mois, String libelle, Boolean validationcoordonnateur, String datesaisiepaiement, String operateurmobile, Boolean etatenvoiop, Etatpaiement etatpaiement, Utilisateur emeteur) {
+    public Paiement(String datepaiement, String details, BigInteger montanttotal,String montantRestant, String mois, String libelle, Boolean validationcoordonnateur, String datesaisiepaiement, String operateurmobile, Boolean etatenvoiop, Etatpaiement etatpaiement, Utilisateur emeteur,String categorie) {
         this.datepaiement = datepaiement;
         this.details = details;
         this.montanttotal = montanttotal;
@@ -129,6 +133,16 @@ public class Paiement implements Serializable {
         this.etatenvoiop = etatenvoiop;
         this.etatpaiement = etatpaiement;
         this.emeteur = emeteur;
+        this.categoriePaiement = categorie;
+        
+    }
+
+    public String getCategoriePaiement() {
+        return categoriePaiement;
+    }
+
+    public void setCategoriePaiement(String categoriePaiement) {
+        this.categoriePaiement = categoriePaiement;
     }
     
     

@@ -499,11 +499,11 @@ public class MaitreaCorriger implements Serializable {
         selectedMc.setEtatcomptemc(selectedMc.getEtatcomptemc());
         selectedMc.setStatutwallet(selectedMc.getStatutwallet());
         selectedMc.setValidationcoordonnateur(Boolean.FALSE);
-        selectedMc.setRejetvalidation(Boolean.FALSE);
+//        selectedMc.setRejetvalidation(Boolean.FALSE);
         selectedMc.setDatemodifcompte(DateOfDay());
         selectedMc.setIdvalideurcompte(null);
-        selectedMc.setMotifrejetvalidation(null);
-        selectedMc.setDaterejetvalidation(null);
+     //   selectedMc.setMotifrejetvalidation(null);
+     //   selectedMc.setDaterejetvalidation(null);
         selectedMc.setDatemodifcompte(DateOfDay());
 
         //System.out.println("modif  : "+selectedMc.getSitmatrimonial()+"  "+selectedMc.getNbreenfants());

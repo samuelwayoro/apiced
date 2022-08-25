@@ -126,6 +126,7 @@ public class MaitreCoManager {
         String val = "Moov";
         Query q = em.createQuery("SELECT m FROM Maitrecommunautaire m WHERE m.operatortelco = :op");
         q.setParameter("op", val);
+        System.out.println("total de mcs moov depuis maitrecomanager  "+q.getResultList().size());
         return q.getResultList();
     }
 
@@ -160,10 +161,17 @@ public class MaitreCoManager {
         qr.setParameter("val", val);
         return qr.getResultList();
     }
+    
+    public List<Maitrecommunautaire>searchByOpAndCtg(String operateur,String cate){
+        Query q = em.createQuery("select m from Maitrecommunautaire m WHERE m.operatortelco = :op and m.categoriepro = :ctg");
+        q.setParameter("op", operateur);
+        q.setParameter("ctg", cate);
+        return q.getResultList();
+    }
 
     public List<Maitrecommunautaire> rechercherParNom(String nom) {
         Boolean val = Boolean.TRUE;
-        Query q = em.createQuery("Select m FROM Maitrecommunautaire m WHERE m.nom like :nom and m.validationcoordonnateur = :val  ");
+        Query q = em.createQuery("Select m FROM Maitrecommunautaire m WHERE m.nom like :nom and m.validationcoordonnateur = :val");
         q.setParameter("nom", "%" + nom + "%");
         q.setParameter("val", val);
         return q.getResultList();
@@ -171,7 +179,7 @@ public class MaitreCoManager {
 
     public List<Maitrecommunautaire> rechercherParPrenoms(String prenomsMc) {
         Boolean val = Boolean.TRUE;
-        Query q = em.createQuery("Select m FROM Maitrecommunautaire m WHERE m.prenoms like :prenoms and m.validationcoordonnateur = :val ");
+        Query q = em.createQuery("Select m FROM Maitrecommunautaire m WHERE m.prenoms like :prenoms and m.validationcoordonnateur = :val");
         q.setParameter("prenoms", "%" + prenomsMc + "%");
         q.setParameter("val", val);
         return q.getResultList();
@@ -252,7 +260,7 @@ public class MaitreCoManager {
     public Boolean persistByExcelFile(Maitrecommunautaire mc) {
         //verifier si il y deja un mc avec ce contact dans la table des mcs 
         List<Maitrecommunautaire> listeVerif = McByPhone(mc.getContactun());
-        if (listeVerif.size() > 0) {
+        if (!listeVerif.isEmpty()) {
             System.out.println("il ya deja un mc avec ce numero de phone....");
             return Boolean.FALSE;
         } else {

@@ -14,6 +14,7 @@ com\sbs\apiced_web\managedBeans\UserWizardMBean$1.class
 com\sbs\apiced_web\entities\Iden.class
 com\sbs\apiced_web\managedBeans\MaitreaCorriger$1.class
 com\sbs\apiced_web\entities\Villes.class
+com\sbs\apiced_web\managedBeans\SelectivPaie.class
 com\sbs\apiced_web\services\AuditlogManager.class
 com\sbs\apiced_web\managedBeans\AnnuaireMBean$1.class
 com\sbs\apiced_web\managedBeans\UsersMBean$1.class
@@ -43,12 +44,14 @@ com\sbs\apiced_web\entities\Person.class
 com\sbs\apiced_web\services\DiplomesManager.class
 com\sbs\apiced_web\services\PromotionManager.class
 com\sbs\apiced_web\entities\Categorie.class
+com\sbs\apiced_web\entities\LazyMaitresCoDataModel.class
 com\sbs\apiced_web\services\EtatPaiementManager.class
 com\sbs\apiced_web\filters\LoginFilter.class
 com\sbs\apiced_web\managedBeans\CategorieMcMbean.class
 com\sbs\apiced_web\managedBeans\ProfilsMBean.class
 com\sbs\apiced_web\managedBeans\MaskView.class
 com\sbs\apiced_web\services\PaiementMensuelManager.class
+com\sbs\apiced_web\entities\LazySorter.class
 com\sbs\apiced_web\managedBeans\CalendarView.class
 com\sbs\apiced_web\managedBeans\HomeCoordoMBean.class
 com\sbs\apiced_web\services\TypeNotifManager.class

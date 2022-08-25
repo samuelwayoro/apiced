@@ -84,21 +84,24 @@
                 <div class="p-col-12">
                     <div class="card" style="margin-top: -16px">
                         <h:form>
-                            <p:tabMenu activeIndex="2">
-                                <p:menuitem value="Nouveau  paiement MOOV" outcome="/private/paiementMoovAfrica">
+                            <p:tabMenu activeIndex="3">
+                                <p:menuitem value="Nouveau paiement MOOV" outcome="/private/paiementMoovAfrica">
                                     <f:param name="i" value="0"/>
                                 </p:menuitem>
-                                <p:menuitem value="Nouveau  paiement AIRTEL" outcome="/private/emissionPaiements">
+                                <p:menuitem value="Paiement Selectif" outcome="/private/paiementSelect">
                                     <f:param name="i" value="1"/>
                                 </p:menuitem>
-                                <p:menuitem value="Paiements à valider (#{monProfilMBean.nbrePaiementEnAttente})" outcome="/private/paiementEnAttente">
+                                <p:menuitem value="Nouveau paiement AIRTEL" outcome="/private/emissionPaiements">
                                     <f:param name="i" value="2"/>
                                 </p:menuitem>
-                                <p:menuitem value="Paiements opérateurs (#{monProfilMBean.nbrePaiementAenvoyeAOp})" outcome="/private/suiviPaiements">
+                                <p:menuitem value="Paiements à valider (#{monProfilMBean.nbrePaiementEnAttente})" outcome="/private/paiementEnAttente">
                                     <f:param name="i" value="3"/>
                                 </p:menuitem>
-                                <p:menuitem value="Suivi des transactions" outcome="/private/suivitransactions" disabled="true">
+                                <p:menuitem value="Paiements opérateurs (#{monProfilMBean.nbrePaiementAenvoyeAOp})" outcome="/private/suiviPaiements">
                                     <f:param name="i" value="4"/>
+                                </p:menuitem>
+                                <p:menuitem value="Suivi transactions" outcome="/private/suivitransactions" disabled="true">
+                                    <f:param name="i" value="5"/>
                                 </p:menuitem>
                             </p:tabMenu>
                         </h:form>

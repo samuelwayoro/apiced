@@ -32,169 +32,261 @@
                     </div>
                     <p:divider/>
                     <p:panel>
-                        
-                            <p:toolbar id="tb">
-                                <p:toolbarGroup>
-                                    <h:form id="btnForm">
-                                        <p:linkButton type="button" title="retour" icon="pi pi-arrow-left" styleClass="ui-button-help" outcome="annuaire.xhtml" />
-                                        <i class="pi pi-bars p-px-2"/>
-                                        <p:commandButton icon="pi pi-print" styleClass="p-mr-2 p-mb-2  ui-button-warning" 
-                                                         ajax="false" id="pdfExport"  actionListener="#{detailMaitreCoMBean.pdfExport()}" />
-                                        </h:form>
-                                </p:toolbarGroup>
 
-                            </p:toolbar>   
-                        
+                        <p:toolbar id="tb">
+                            <p:toolbarGroup>
+                                <h:form id="btnForm">
+                                    <p:linkButton type="button" title="retour" icon="pi pi-arrow-left" styleClass="ui-button-help" outcome="annuaire.xhtml" />
+                                    <i class="pi pi-bars p-px-2"/>
+                                    <p:commandButton icon="pi pi-print" styleClass="p-mr-2 p-mb-2  ui-button-warning" 
+                                                     ajax="false" id="pdfExport"  actionListener="#{detailMaitreCoMBean.pdfExport()}" />
+                                </h:form>
+                            </p:toolbarGroup>
+
+                        </p:toolbar>   
+
                         <div class="card">
-                            <h:form id="profil" rendered="#{detailMaitreCoMBean.details != null}" >
-                                <div class="card">
-                                    <p:growl id="messages" showDetail="true"/>
+                            <h:form id="profil" rendered="#{detailMaitreCoMBean.details != null}" > 
+                                <p:growl id="growl" sticky="true" showDetail="true"/>
+
+                                <div class="card" id="manage-mc-content">
                                     <div class="p-grid ui-fluid">
                                         <div class="p-col-12 p-md-4">
                                             <br/>
                                         </div>
                                     </div>
                                     <div class="p-grid ui-fluid">
-                                        <div class="p-col-12 p-md-4">
+                                        <div class="p-col-12 p-md-3">
                                             <div class="ui-inputgroup">
-                                                <p:commandButton value="Matricule" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.matricule}" placeholder="#{detailMaitreCoMBean.details.matricule}" disabled="true" />
+                                                <p:commandButton value="Matricule" styleClass="ui-button-help"  style="width: 300px"  />
+                                                <p:inputText value="#{detailMaitreCoMBean.details.matricule}" placeholder="#{detailMaitreCoMBean.details.matricule}" 
+                                                             disabled="true" />
                                             </div>                                            
                                         </div>
-                                        <div class="p-col-12 p-md-4">
+                                        <div class="p-col-12 p-md-3">
                                             <div class="ui-inputgroup">
-                                                <p:commandButton value="Noms" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.nom}" placeholder="#{detailMaitreCoMBean.details.nom}" disabled="true" />
+                                                <p:commandButton value="Noms" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.nom}" placeholder="#{detailMaitreCoMBean.details.nom}" 
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}"/>
                                             </div> 
                                         </div>
-                                        <div class="p-col-10 p-md-4">
+                                        <div class="p-col-10 p-md-3">
                                             <div class="ui-inputgroup">
-                                                <p:commandButton value="Prénoms" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.prenoms}" placeholder="#{detailMaitreCoMBean.details.prenoms}" disabled="true" />
+                                                <p:commandButton value="Prénoms" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.prenoms}" placeholder="#{detailMaitreCoMBean.details.prenoms}" 
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" />
                                             </div> 
                                         </div>
-                                    </div>
-                                    <div class="p-grid ui-fluid">
-                                        <div class="p-col-12 p-md-4">
+                                        <div class="p-col-12 p-md-3">
                                             <div class="ui-inputgroup">
-                                                <p:commandButton value="Sexe " styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.genre}" placeholder="#{detailMaitreCoMBean.details.genre}" disabled="true" />
+                                                <p:commandButton value="Sexe " styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:selectOneMenu id="sexe" value="#{detailMaitreCoMBean.updatedMc.genre}" 
+                                                                 disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}">
+                                                    <f:selectItem noSelectionOption="#{detailMaitreCoMBean.details.genre}" itemLabel="#{detailMaitreCoMBean.details.genre}" itemValue="#{detailMaitreCoMBean.details.genre}" />
+                                                    <f:selectItem itemLabel="M" itemValue="M" />
+                                                    <f:selectItem itemLabel="F" itemValue="F"/>
+                                                </p:selectOneMenu>
                                             </div>                                            
                                         </div>
-                                        <div class="p-col-12 p-md-4">
+                                    </div>
+                                    <div class="p-grid ui-fluid">
+                                        <div class="p-col-12 p-md-3">
                                             <div class="ui-inputgroup">
-                                                <p:commandButton value="Date de naissance" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.datenaissance}" placeholder="#{detailMaitreCoMBean.details.datenaissance}" disabled="true" />
+                                                <p:commandButton value="Date naissance " styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText id="dateNaissance" disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" 
+                                                             value="#{detailMaitreCoMBean.datedenaissance}" label="date de naissance" placeholder="#{detailMaitreCoMBean.details.datenaissance}" >
+                                                    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                                </p:inputText>
+
+
                                             </div> 
                                         </div>
-                                        <div class="p-col-10 p-md-4">
+                                        <div class="p-col-10 p-md-3">
                                             <div class="ui-inputgroup">
-                                                <p:commandButton value="Lieu de naissance" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.lieudenaissance}" placeholder="#{detailMaitreCoMBean.details.lieudenaissance}" disabled="true" />
+                                                <p:commandButton value="Lieu de naissance" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.lieudenaissance}" placeholder="#{detailMaitreCoMBean.details.lieudenaissance}"
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" />
+                                            </div> 
+                                        </div>
+                                        <div class="p-col-12 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="Sit. maritale" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.sitmatrimonial}" placeholder="#{detailMaitreCoMBean.details.sitmatrimonial}"
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" />
+                                            </div> 
+                                        </div>
+                                        <div class="p-col-10 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="Langue" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.langue}" placeholder="#{detailMaitreCoMBean.details.langue}"
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" />
                                             </div> 
                                         </div>
                                     </div>
                                     <div class="p-grid ui-fluid">
-                                        
-                                        <div class="p-col-12 p-md-4">
+
+
+                                        <div class="p-col-12 p-md-3">
                                             <div class="ui-inputgroup">
-                                                <p:commandButton value="Situtation maritale" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.sitmatrimonial}" placeholder="#{detailMaitreCoMBean.details.sitmatrimonial}" disabled="true" />
-                                            </div> 
-                                        </div>
-                                        <div class="p-col-10 p-md-4">
-                                            <div class="ui-inputgroup">
-                                                <p:commandButton value="Langue" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.langue}" placeholder="#{detailMaitreCoMBean.details.langue}" disabled="true" />
-                                            </div> 
-                                        </div>
-                                        <div class="p-col-10 p-md-4">
-                                            <div class="ui-inputgroup">
-                                                <p:commandButton value="Langue" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.valeureetatretraite}" placeholder="#{detailMaitreCoMBean.details.valeureetatretraite}" disabled="true" />
-                                            </div> 
-                                        </div>
-                                    </div>
-                                    <div class="p-grid ui-fluid">
-                                        <div class="p-col-12 p-md-4">
-                                            <div class="ui-inputgroup">
-                                                <p:commandButton value="Contact" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.contactun}" placeholder="#{detailMaitreCoMBean.details.contactun}" disabled="true" />
+                                                <p:commandButton value="Contact n°1" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.contactun}" placeholder="#{detailMaitreCoMBean.details.contactun}" 
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}"/>
                                             </div>                                            
                                         </div>
-                                        <div class="p-col-12 p-md-4">
+                                        <div class="p-col-10 p-md-3">
                                             <div class="ui-inputgroup">
-                                                <p:commandButton value="Opérateur télécom" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.operatortelco}" placeholder="#{detailMaitreCoMBean.details.operatortelco}" disabled="true" />
+                                                <p:commandButton value="Contact n°2" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.contactdeux}" placeholder="#{detailMaitreCoMBean.details.contactdeux}"
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}"/>
                                             </div> 
                                         </div>
-                                        <div class="p-col-10 p-md-4">
+                                        <div class="p-col-12 p-md-3">
                                             <div class="ui-inputgroup">
-                                                <p:commandButton value="Mobile money" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.statutwallet}" placeholder="#{detailMaitreCoMBean.details.statutwallet}" disabled="true" />
+                                                <p:commandButton value="Opérateur télco" styleClass="ui-button-help"  style="width: 300px"/>
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.operatortelco}" placeholder="#{detailMaitreCoMBean.details.operatortelco}" 
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" />
+                                            </div> 
+                                        </div>
+                                        <div class="p-col-10 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="Mobile money" styleClass="ui-button-help"  style="width: 300px"/>
+                                                <p:toggleSwitch value="#{detailMaitreCoMBean.mc.statutwallet}" 
+                                                                disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" />
                                             </div> 
                                         </div>
                                     </div>
                                     <div class="p-grid ui-fluid">
-                                        <div class="p-col-12 p-md-4">
+                                        <div class="p-col-12 p-md-3">
                                             <div class="ui-inputgroup">
-                                                <p:commandButton value="Bailleur" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.bailleur}" placeholder="#{detailMaitreCoMBean.details.bailleur}" disabled="true" />
+                                                <p:commandButton value="Bailleur" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.bailleur}" placeholder="#{detailMaitreCoMBean.details.bailleur}"
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}"/>
+                                            </div>                                            
+                                        </div> 
+                                        <div class="p-col-12 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="Catégorie" styleClass="ui-button-help"  style="width: 300px"/>
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.categoriepro}" placeholder="#{detailMaitreCoMBean.details.categoriepro}" 
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" />
+                                            </div> 
+                                        </div>
+                                        <div class="p-col-10 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="Montant subside" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.mensuel}" placeholder="#{detailMaitreCoMBean.details.mensuel}"
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" />
+                                            </div> 
+                                        </div>
+                                        <div class="p-col-10 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="Localité (DREJ)" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.drej}" placeholder="#{detailMaitreCoMBean.details.drej}" 
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}"/>
+                                            </div> 
+                                        </div>
+
+                                    </div>
+                                    <div class="p-grid ui-fluid">
+                                        <div class="p-col-10 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="IDEN" styleClass="ui-button-help"  style="width: 300px"/>
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.iden}" placeholder="#{detailMaitreCoMBean.details.iden}"
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" />
+                                            </div> 
+                                        </div>
+                                        <div class="p-col-10 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="IPEP" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.ipep}" placeholder="#{detailMaitreCoMBean.details.ipep}" 
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}"/>
+                                            </div> 
+                                        </div>
+                                        <div class="p-col-10 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="Type Ecole" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.type_ecole}" placeholder="#{detailMaitreCoMBean.details.type_ecole}"
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" />
+                                            </div> 
+                                        </div>
+                                        <div class="p-col-12 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="Ecole" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.ecole}" placeholder="#{detailMaitreCoMBean.details.ecole}"
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}"/>
+                                            </div>                                            
+                                        </div>                                        
+                                    </div>
+                                    <div class="p-grid ui-fluid">
+
+                                        <div class="p-col-12 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="Debut fonction" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText id="datePFonction" disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" 
+                                                             value="#{detailMaitreCoMBean.datePriseFonction}" label="date prise de fonction" 
+                                                             placeholder="#{detailMaitreCoMBean.details.dateprisefonction}" >
+                                                    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                                </p:inputText>
                                             </div>                                            
                                         </div>
-                                        <div class="p-col-12 p-md-4">
+
+                                        <div class="p-col-12 p-md-3">
                                             <div class="ui-inputgroup">
-                                                <p:commandButton value="Catégorie" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.categoriepro}" placeholder="#{detailMaitreCoMBean.details.categoriepro}" disabled="true" />
-                                            </div> 
-                                        </div>
-                                        <div class="p-col-10 p-md-4">
-                                            <div class="ui-inputgroup">
-                                                <p:commandButton value="Montant subside" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.mensuel}" placeholder="#{detailMaitreCoMBean.details.mensuel}" disabled="true" />
-                                            </div> 
-                                        </div>
-                                    </div>
-                                    <div class="p-grid ui-fluid">
-                                        <div class="p-col-10 p-md-4">
-                                            <div class="ui-inputgroup">
-                                                <p:commandButton value="Localité (DREJ)" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.drej}" placeholder="#{detailMaitreCoMBean.details.drej}" disabled="true" />
-                                            </div> 
-                                        </div>
-                                        <div class="p-col-10 p-md-4">
-                                            <div class="ui-inputgroup">
-                                                <p:commandButton value="IDEN" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.iden}" placeholder="#{detailMaitreCoMBean.details.iden}" disabled="true" />
-                                            </div> 
-                                        </div>
-                                        <div class="p-col-10 p-md-4">
-                                            <div class="ui-inputgroup">
-                                                <p:commandButton value="IPEP" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.ipep}" placeholder="#{detailMaitreCoMBean.details.ipep}" disabled="true" />
-                                            </div> 
-                                        </div>
-                                                                                
-                                    </div>
-                                    <div class="p-grid ui-fluid">
-                                        <div class="p-col-10 p-md-4">
-                                            <div class="ui-inputgroup">
-                                                <p:commandButton value="Type école" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.type_ecole}" placeholder="#{detailMaitreCoMBean.details.type_ecole}" disabled="true" />
-                                            </div> 
-                                        </div>
-                                        <div class="p-col-12 p-md-4">
-                                            <div class="ui-inputgroup">
-                                                <p:commandButton value="Classes affectees" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.classeaffectee}" placeholder="#{detailMaitreCoMBean.details.classeaffectee}" disabled="true" />
-                                            </div> 
-                                        </div>
-                                        <div class="p-col-12 p-md-4">
-                                            <div class="ui-inputgroup">
-                                                <p:commandButton value="Observation" styleClass="ui-button-help"  style="width: 300px" disabled="true"/>
-                                                <p:inputText value="#{detailMaitreCoMBean.details.etatcomptemc}" placeholder="#{detailMaitreCoMBean.details.etatcomptemc}" disabled="true" />
+                                                <p:commandButton value="Date dep. retraite" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText id="dateDepRetraite" disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}" 
+                                                             value="#{detailMaitreCoMBean.datePriseRetraite}" label="date depart retraite" 
+                                                             placeholder="#{detailMaitreCoMBean.details.dateretraite}" >
+                                                    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+                                                </p:inputText>
                                             </div>                                            
                                         </div>
+                                        <div class="p-col-12 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="Retraité" styleClass="ui-button-help"  style="width: 300px" disabled="true" /> 
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.etatretraite}" placeholder="#{detailMaitreCoMBean.details.etatretraite}"
+                                                             disabled="true"/>
+                                            </div>                                            
+                                        </div>
+                                        <div class="p-col-12 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="NNI" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:inputText value="#{detailMaitreCoMBean.updatedMc.nni}" placeholder="#{detailMaitreCoMBean.details.nni}"
+                                                             disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}"/>
+                                            </div>                                            
+                                        </div>
+                                    </div>
+                                    <div class="p-grid ui-fluid">
+
+                                        <div class="p-col-12 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton value="Observation" styleClass="ui-button-help"  style="width: 300px" />
+                                                <p:selectOneMenu id="obs" value="#{detailMaitreCoMBean.updatedMc.statutcompte}"  
+                                                                 disabled="#{!loginMBean.utilisateur.profilIdprofil.accesmodifmc}">
+                                                    <f:selectItem itemLabel="choisir une observation" itemValue="" />
+                                                    <f:selectItem itemLabel="Abandon" itemValue="Abandon" />
+                                                    <f:selectItem itemLabel="Absent" itemValue="Absent"/>
+                                                    <f:selectItem itemLabel="Decédé" itemValue="Decédé"/>
+                                                    <f:selectItem itemLabel="R.A.S" itemValue="R.A.S"/>
+                                                    <f:selectItem itemLabel="En formation" itemValue="En formation"/>
+                                                </p:selectOneMenu>
+                                            </div>                                            
+                                        </div>
+                                        <div class="p-col-12 p-md-3">
+                                            <div class="ui-inputgroup"></div>
+                                        </div>
+                                        <div class="p-col-12 p-md-3">
+                                            <div class="ui-inputgroup"></div>
+                                        </div>
+                                        <div class="p-col-12 p-md-3">
+                                            <div class="ui-inputgroup">
+                                                <p:commandButton  value="Enregistrer" update="growl" actionListener="#{detailMaitreCoMBean.updateMaitre()}"  
+                                                                  styleClass="ui-button-raised ui-button-success" icon="pi pi-save" iconPos="right" />
+
+                                            </div>                                            
+                                        </div>
+
+                                    </div>
+                                    <div class="p-grid ui-fluid">
+
                                     </div>
 
                                 </div>

@@ -196,8 +196,8 @@ public class EmissionPaieMensuelMoovAfricaMBean implements Serializable {
         //liste des opérateurs mobile
         listeDesOperateurs = operateurMgr.getAllOperateur();
         //
-        List<Maitrecommunautaire> listeMaitreCoDeAirtel = mcManager.getAirtelMcs();
-        data.put("AIRTEL", listeMaitreCoDeAirtel);
+//        List<Maitrecommunautaire> listeMaitreCoDeAirtel = mcManager.getAirtelMcs();
+//        data.put("AIRTEL", listeMaitreCoDeAirtel);
     }
 
     public Boolean getVerifMoisDejaPaye() {
@@ -540,13 +540,15 @@ public class EmissionPaieMensuelMoovAfricaMBean implements Serializable {
             try {
                 montantRestantSubsides = montantPaie.subtract(montantTotalSubsidesMoov);
             } catch (Exception e) {
+                e.getMessage();
             }
 
-            if (montantRestantSubsides.intValue() > 0) {
+            if (montantRestantSubsides.intValue() >= 0) {
                 System.out.println("le montant restant de paiement est  " + montantRestantSubsides);
                 afficheMontantRestant = Boolean.TRUE;
             }
 
+            String categoriePaiement = "ALL";
             //si le paiement existe deja parmis les mois payé : rejeter 
             Paiement paie = new Paiement(DateDePaiement.format(DateTimeFormatter.ISO_DATE),
                     Details,
@@ -555,16 +557,17 @@ public class EmissionPaieMensuelMoovAfricaMBean implements Serializable {
                     this.MoisDePaie.format(DateTimeFormatter.ISO_DATE).substring(0, 7),
                     libellePaie,
                     Boolean.FALSE, DateOfDay(),
-                    "MOOV",
+                    "Moov",
                     Boolean.FALSE,
                     etatPaiementMgr.etatPaiementbyId(BigDecimal.ONE),
-                    userCo);
+                    userCo,
+                    categoriePaiement);
 
             //controle sur le paiement deja effectue d'un mois 
             for (Paiement unMois : listeDesMoisDejaPayes) {
-               // System.out.println(" : ->" + unMois.getMois() + " montant " + unMois.getMontanttotal());
+                // System.out.println(" : ->" + unMois.getMois() + " montant " + unMois.getMontanttotal());
 
-                if (unMois.getMois().equalsIgnoreCase(paie.getMois()) && unMois.getOperateurmobile().equalsIgnoreCase("MOOV")) {
+                if (unMois.getMois().equalsIgnoreCase(paie.getMois()) && unMois.getOperateurmobile().equalsIgnoreCase("Moov")) {
                     System.out.println("attention ce mois à déjà été payé pour ce opérateur  :");
                     verifMoisDejaPaye = Boolean.TRUE;
                     break;
@@ -572,7 +575,6 @@ public class EmissionPaieMensuelMoovAfricaMBean implements Serializable {
                 } else {
                     System.out.println("le paiement peut etre effectué");
                     verifMoisDejaPaye = Boolean.FALSE;
-                    //     pm.persist(paie);
                 }
             }
 
@@ -594,57 +596,65 @@ public class EmissionPaieMensuelMoovAfricaMBean implements Serializable {
                 msgErrorDateDemandePaiement();
             } else { //sinn on paie a present 
 
-                if (afficheMontantRestant) {
-                    msgAlerteMonnaie();
-                }
-                paiementMgr.persist(paie);
-                //creation d'une liste de transactions pour persistance ...
-                //recuperation d'un ligne de mc a payer 
-                System.out.println("debut de recup des mc payable");
-                List<Maitrecommunautaire> LesMc = mcManager.recupMcPayable("Moov");
-                System.out.println("on a recuperer :  " + LesMc.size() + " maitres abonnés moov payables ");
-                LesMc.forEach(maitre -> {
-                    //System.out.println("infos mc ->" + maitre.getNom() + " " + maitre.getPrenoms() + " " + maitre.getContactun() + " " + maitre.getOperatortelco());
-                    //convertir en transaction ...
-                    Transactions t = new Transactions();
-                    t.setNumerointerne(maitre.getNumerointerne());
-                    if (maitre.getStatutwallet()) {
-                        t.setStatutwallet(BigInteger.ONE);
-                    } else {
-                        t.setStatutwallet(BigInteger.ZERO);
+                //verif inexistance paiement 
+                if (!paiementMgr.verifUnicitePaie(paie)) {
+
+                    paiementMgr.persist(paie);
+                    //creation d'une liste de transactions pour persistance ...
+                    //recuperation d'un ligne de mc a payer 
+                    System.out.println("debut de recup des mc payable");
+                    List<Maitrecommunautaire> LesMc = mcManager.recupMcPayable("Moov");
+                    System.out.println("on a recuperer :  " + LesMc.size() + " maitres abonnés moov payables ");
+                    LesMc.forEach(maitre -> {
+                        //System.out.println("infos mc ->" + maitre.getNom() + " " + maitre.getPrenoms() + " " + maitre.getContactun() + " " + maitre.getOperatortelco());
+                        //convertir en transaction ...
+                        Transactions t = new Transactions();
+                        t.setNumerointerne(maitre.getNumerointerne());
+                        if (maitre.getStatutwallet()) {
+                            t.setStatutwallet(BigInteger.ONE);
+                        } else {
+                            t.setStatutwallet(BigInteger.ZERO);
+                        }
+                        t.setTypecompte("compte APICED");
+                        t.setMontantsubside(maitre.getMensuel());
+                        t.setContactmaitre(maitre.getContactun());
+                        t.setLibellepaie(paie.getLibelle());
+                        t.setDatepaiement(paie.getDatepaiement());
+                        t.setMoisanneepaie(paie.getMois());
+                        t.setOperateurs(maitre.getOperatortelco());
+                        //System.out.println("le contenu de paie " + paie.getIdpaiement());
+                        t.setPaiementid(paie.getIdpaiement());
+                        t.setNommaitre(maitre.getNom());
+                        t.setPrenomsmaitre(maitre.getPrenoms());
+                        t.setDatepaiementdemandee(paie.getDatepaiement());
+                        //persistance dans la table transaction ...
+                        transacMgr.persist(t);
+                        //System.out.println("enregistrement ok de la transaction...");
+                    });
+
+                    libelleLog = "emission du paiement des subsides  : " + paie.getLibelle() + " par l'utilisateur : " + userCo.getLogin() + " d'un montant de  :" + paie.getMontanttotal() + " à l'opérateur : MOOV";
+
+                    saveLog(libelleLog, userCo);
+
+                    typeNotification = typeNotifMgr.creaMcTypeNotifById(BigDecimal.valueOf(4));
+
+                    String libelleNotif = "création de paiement de subsides mensuel MOOV  par l'utilisateur : " + userCo.getLogin() + " pour validation";
+                    String details = "création de paiement de subsides du mois de " + paie.getMois() + "d'un montant de  " + paie.getMontanttotal();
+
+                    listeUsers = utilisateurMgr.getAllActivedUsers();
+                    //save de la notif de paiement 
+                    savePaieNotif(libelleNotif, details, 4, paie, listeUsers);
+
+                    msgSuccessNewPaie();
+                    
+                    if (afficheMontantRestant) {
+                        msgAlerteMonnaie();
                     }
-                    t.setTypecompte("compte APICED");
-                    t.setMontantsubside(maitre.getMensuel());
-                    t.setContactmaitre(maitre.getContactun());
-                    t.setLibellepaie(paie.getLibelle());
-                    t.setDatepaiement(paie.getDatepaiement());
-                    t.setMoisanneepaie(paie.getMois());
-                    t.setOperateurs(maitre.getOperatortelco());
-                    //System.out.println("le contenu de paie " + paie.getIdpaiement());
-                    t.setPaiementid(paie.getIdpaiement());
-                    t.setNommaitre(maitre.getNom());
-                    t.setPrenomsmaitre(maitre.getPrenoms());
-                    t.setDatepaiementdemandee(paie.getDatepaiement());
-                    //persistance dans la table transaction ...
-                    transacMgr.persist(t);
-                    //System.out.println("enregistrement ok de la transaction...");
-                });
-
-                libelleLog = "emission du paiement des subsides  : " + paie.getLibelle() + " par l'utilisateur : " + userCo.getLogin() + " d'un montant de  :" + paie.getMontanttotal() + " à l'opérateur : MOOV";
-
-                saveLog(libelleLog, userCo);
-
-                typeNotification = typeNotifMgr.creaMcTypeNotifById(BigDecimal.valueOf(4));
-
-                String libelleNotif = "création de paiement de subsides mensuel MOOV  par l'utilisateur : " + userCo.getLogin() + " pour validation";
-                String details = "création de paiement de subsides du mois de " + paie.getMois() + "d'un montant de  " + paie.getMontanttotal();
-
-                listeUsers = utilisateurMgr.getAllActivedUsers();
-                //save de la notif de paiement 
-                savePaieNotif(libelleNotif, details, 4, paie, listeUsers);
-
-                msgSuccessNewPaie();
-                PrimeFaces.current().ajax().update(":form:menu");
+                    
+                    PrimeFaces.current().ajax().update(":form:menu");
+                } else {
+                    msgErrorPaiementExistant();
+                }
             }
 
         } else {
@@ -652,8 +662,8 @@ public class EmissionPaieMensuelMoovAfricaMBean implements Serializable {
             msgErrorMauvaisMontant();
         }
     }
-
     //au choix de l'opérateur
+
     public void onOperateurMobileChange() {
         if (choixOperateur != null) {
             System.out.println("affichage de la liste de l'operateur " + choixOperateur);
@@ -717,7 +727,11 @@ public class EmissionPaieMensuelMoovAfricaMBean implements Serializable {
     }
 
     public void msgErrorMauvaisMontant() {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Impossible d'emettre le paiment", "le montant a entré : " + montantPaie + "  est inférieur aux montant des subsides a payer  :" + montantTotalSubsidesMoov));
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Impossible d'emettre le paiment", "le montant  entré : " + montantPaie + "  est inférieur aux montant des subsides a payer  :" + montantTotalSubsidesMoov));
+    }
+
+    public void msgErrorPaiementExistant() {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Impossible d'emettre le paiment", "le paiement des maitres pour ce mois est dejà crée "));
     }
 
     public boolean isSkip() {

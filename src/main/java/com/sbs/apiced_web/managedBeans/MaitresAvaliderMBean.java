@@ -548,14 +548,14 @@ public class MaitresAvaliderMBean implements Serializable {
         //System.out.println("la valeur recup  " + sortMc);
         if (sortMc.equalsIgnoreCase("valider")) {
             selectedMc.setValidationcoordonnateur(Boolean.TRUE);
-            selectedMc.setRejetvalidation(Boolean.FALSE);
+           // selectedMc.setRejetvalidation(Boolean.FALSE);
             selectedMc.setDatemodifcompte(DateOfDay());
             selectedMc.setEtatcomptemc(Boolean.TRUE);//validation du compte
             selectedMc.setStatutcompte("actif");
             selectedMc.setIdvalideurcompte(userCo.getIdutilisateur().longValue());
             selectedMc.setDateactivationcompte(DateOfDay());
             selectedMc.setEtatretraite(Boolean.FALSE);
-            selectedMc.setMotifrejetvalidation(null);
+           // selectedMc.setMotifrejetvalidation(null);
             selectedMc.setMotifsuspension(motifModif);
             mcMgr.updateMaitre(selectedMc);
             msgSuccesValidationMc();
@@ -625,17 +625,17 @@ public class MaitresAvaliderMBean implements Serializable {
             PrimeFaces.current().ajax().update("form:messages", "form:tbl", "panelInfo");
             this.sortMc = null;
             this.motifModif = null;
-            selectedMc.setMotifrejetvalidation(null);
+//            selectedMc.setMotifrejetvalidation(null);
         } else {
             selectedMc.setValidationcoordonnateur(null);
-            selectedMc.setRejetvalidation(Boolean.TRUE);
-            selectedMc.setDaterejetvalidation(DateOfDay());
+         //   selectedMc.setRejetvalidation(Boolean.TRUE);
+         //   selectedMc.setDaterejetvalidation(DateOfDay());
             selectedMc.setIdvalideurcompte(userCo.getIdutilisateur().longValue());
             selectedMc.setEtatretraite(Boolean.FALSE);
             selectedMc.setStatutcompte("non actif");
-            if (selectedMc.getMotifrejetvalidation() == null) {
-                selectedMc.setMotifrejetvalidation("corriger toutes les informations du maitre ....");
-            }
+//            if (selectedMc.getMotifrejetvalidation() == null) {
+//                selectedMc.setMotifrejetvalidation("corriger toutes les informations du maitre ....");
+//            }
             selectedMc.setEtatcomptemc(Boolean.FALSE);
             selectedMc.setDatemodifcompte(DateOfDay());
             mcMgr.updateMaitre(selectedMc);
@@ -644,8 +644,8 @@ public class MaitresAvaliderMBean implements Serializable {
             nbreMcAvalider = nbreMcAvalider - 1;
 
             notif.setLibelle("Compte du nouvau maitre communautaire " + selectedMc.getNom() + "   " + selectedMc.getPrenoms() + " rejeté pour correction ");
-            String details = "Validation du compte du nouveau maitre communautaire : " + selectedMc.getNom() + "  " + selectedMc.getPrenoms() + " rejeté  par le coordonnateur :" + userCo.getLogin() + "  motif : " + selectedMc.getMotifrejetvalidation();
-            notif.setDetails(details);
+//            String details = "Validation du compte du nouveau maitre communautaire : " + selectedMc.getNom() + "  " + selectedMc.getPrenoms() + " rejeté  par le coordonnateur :" + userCo.getLogin() + "  motif : " + selectedMc.getMotifrejetvalidation();
+  //          notif.setDetails(details);
             notif.setDatecreation(DateOfDay());
             BigDecimal typn = BigDecimal.valueOf(1);
             typeNotification = typeNotifMgr.creaMcTypeNotifById(typn);
@@ -669,7 +669,7 @@ public class MaitresAvaliderMBean implements Serializable {
                 userNotif.setEtat(BigInteger.ZERO);
                 userNotif.setIdutilisateur(BigInteger.valueOf(u.getIdutilisateur()));
                 userNotif.setTitre("Validation rejetée du compte d'un nouveau maitre communautaire");
-                userNotif.setInformation(details);
+//                userNotif.setInformation(details);
                 userNotif.setCreateur(userCo.getLogin());
                 userNotif.setTypeusernotif("MCREJETE");
 
@@ -706,7 +706,7 @@ public class MaitresAvaliderMBean implements Serializable {
             PrimeFaces.current().executeScript("PF('viewModifMcDialog').hide()");
             PrimeFaces.current().ajax().update("form:messages", "form:tbl");
             this.sortMc = null;
-            selectedMc.setMotifrejetvalidation(null);
+//            selectedMc.setMotifrejetvalidation(null);
 
         }
 

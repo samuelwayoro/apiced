@@ -10,23 +10,33 @@ import com.sbs.apiced_web.entities.Categorie;
 import com.sbs.apiced_web.entities.Etablissement;
 import com.sbs.apiced_web.entities.Ipep;
 import com.sbs.apiced_web.entities.Maitrecommunautaire;
+import com.sbs.apiced_web.entities.Notifications;
 import com.sbs.apiced_web.entities.Promotion;
+import com.sbs.apiced_web.entities.Typenotifs;
+import com.sbs.apiced_web.entities.Usersnotifs;
 import com.sbs.apiced_web.entities.Utilisateur;
 import com.sbs.apiced_web.entities.Villes;
 import com.sbs.apiced_web.services.AuditlogManager;
 import com.sbs.apiced_web.services.CategorieMcManager;
 import com.sbs.apiced_web.services.EtablissementManager;
 import com.sbs.apiced_web.services.MaitreCoManager;
+import com.sbs.apiced_web.services.NotifsManager;
 import com.sbs.apiced_web.services.OperateurTelcoManager;
+import com.sbs.apiced_web.services.TypeNotifManager;
+import com.sbs.apiced_web.services.UsersNotifManager;
+import com.sbs.apiced_web.services.UtilisateurManager;
 import com.sbs.apiced_web.services.VilleManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,6 +73,7 @@ public class DetailMaitreCoMBean implements Serializable {
     private Etablissement mcEtablissement;
     private String nomCategorie;
     private Maitrecommunautaire selectedMc;
+    private Maitrecommunautaire updatedMc;
     private List<Maitrecommunautaire> listeUnMc = new ArrayList<>();
     private List<Categorie> listeCategorieMc;
     private List<String> listeNomsEtablissements;
@@ -77,7 +88,15 @@ public class DetailMaitreCoMBean implements Serializable {
     private String userCo;
     private String phoneMc;
     private Ipep localite;
+    private LocalDate datedenaissance;
+    private LocalDate datePriseFonction;
+    private LocalDate datePriseRetraite;
+    private Typenotifs typeNotification;
+    private Notifications notif = new Notifications();
+    private List<Utilisateur> listeUsers;
 
+    @EJB
+    private UsersNotifManager userNotifMgr;
     @EJB
     private MaitreCoManager mcManager;
     @EJB
@@ -92,7 +111,20 @@ public class DetailMaitreCoMBean implements Serializable {
     private OperateurTelcoManager opMgr;
     @EJB
     private MaitreCoManager mcMgr;
+    @EJB
+    private TypeNotifManager typeNotifMgr;
+    @EJB
+    private UtilisateurManager utilisateurMgr;
+    @EJB
+    private NotifsManager notifMgr;
 
+    public Maitrecommunautaire getUpdatedMc() {
+        return updatedMc;
+    }
+
+    public void setUpdatedMc(Maitrecommunautaire updatedMc) {
+        this.updatedMc = updatedMc;
+    }
 
     public Ipep getLocalite() {
         return localite;
@@ -206,6 +238,14 @@ public class DetailMaitreCoMBean implements Serializable {
         this.villeMgr = villeMgr;
     }
 
+    public LocalDate getDatedenaissance() {
+        return datedenaissance;
+    }
+
+    public void setDatedenaissance(LocalDate datedenaissance) {
+        this.datedenaissance = datedenaissance;
+    }
+
     //converter des villes a afficher 
     private Converter villesConverter = new Converter() {
         @Override
@@ -241,6 +281,7 @@ public class DetailMaitreCoMBean implements Serializable {
         HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
         userCo = session.getAttribute("utilisateur").toString();
         listeDesVilles = villeMgr.getAllVilles();
+        updatedMc = new Maitrecommunautaire();
     }
 
     public String getUserCo() {
@@ -363,15 +404,31 @@ public class DetailMaitreCoMBean implements Serializable {
         this.opMgr = opMgr;
     }
 
+    public LocalDate getDatePriseFonction() {
+        return datePriseFonction;
+    }
+
+    public void setDatePriseFonction(LocalDate datePriseFonction) {
+        this.datePriseFonction = datePriseFonction;
+    }
+
+    public LocalDate getDatePriseRetraite() {
+        return datePriseRetraite;
+    }
+
+    public void setDatePriseRetraite(LocalDate datePriseRetraite) {
+        this.datePriseRetraite = datePriseRetraite;
+    }
+
     public void loadMaitreCoDetails() {
         try {
             //this.mc = mcManager.getMaitreCoInfo(idmc);
             this.mc = mcManager.loadMcByPhoneNumber(phoneMc);
 
             mcEtablissement = etsManager.getEtsByNom(this.mc.getEcole());
-           // System.out.println("l'etablissement recuperee est   " + mcEtablissement);
-           // localite = etsManager.EtablissementIpep(mcEtablissement.getIpep());
-             
+            // System.out.println("l'etablissement recuperee est   " + mcEtablissement);
+            // localite = etsManager.EtablissementIpep(mcEtablissement.getIpep());
+
         } catch (Exception e) {
             this.mc = null;
             System.out.println("il n'existe pas de maitre communautaire avec ce numéro" + e.getMessage());
@@ -423,65 +480,208 @@ public class DetailMaitreCoMBean implements Serializable {
      * methode de maj des infos d'un maitre
      */
     public void updateMaitre() {
-        LocalDateTime dt = LocalDateTime.now();
-        //System.out.println("la valeur de la date : "+dt);
-        //definition du patterne 
-        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("dd/MM/YYYY");
-        //affichage avec nouveau format 
-        //System.out.println("le bon format c'est : " + dt.format(dtFormat));
-        String dateModif = dt.format(dtFormat);
-        // recuperation du user en session 
-        //recuperation de la facecontext pour travailler avec le context courant de la requette
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        //recuperation de la session a partir de la facescontext pour annuler la session de l'utilisateur
-        HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
-        //System.out.println("loggin de l'action de l'utilisateur : " + session.getAttribute("utilisateur"));
-        Utilisateur userCo = (Utilisateur) session.getAttribute("utilisateurConnecte");
-        Auditlog log = new Auditlog();
-        log.setAuteurIdutilisateur(userCo);
-        log.setLogin(userCo.getLogin());
-        log.setAction("modification des infos du maitre  : " + mc.getNom() + " de matricule :" + mc.getMatricule() + "avant validation du coordonnateur");
-        log.setDateaction(dateModif);
-        audit.persist(log);
+        System.out.println("mise a jours des infos du maitre ");
+        Utilisateur createur = utilisateurMgr.verif(userCo);
+        String nouvelleDateNaissance = null, dateDePriseDeFonction = null, dateDeDepartRetraite = null;
+        int dateCompare;
+        //System.out.println("date naissance "+datedenaissance+"  date de depart a la retraite  "+datePriseRetraite+"  date de prise de fonction  "+datePriseFonction);
+        DateTimeFormatter f = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.FRENCH);
+        try {
+            //comparaison de la date de depart a la retraite et la date de prise de fonction
+            dateCompare = datePriseRetraite.compareTo(datePriseFonction);
+            System.out.println("resultat de comparaison des dates    " + dateCompare);
 
-        if (this.nomEtablissement == null) {
-            nomEtablissement = mc.getEcole();
+            if (dateCompare > 0) {//date de prise de fonction est bien antérieur a la date de depart a la retraite 
+                System.out.println("date de prise de fonction est bien antérieur a la date de depart a la retraite ");
+            } else if (dateCompare < 0) {//la date de prise retraite est antérieur a la date de prise de fonction (pas bon)
+                System.out.println("date de prise de fonction est bien antérieur a la date de depart a la retraite ");
+                erreurMsgWorkDateOne();
+
+            } else {//les deux dates sont egales ...(pas bon)
+                System.out.println("erreur , date de prise fonction et date retraite sont identique  ");
+                erreurMsgWorkDateTwo();
+            }
+
+            nouvelleDateNaissance = f.format(datedenaissance);
+            dateDeDepartRetraite = f.format(datePriseRetraite);
+            dateDePriseDeFonction = f.format(datePriseFonction);
+
+            System.out.println("date de naissance   " + nouvelleDateNaissance + " date debut fonction " + dateDePriseDeFonction + " date prise retraite  " + dateDeDepartRetraite);
+
+        } catch (NullPointerException e) {
+            System.out.println("les champs date ne sont pas tous rempli ...");
         }
 
-        //rechercher un etablissement a partir du nom selectionné 
-        //mc.setEtablissement(mcManager.getEtablissementByName(this.nomEtablissement));
-        // mc.setEtablissement(mcManager.getEtablissementNameById(nomEtablissement));
-        // mc.setEcole(mcManager.get);
-        //changement de l'opérateur du maitre 
-        if (this.operateurMc != null) {
-            //mc.setOperatortelco(mcManager.getIdOpByName(this.operateurMc));
-            mc.setOperatortelco(opMgr.oneOpByName(operateurMc));
+        try {
+            System.out.println("nom " + updatedMc.getNom() + " etat retraite" + updatedMc.getEtatretraite());
+        } catch (Exception e) {
+            System.out.println("certain champs du forumulaire n'ont pas ete remplis ");
         }
 
-        //gestion du changement de la catégorie 
-        //si changement de categorie : modification de la categorie du mc 
-        if (this.nomCategorie != null) {
-            //System.out.println("modification de la categorie du mc  de  " + mc.getIdcategoriepro().getLibelle() + " à " + nomCategorie);
-            mc.setCategoriepro(nomCategorie);
-
+        //coder le update des infos du maitre en fonction du 
+        //statut wallet et etat compte reste inchangé 
+        // selectedMc.setEtatcomptemc(selectedMc.getEtatcomptemc());
+        // selectedMc.setStatutwallet(selectedMc.getStatutwallet());
+        if (!updatedMc.getNom().isEmpty()) {
+            this.mc.setNom(updatedMc.getNom());
         }
-//
-//        if (this.statutMaitre != null) {//modification du statut du mc : retraité - actif - suspendu (par l'apiced bloc momentannement son accès au paiement de subsides)
-//            if (statutMaitre.equalsIgnoreCase("actif")) {
-//                this.mc.setEtatcomptemc(Boolean.TRUE);
-//            } else {
-//                this.mc.setEtatcomptemc(Boolean.FALSE); //on ne permet pas de payer les mc qui sont a la retraite
-//            }
-//        }
+        if (!updatedMc.getPrenoms().isEmpty()) {
+            this.mc.setPrenoms(updatedMc.getPrenoms());
+        }
+        if (!updatedMc.getGenre().isEmpty()) {
+            this.mc.setGenre(updatedMc.getGenre());
+        }
+        try {
+            if (!nouvelleDateNaissance.isEmpty()) {
+                this.mc.setDatenaissance(nouvelleDateNaissance);
+            }
+        } catch (Exception e) {
+            System.out.println("le champ date de naissance est vide");
+        }
 
-        //remise a jour du statut de son wallet 
-        System.out.println("le statu du mc est à présent : " + mc.getStatutwallet());
-        //sinon on garde la mm categorie pour le mc
-        //mise a jour
-        //mcManager.updateProfil(mc);
+        if (!updatedMc.getLieudenaissance().isEmpty()) {
+            this.mc.setLieudenaissance(updatedMc.getLieudenaissance());
+        }
+        if (!updatedMc.getSitmatrimonial().isEmpty()) {
+            this.mc.setSitmatrimonial(updatedMc.getSitmatrimonial());
+        }
+        if (!updatedMc.getLangue().isEmpty()) {
+            this.mc.setLangue(updatedMc.getLangue());
+        }
+        if (!updatedMc.getContactun().isEmpty()) {
+            this.mc.setContactun(updatedMc.getContactun());
+        }
+        if (!updatedMc.getContactdeux().isEmpty()) {
+            this.mc.setContactdeux(updatedMc.getContactdeux());
+        }
+        if (!updatedMc.getOperatortelco().isEmpty()) {
+            this.mc.setOperatortelco(updatedMc.getOperatortelco());
+        }
+
+        //gestion du statut wallet 
+        System.out.println("statut wallet selectionné   " + mc.getStatutwallet());
+
+        if (!updatedMc.getBailleur().isEmpty()) {
+            this.mc.setBailleur(updatedMc.getBailleur());
+        }
+
+        if (!updatedMc.getCategoriepro().isEmpty()) {
+            this.mc.setCategoriepro(updatedMc.getCategoriepro());
+        }
+
+        if (!updatedMc.getMensuel().isEmpty()) {
+            this.mc.setMensuel(updatedMc.getMensuel());
+        }
+
+        if (!updatedMc.getDrej().isEmpty()) {
+            this.mc.setDrej(updatedMc.getDrej());
+        }
+
+        if (!updatedMc.getIden().isEmpty()) {
+            this.mc.setIden(updatedMc.getIden());
+        }
+
+        if (!updatedMc.getIpep().isEmpty()) {
+            this.mc.setIpep(updatedMc.getIpep());
+        }
+
+        if (!updatedMc.getType_ecole().isEmpty()) {
+            this.mc.setType_ecole(updatedMc.getType_ecole());
+        }
+
+        if (!updatedMc.getEcole().isEmpty()) {
+            this.mc.setEcole(updatedMc.getEcole());
+        }
+
+        try {
+            if (!dateDePriseDeFonction.isEmpty()) {
+                this.mc.setDateprisefonction(dateDePriseDeFonction);
+            }
+        } catch (Exception e) {
+            System.out.println("pris de fonction vide");
+        }
+
+        try {
+            if (!dateDeDepartRetraite.isEmpty()) {
+                this.mc.setDateretraite(dateDeDepartRetraite);
+                this.mc.setEtatretraite(Boolean.TRUE);
+            }
+        } catch (Exception e) {
+            System.out.println("date de retraite vide ");
+        }
+
+        if (!updatedMc.getNni().isEmpty()) {
+            this.mc.setNni(updatedMc.getNni());
+        }
+
+        try {
+            if (!updatedMc.getStatutcompte().isEmpty()) {
+                this.mc.setStatutcompte(updatedMc.getStatutcompte());
+            }
+        } catch (Exception e) {
+            System.out.println("champ observation resté intact");
+        }
+
+        mcMgr.updateMaitre(mc);
+
+//auditlog
+        saveLog("mise a jour des informations du maitre  " + updatedMc.getNom(), DateOfDay());
+        //enregistrement de la notif
+        BigDecimal typn = BigDecimal.valueOf(6);
+        typeNotification = typeNotifMgr.creaMcTypeNotifById(typn);
+        String details = "mise a jour des informations du maitre communautaire : " + updatedMc.getNom() + "  " + updatedMc.getPrenoms() + "  par le coordonnateur :" + userCo;
+        String libelleNotif = "Mise à jour des informations du maitre communautaire     " + updatedMc.getNom() + "  " + updatedMc.getPrenoms();
+        notif.setLibelle(libelleNotif);
+        notif.setDetails(details);
+        notif.setDatecreation(DateOfDay());
+        notif.setDateresolution(DateOfDay());
+        notif.setEtat(BigInteger.ZERO);
+        notif.setTypenotif(typeNotification);
+        notif.setCreateur(createur);
+        notif.setIdinfo(mc.getId().toString());
+        //save de la notif
+        notifMgr.persist(notif);
+
+        //persistance de toutes les notifications pour tous les utilisateurs ...
+        //je recupère la liste de tous les users
+        listeUsers = utilisateurMgr.getAllActivedUsers();
+        //je recupère la dernière notif créée pour le setting a venir 
+        Integer lastNotifId = notifMgr.lastNotif();
+
+        //creation des btns 
+        //je le parcours et je cree un notifsuser avec un etat a zero...
+        for (Utilisateur u : listeUsers) {
+            //System.out.println("le user en cours ... : " + u.getNOM());
+            Usersnotifs userNotif = new Usersnotifs();
+            userNotif.setDateinsert(DateOfDay());
+            userNotif.setEtat(BigInteger.ZERO);
+            userNotif.setIdutilisateur(BigInteger.valueOf(u.getIdutilisateur()));
+            userNotif.setTitre(libelleNotif);
+            userNotif.setInformation(details);
+            userNotif.setCreateur(userCo);
+            userNotif.setTypeusernotif("MODIF_MC");
+
+            //construction des btn en fonction des profils
+            if (u.getProfilIdprofil().getLibelle().equalsIgnoreCase("emetteur")) {
+                userNotif.setBtnvalidemc("false");
+                userNotif.setBtnvalidepaie("false");
+                userNotif.setBtndetail("true");
+            } else if (u.getProfilIdprofil().getLibelle().equalsIgnoreCase("coordonnateur")) {
+                userNotif.setBtnvalidemc("false");
+                userNotif.setBtnvalidepaie("false");
+                userNotif.setBtndetail("true");
+            } else {
+                userNotif.setBtnvalidemc("false");
+                userNotif.setBtnvalidepaie("false");
+                userNotif.setBtndetail("true");
+            }
+
+            //setter l'id du notif
+            userNotif.setIdnotif(BigInteger.valueOf(lastNotifId));
+            //on persist la notifUser pr finir
+            userNotifMgr.persist(userNotif);
+        }
         msgSuccesModif();
-        //maj de la liste des profils
-        // PrimeFaces.current().ajax().update("form:messages");
 
     }
 
@@ -512,6 +712,20 @@ public class DetailMaitreCoMBean implements Serializable {
         ServletOutputStream stream = response.getOutputStream();
         JasperExportManager.exportReportToPdfStream(print, stream);
         FacesContext.getCurrentInstance().responseComplete();
+    }
+
+    public void saveLog(String msg, String date) {
+        //trace dans la table auditlOg
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
+        Utilisateur userConnected = (Utilisateur) session.getAttribute("utilisateurConnecte");
+        String userLogin = userConnected.getLogin();
+        Auditlog log = new Auditlog();
+        log.setAuteurIdutilisateur(userConnected);
+        log.setLogin(userLogin);
+        log.setAction(msg + " par l'utilisateur " + userLogin);
+        log.setDateaction(date);
+        audit.persist(log);
     }
 
     //fonction de verification de l'etat du compte mobile money du user 
@@ -551,4 +765,13 @@ public class DetailMaitreCoMBean implements Serializable {
         String date = dt.format(dtFormat);
         return date;
     }
+
+    public void erreurMsgWorkDateOne() {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "La date de depart retraite  est antérieure à la date de prise fonction , veuillez corriger"));
+    }
+
+    public void erreurMsgWorkDateTwo() {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Les dates de depart retraite et date prise fonction sont égales , veuillez corriger"));
+    }
+
 }

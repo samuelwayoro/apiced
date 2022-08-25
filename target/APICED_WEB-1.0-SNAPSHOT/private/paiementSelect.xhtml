@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>PAIEMENT SELECTIF MAITRES COMMUNAUTAIRES</title>
+        <h:outputStylesheet library="default" name="css/primeflex.css" />
+        <script type="text/javascript">
+            //<![CDATA[
+            function dateTemplateFunc(date) {
+                return '<span style="background-color:' + ((date.day < 21 && date.day > 10) ? '#81C784' : 'inherit') + ';border-radius:50%;width: 2.5rem;height: 2.5rem;line-height: 2.5rem;display: flex;align-items: center;justify-content: center;">' + date.day + '</span>';
+            }
+
+            //]]>
+        </script>
+        <style type="text/css">
+            .label {
+                width: 20%;
+                padding: 4px;
+            }
+
+            .value {
+                width: 80%;
+                padding: 4px;
+            }
+
+            .grid {
+                width: 100%;
+            }
+
+            .error {
+                color: red;
+            }
+
+            .outputLabel {
+                font-weight: bold;
+            }
+
+            .grid {
+                width: 33%;
+                padding: 4px;
+            }
+        </style>
+        <style type="text/css">
+            .label {
+                width: 20%;
+                padding: 4px;
+            }
+
+            .value {
+                width: 80%;
+                padding: 4px;
+            }
+
+            .grid {
+                width: 100%;
+            }
+
+            .error {
+                color: red;
+            }
+
+            .outputLabel {
+                font-weight: bold;
+            }
+
+            .grid {
+                width: 33%;
+                padding: 4px;
+            }
+        </style>
+        <style type="text/css">
+            .value {
+                font-weight: bold;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <ui:composition template="../template.xhtml">
+            <ui:define name="centre">
+                <div class="p-col-12">
+                    <div class="card" style="margin-top: -16px">
+                        <h:form>
+                            <p:tabMenu activeIndex="1">
+                                <p:menuitem value="Nouveau paiement MOOV" outcome="/private/paiementMoovAfrica">
+                                    <f:param name="i" value="0"/>
+                                </p:menuitem>
+                                <p:menuitem value="Paiement Selectif" outcome="/private/paiementSelect">
+                                    <f:param name="i" value="1"/>
+                                </p:menuitem>
+                                <p:menuitem value="Nouveau paiement AIRTEL" outcome="/private/emissionPaiements">
+                                    <f:param name="i" value="2"/>
+                                </p:menuitem>
+                                <p:menuitem value="Paiements à valider (#{monProfilMBean.nbrePaiementEnAttente})" outcome="/private/paiementEnAttente">
+                                    <f:param name="i" value="3"/>
+                                </p:menuitem>
+                                <p:menuitem value="Paiements opérateurs (#{monProfilMBean.nbrePaiementAenvoyeAOp})" outcome="/private/suiviPaiements">
+                                    <f:param name="i" value="4"/>
+                                </p:menuitem>
+                                <p:menuitem value="Suivi des transactions" outcome="/private/suivitransactions" disabled="true">
+                                    <f:param name="i" value="5"/>
+                                </p:menuitem>
+                            </p:tabMenu>
+                        </h:form>
+
+                    </div>
+                    <!--fil d'ariane -->
+                    <div class="card">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <i class="pi pi-wallet p-px-2"/>                                                
+                                <p:outputLabel value=" " />
+                                <i class="pi pi-chevron-right p-px-2"/>
+                                <p:outputLabel value="Paiement selectif :" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <p:panel header="Effectuez un paiement de subsides en fonction des critères de selection">
+                                <div class="card">
+                                    <h:form id="searcheFormOne">
+                                        <div class="p-formgroup-inline">
+                                           <h:outputText value="Opérateur télécom "/>
+                                           <p:selectOneMenu id="nomOperateur" value="#{sP.operateurToPaie}" required="true" label="Opérateur télécom">
+                                                <f:selectItems value="#{sP.listeOperateurs}"/>
+                                            </p:selectOneMenu>
+                                            <h:outputText value="Catégorie" />
+                                            <p:selectOneMenu id="idcategoriepro" value="#{sP.categorieToPaie}" required="true">
+                                                <f:selectItems value="#{sP.listeCategories}"   itemLabelEscaped="true"  />
+                                            </p:selectOneMenu>
+                                            <div class="p-field">
+                                                <p:commandButton type="submit" value="rechercher" 
+                                                                 styleClass="ui-button-raised ui-button-help"  
+                                                                 actionListener="#{sP.searchSelectivPaie()}" />
+                                            </div>
+                                        </div>
+                                    </h:form>
+                                </div>
+                            </p:panel>
+                        </div>
+                    </div>
+                    <p:divider/>
+                    <div class="p-grid">
+                        <div class="p-col-4 ">
+                            <p:panel header="Formulaire de paiement">
+                                <h:form>
+                                    <p:growl id="growl" sticky="true" showDetail="true"/>
+                                    <h:panelGrid columns="2" columnClasses="label, value" id="formPanelGrid">
+                                        <h:outputText value="Libellé "/>
+                                        <p:inputText   id="libelle" value="#{sP.libellePaie}"  label="libelle" required="true"/>
+                                        <h:outputText value="Montant Total de Paiement" />                                        
+                                        <p:inputMask id="totalMontal"  value="#{sP.montantPaie}" label="Montant Total" mask="9[9999999999]"
+                                                     validateMask="false" required="true" requiredMessage="veuillez entrer le montant de paiement ">
+                                            <f:validateLength minimum="2" maximum="12"/>
+                                        </p:inputMask>
+                                        <h:outputText  value="Détails" />
+                                        <p:inputTextarea id="details" rows="4" cols="22" value="#{sP.details}" 
+                                                         label="détails" required="true"  requiredMessage="veuillez mentionner une information de détail svp" />
+                                        <h:outputText value="Paiement du mois de : " />
+                                        <p:datePicker  label="mois de paiement" id="moisDePaiement" view="month" value="#{sP.moisDePaie}" pattern="MM/yyyy" 
+                                                       yearNavigator="true" yearRange="2000:2030"  required="true" requiredMessage="veuillez entrer la date d'execution de paiement suggeree à l'opérateur télécom" />
+                                        <h:outputText value="Date de paiement (suggeré a l'opérateur) " />
+                                        <p:datePicker id="navigator" value="#{sP.dateDePaiement}"
+                                                      monthNavigator="true"
+                                                      yearNavigator="true"
+                                                      showWeek="true" required="true" requiredMessage="entrer la date de paiement suggerée"/>
+                                        
+                                        <h:outputText value=""/>
+                                        <p:commandButton  value="Soumettre" styleClass="ui-button-raised ui-button-success"  
+                                                          update="growl" actionListener="#{sP.newPaiementMensuelSelectif}" />
+                                    </h:panelGrid>                                                                
+                                </h:form>
+                            </p:panel>
+                        </div>
+                        <div class="p-col">
+                            <p:panel header="Liste des maitres communautaire recherchés"  >
+                                <p:messages/>
+                                <h:panelGrid columns="2" columnClasses="label, value">
+                                    <h:form id="formpaiement">
+                                        <div class="card crud-demo">
+                                            <p:growl id="messages" showDetail="true"/>
+                                            <p:dataTable id="listeMaitres" widgetVar="dtProducts" var="product"   emptyMessage="aucun maitres"  
+                                                         value="#{sP.listeDatatable}" reflow="true" styleClass="products-table"  
+                                                         rowKey="#{product.id}" paginator="true" rows="4" paginatorPosition="bottom">
+                                                <p:autoUpdate />                                                
+                                                <f:facet name="header">
+                                                    <div class="products-table-header">
+                                                        <span class="filter-container ui-input-icon-left">
+                                                            <p:outputLabel>Emetteur</p:outputLabel>
+                                                            <b style="color: red">#{emissionPaieMensuelMoovAfricaMBean.userCo.login}</b>
+                                                        </span>
+                                                        <span style="font-weight: bold;margin-left: 200px">Montant total :<b style="color: red"> #{sP.dataTableTotalSubside} F CFA </b></span>
+                                                        <span style="font-weight: bold;margin-left: 200px">Restant : ... F CFA</span>
+                                                    </div>
+                                                </f:facet>
+                                                <p:column headerText="Matricule">
+                                                    <h:outputText value="#{product.matricule}"/>
+                                                </p:column>
+                                                <p:column headerText="Nom">
+                                                    <h:outputText value="#{product.nom}"/>
+                                                </p:column>
+                                                <p:column headerText="Prénoms">
+                                                    <h:outputText value="#{product.prenoms}" />
+                                                </p:column>
+                                                <p:column headerText="Numéro de paiement">
+                                                    <h:outputText value="#{product.contactun}"  />
+                                                </p:column>
+                                                <p:column headerText="Etat mobile money">
+                                                    <h:outputText value="#{product.valeurestatutwallet}"  />
+                                                </p:column>
+                                                <p:column headerText="Motif">
+                                                    <h:outputText value="#{product.motifsuspension}"  />
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </h:form>
+                                </h:panelGrid>
+                            </p:panel>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

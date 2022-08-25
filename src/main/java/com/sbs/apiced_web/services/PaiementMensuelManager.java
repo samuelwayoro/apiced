@@ -33,6 +33,7 @@ public class PaiementMensuelManager {
     public void persist(Paiement paie) {
         try {
             //System.out.println("entree dans la methode persist de paiement mensuel de subsides "+paie.getMontanttotal());
+            //verification de l'inexistance du paiement avant validation dans la bd avec une requette find 
             em.persist(paie);
         } catch (ConstraintViolationException e) {
             e.getConstraintViolations().forEach(actual -> {
@@ -61,8 +62,6 @@ public class PaiementMensuelManager {
         Query q = em.createNamedQuery("Paiement.findAll");
         return q.getResultList();
     }
-    
-    
 
     public Integer recupLastPaie() {
         System.out.println("recuperation du dernier paiement");
@@ -144,9 +143,9 @@ public class PaiementMensuelManager {
 
     public List<Transactions> listeTransactionsEnCours() {
         String etat = "En cours de paiement";
-         String etatPayes = "payee";
-         String etatEchec = "echouee";
-         Query q = em.createQuery("SELECT t FROM Transactions t WHERE t.etattransaction = :etat  or t.etattransaction = :etatPayes or t.etattransaction = :etatEchec ");
+        String etatPayes = "payee";
+        String etatEchec = "echouee";
+        Query q = em.createQuery("SELECT t FROM Transactions t WHERE t.etattransaction = :etat  or t.etattransaction = :etatPayes or t.etattransaction = :etatEchec ");
         q.setParameter("etat", etat);
         q.setParameter("etatPayes", etatPayes);
         q.setParameter("etatEchec", etatEchec);
@@ -154,10 +153,23 @@ public class PaiementMensuelManager {
     }
 
     public Long nbreTransactionsEnCours() {
-         String etatEnCours = "En cours de paiement";
-                Query q = em.createQuery("SELECT COUNT(t) FROM Transactions t WHERE t.etattransaction = :etat");//nbrePaiementEnCours
+        String etatEnCours = "En cours de paiement";
+        Query q = em.createQuery("SELECT COUNT(t) FROM Transactions t WHERE t.etattransaction = :etat");//nbrePaiementEnCours
         q.setParameter("etat", etatEnCours);
         return (Long) q.getSingleResult();
+    }
+
+    public Boolean verifUnicitePaie(Paiement paie) {
+        Query q = em.createQuery("SELECT p FROM Paiement p WHERE p.mois = :mois and p.operateurmobile = :operateur and p.categoriePaiement = :cate ");
+        q.setParameter("mois", paie.getMois());
+        q.setParameter("operateur", paie.getOperateurmobile());
+        q.setParameter("cate", paie.getCategoriePaiement());
+        List<Object> x = q.getResultList();
+        System.out.println("nous avons trouvee "+x.size()+" paiement lors de la verif de ce paiement ...");
+        if(!x.isEmpty())
+            return Boolean.TRUE;
+        else
+            return Boolean.FALSE;
     }
 
 }

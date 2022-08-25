@@ -7,7 +7,6 @@ package com.sbs.apiced_web.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -53,18 +52,13 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Maitrecommunautaire.findByDateretraite", query = "SELECT m FROM Maitrecommunautaire m WHERE m.dateretraite = :dateretraite"),
     @NamedQuery(name = "Maitrecommunautaire.findByDatesuspension", query = "SELECT m FROM Maitrecommunautaire m WHERE m.datesuspension = :datesuspension"),
     @NamedQuery(name = "Maitrecommunautaire.findByGenre", query = "SELECT m FROM Maitrecommunautaire m WHERE m.genre = :genre"),
-    @NamedQuery(name = "Maitrecommunautaire.findByDemandesusp", query = "SELECT m FROM Maitrecommunautaire m WHERE m.demandesusp = :demandesusp"),
     @NamedQuery(name = "Maitrecommunautaire.findByMotifsuspension", query = "SELECT m FROM Maitrecommunautaire m WHERE m.motifsuspension = :motifsuspension"),
-    @NamedQuery(name = "Maitrecommunautaire.findByNbreenfants", query = "SELECT m FROM Maitrecommunautaire m WHERE m.nbreenfants = :nbreenfants"),
     @NamedQuery(name = "Maitrecommunautaire.findBySitmatrimonial", query = "SELECT m FROM Maitrecommunautaire m WHERE m.sitmatrimonial = :sitmatrimonial"),
     @NamedQuery(name = "Maitrecommunautaire.findByDernierdiplome", query = "SELECT m FROM Maitrecommunautaire m WHERE m.dernierdiplome = :dernierdiplome"),
     @NamedQuery(name = "Maitrecommunautaire.findByClasseaffectee", query = "SELECT m FROM Maitrecommunautaire m WHERE m.classeaffectee = :classeaffectee"),
     @NamedQuery(name = "Maitrecommunautaire.findByOperatortelco", query = "SELECT m FROM Maitrecommunautaire m WHERE m.operatortelco = :operatortelco"),
     @NamedQuery(name = "Maitrecommunautaire.findByNumerointerne", query = "SELECT m FROM Maitrecommunautaire m WHERE m.numerointerne = :numerointerne"),
     @NamedQuery(name = "Maitrecommunautaire.findByEtatretraite", query = "SELECT m FROM Maitrecommunautaire m WHERE m.etatretraite = :etatretraite"),
-    @NamedQuery(name = "Maitrecommunautaire.findByMotifrejetvalidation", query = "SELECT m FROM Maitrecommunautaire m WHERE m.motifrejetvalidation = :motifrejetvalidation"),
-    @NamedQuery(name = "Maitrecommunautaire.findByDaterejetvalidation", query = "SELECT m FROM Maitrecommunautaire m WHERE m.daterejetvalidation = :daterejetvalidation"),
-    @NamedQuery(name = "Maitrecommunautaire.findByRejetvalidation", query = "SELECT m FROM Maitrecommunautaire m WHERE m.rejetvalidation = :rejetvalidation"),
     @NamedQuery(name = "Maitrecommunautaire.findByValeureetatretraite", query = "SELECT m FROM Maitrecommunautaire m WHERE m.valeureetatretraite = :valeureetatretraite"),
     @NamedQuery(name = "Maitrecommunautaire.findByValeurestatutwallet", query = "SELECT m FROM Maitrecommunautaire m WHERE m.valeurestatutwallet = :valeurestatutwallet"),
     @NamedQuery(name = "Maitrecommunautaire.findByStatutcompte", query = "SELECT m FROM Maitrecommunautaire m WHERE m.statutcompte = :statutcompte"),
@@ -144,13 +138,9 @@ public class Maitrecommunautaire implements Serializable {
     @Size(max = 8)
     @Column(name = "GENRE")
     private String genre;
-    @Column(name = "DEMANDESUSP")
-    private BigInteger demandesusp;
     @Size(max = 50)
     @Column(name = "MOTIFSUSPENSION")
     private String motifsuspension;
-    @Column(name = "NBREENFANTS")
-    private BigInteger nbreenfants;
     @Size(max = 30)
     @Column(name = "SITMATRIMONIAL")
     private String sitmatrimonial;
@@ -168,14 +158,7 @@ public class Maitrecommunautaire implements Serializable {
     private String numerointerne;
     @Column(name = "ETATRETRAITE")
     private Boolean etatretraite;
-    @Size(max = 255)
-    @Column(name = "MOTIFREJETVALIDATION")
-    private String motifrejetvalidation;
-    @Size(max = 20)
-    @Column(name = "DATEREJETVALIDATION")
-    private String daterejetvalidation;
-    @Column(name = "REJETVALIDATION")
-    private Boolean rejetvalidation;
+
     @Size(max = 50)
     @Column(name = "VALEUREETATRETRAITE")
     private String valeureetatretraite;
@@ -244,8 +227,6 @@ public class Maitrecommunautaire implements Serializable {
     public void setDrej(String drej) {
         this.drej = drej;
     }
-    
-    
 
     public String getIpep() {
         return ipep;
@@ -254,7 +235,6 @@ public class Maitrecommunautaire implements Serializable {
     public void setIpep(String ipep) {
         this.ipep = ipep;
     }
-
 
     public BigDecimal getId() {
         return id;
@@ -335,8 +315,6 @@ public class Maitrecommunautaire implements Serializable {
     public void setNni(String nni) {
         this.nni = nni;
     }
-
-
 
     public String getLieudenaissance() {
         return lieudenaissance;
@@ -450,28 +428,12 @@ public class Maitrecommunautaire implements Serializable {
         this.genre = genre;
     }
 
-    public BigInteger getDemandesusp() {
-        return demandesusp;
-    }
-
-    public void setDemandesusp(BigInteger demandesusp) {
-        this.demandesusp = demandesusp;
-    }
-
     public String getMotifsuspension() {
         return motifsuspension;
     }
 
     public void setMotifsuspension(String motifsuspension) {
         this.motifsuspension = motifsuspension;
-    }
-
-    public BigInteger getNbreenfants() {
-        return nbreenfants;
-    }
-
-    public void setNbreenfants(BigInteger nbreenfants) {
-        this.nbreenfants = nbreenfants;
     }
 
     public String getSitmatrimonial() {
@@ -520,30 +482,6 @@ public class Maitrecommunautaire implements Serializable {
 
     public void setEtatretraite(Boolean etatretraite) {
         this.etatretraite = etatretraite;
-    }
-
-    public String getMotifrejetvalidation() {
-        return motifrejetvalidation;
-    }
-
-    public void setMotifrejetvalidation(String motifrejetvalidation) {
-        this.motifrejetvalidation = motifrejetvalidation;
-    }
-
-    public String getDaterejetvalidation() {
-        return daterejetvalidation;
-    }
-
-    public void setDaterejetvalidation(String daterejetvalidation) {
-        this.daterejetvalidation = daterejetvalidation;
-    }
-
-    public Boolean getRejetvalidation() {
-        return rejetvalidation;
-    }
-
-    public void setRejetvalidation(Boolean rejetvalidation) {
-        this.rejetvalidation = rejetvalidation;
     }
 
     public String getValeureetatretraite() {

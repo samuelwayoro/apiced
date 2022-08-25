@@ -451,11 +451,12 @@ public class EmissionPaieMensuelMBean implements Serializable {
             } catch (Exception e) {
             }
 
-            if (montantRestantSubsides.intValue() > 0) {
+            if (montantRestantSubsides.intValue() >= 0) {
                 System.out.println("le montant restant de paiement est  " + montantRestantSubsides);
                 afficheMontantRestant = Boolean.TRUE;
             }
 
+            String categoriePaiement = "ALL";
             //si le paiement existe deja parmis les mois payé : rejeter 
             Paiement paie = new Paiement(DateDePaiement.format(DateTimeFormatter.ISO_DATE),
                     Details,
@@ -467,13 +468,14 @@ public class EmissionPaieMensuelMBean implements Serializable {
                     "MOOV",
                     Boolean.FALSE,
                     etatPaiementMgr.etatPaiementbyId(BigDecimal.ONE),
-                    userCo);
+                    userCo,
+                    categoriePaiement);
 
             //controle sur le paiement deja effectue d'un mois 
             for (Paiement unMois : listeDesMoisDejaPayes) {
                 System.out.println(" : ->" + unMois.getMois() + " montant " + unMois.getMontanttotal());
 
-                if (unMois.getMois().equalsIgnoreCase(paie.getMois()) && unMois.getOperateurmobile().equalsIgnoreCase("AIRTEL")) {
+                if (unMois.getMois().equalsIgnoreCase(paie.getMois()) && unMois.getOperateurmobile().equalsIgnoreCase("Airtel")) {
                     System.out.println("attention ce mois à déjà été payé pour ce opérateur  :");
                     verifMoisDejaPaye = Boolean.TRUE;
                     break;
@@ -503,15 +505,14 @@ public class EmissionPaieMensuelMBean implements Serializable {
                 msgErrorDateDemandePaiement();
             } else { //sinn on paie a present 
 
-                if (afficheMontantRestant) {
-                    msgAlerteMonnaie();
-                }
+                 //verif inexistance paiement 
+                if (!paiementMgr.verifUnicitePaie(paie)) {
                 paiementMgr.persist(paie);
                 //creation d'une liste de transactions pour persistance ...
                 //recuperation d'un ligne de mc a payer 
                 System.out.println("debut de recup des mc payable");
                 List<Maitrecommunautaire> LesMc = mcManager.recupMcPayable("Airtel");
-                System.out.println("on a recuperer :  " + LesMc.size() + " maitres abonnés airtel payables ");
+                System.out.println("on a recuperer :  " + LesMc.size() + " maitres abonnés Airtel payables ");
                 LesMc.forEach(maitre -> {
                     //System.out.println("infos mc ->" + maitre.getNom() + " " + maitre.getPrenoms() + " " + maitre.getContactun() + " " + maitre.getOperatortelco());
                     //convertir en transaction ...
@@ -553,8 +554,16 @@ public class EmissionPaieMensuelMBean implements Serializable {
                 savePaieNotif(libelleNotif, details, 4, paie, listeUsers);
 
                 msgSuccessNewPaie();
+                
+                if (afficheMontantRestant) {
+                    msgAlerteMonnaie();
+                }
+                
                 PrimeFaces.current().ajax().update(":form:menu");
-            }
+            } else {
+                    msgErrorPaiementExistant();
+                }
+        }
 
         } else {
             System.out.println("le montant saisi est inférieur au montant total des subsides a payer ");
@@ -622,7 +631,8 @@ public class EmissionPaieMensuelMBean implements Serializable {
         this.montantPaie = null;
         this.p = null;
     }
-public void msgSuccessNewPaie() {
+
+    public void msgSuccessNewPaie() {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Demande de paiement enregistrée", "En attente de validation par le coordonnateur ,Prière Imprimer le rapport de demande à l'écran paiement à valider"));
     }
 
@@ -641,7 +651,6 @@ public void msgSuccessNewPaie() {
     public void msgErrorMauvaisMontant() {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Impossible d'emettre le paiment", "le montant a entré : " + montantPaie + "  est inférieur aux montant des subsides a payer  :" + montantTotalSubsidesAirtel));
     }
-
 
     public boolean isSkip() {
         return skip;
@@ -670,6 +679,11 @@ public void msgSuccessNewPaie() {
         FacesMessage msg = new FacesMessage("Tab Closed", "Closed tab: " + event.getTab().getTitle());
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
+    
+        public void msgErrorPaiementExistant() {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Impossible d'emettre le paiment", "le paiement des maitres pour ce mois est dejà crée "));
+    }
+
 
     public void enable() {
         if (step) {

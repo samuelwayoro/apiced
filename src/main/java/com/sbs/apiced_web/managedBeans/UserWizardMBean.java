@@ -34,7 +34,6 @@ import com.sbs.apiced_web.services.TypePiecesAdministrativeManager;
 import com.sbs.apiced_web.services.UsersNotifManager;
 import com.sbs.apiced_web.services.UtilisateurManager;
 import com.sbs.apiced_web.services.VilleManager;
-import com.sbs.apiced_web.utility.Utility;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
